@@ -3,7 +3,7 @@ import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { Header } from "@/components/Header";
 import { TopBanner } from "@/components/TopBanner";
 import { Footer } from "@/components/Footer";
-import { getProduct, formatNgn, formatEur } from "@/lib/products";
+import { getProduct, formatNgn, formatEur, type ColorVariant } from "@/lib/products";
 
 export const Route = createFileRoute("/product/$slug")({
   loader: ({ params }) => {
@@ -86,7 +86,7 @@ function ProductPage() {
                 </p>
               </div>
               <div className="mt-3 flex gap-3">
-                {product.colors.map((c, i) => {
+                {product.colors.map((c: ColorVariant, i: number) => {
                   const disabled = !c.inStock;
                   return (
                     <button
@@ -118,7 +118,7 @@ function ProductPage() {
                 </a>
               </div>
               <div className="mt-3 grid grid-cols-5 gap-2 sm:max-w-sm">
-                {product.sizes.map((s) => (
+                {product.sizes.map((s: string) => (
                   <button
                     key={s}
                     onClick={() => setSize(s)}
