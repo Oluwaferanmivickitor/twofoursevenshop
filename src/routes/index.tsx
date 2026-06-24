@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Header } from "@/components/Header";
 import { HeroCarousel } from "@/components/HeroCarousel";
 import { ProductGrid } from "@/components/ProductGrid";
+import { TopBanner } from "@/components/TopBanner";
+import { Footer } from "@/components/Footer";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -26,11 +28,13 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <div className="min-h-screen bg-background">
+      <TopBanner />
       <Header />
       <main>
         <HeroCarousel />
         <ProductGrid />
       </main>
+      <Footer />
     </div>
   );
 }
