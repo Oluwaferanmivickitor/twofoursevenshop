@@ -3,6 +3,7 @@ import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { Header } from "@/components/Header";
 import { TopBanner } from "@/components/TopBanner";
 import { Footer } from "@/components/Footer";
+import { ProductGallery } from "@/components/ProductGallery";
 import { getProduct, formatNgn, formatEur, type ColorVariant } from "@/lib/products";
 
 export const Route = createFileRoute("/product/$slug")({
@@ -44,20 +45,18 @@ function ProductPage() {
   const [size, setSize] = useState<string | null>(null);
 
   const activeColor = product.colors?.[colorIdx];
-  const displayImage = activeColor?.image ?? product.image;
+  const galleryImages =
+    activeColor?.images ?? product.gallery ?? [product.image];
 
   return (
     <div className="min-h-screen bg-background">
       <TopBanner />
       <Header />
       <main className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-5 py-10 sm:px-8 lg:grid-cols-2 lg:gap-16 lg:py-16">
-        <div className="bg-secondary">
-          <img
-            src={displayImage}
-            alt={`${product.name}${activeColor ? ` — ${activeColor.name}` : ""}`}
-            className="h-auto w-full object-cover"
-          />
-        </div>
+        <ProductGallery
+          images={galleryImages}
+          alt={`${product.name}${activeColor ? ` — ${activeColor.name}` : ""}`}
+        />
 
         <div className="flex flex-col">
           <p className="eyebrow text-muted-foreground">{product.category}</p>

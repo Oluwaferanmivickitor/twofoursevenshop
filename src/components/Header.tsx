@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Menu, Search, ShoppingBag, X } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import logoAsset from "@/assets/twofourseven-logo.png.asset.json";
 
 const navLinks = [
   { label: "Shop All", href: "#" },
@@ -52,9 +53,13 @@ export function Header() {
           <Link
             to="/"
             aria-label="TWOFOURSEVEN — Home"
-            className="wordmark justify-self-center text-[0.95rem] text-foreground sm:text-[1.1rem]"
+            className="justify-self-center"
           >
-            TWOFOURSEVEN
+            <img
+              src={logoAsset.url}
+              alt="TWOFOURSEVEN"
+              className="h-8 w-auto sm:h-10"
+            />
           </Link>
 
           <div className="justify-self-end">
