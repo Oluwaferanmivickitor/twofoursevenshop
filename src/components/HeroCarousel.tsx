@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import hero1 from "@/assets/hero-1.jpg";
-import hero2 from "@/assets/hero-2.jpg";
-import hero3 from "@/assets/hero-3.jpg";
+import hero1 from "@/assets/hero-wd-black.jpg.asset.json";
+import hero2 from "@/assets/hero-wd-white.jpg.asset.json";
+import hero3 from "@/assets/hero-mg.jpg.asset.json";
 
 const slides = [
-  { src: hero1, alt: "Editorial campaign — black silk ensemble" },
-  { src: hero2, alt: "Editorial campaign — ivory and grey outerwear" },
-  { src: hero3, alt: "Editorial campaign — black trench" },
+  { src: hero1.url, alt: "TWOFOURSEVEN — WE DIFFERENT campaign portrait" },
+  { src: hero2.url, alt: "TWOFOURSEVEN — WE DIFFERENT lifestyle" },
+  { src: hero3.url, alt: "TWOFOURSEVEN — MONEY GANG editorial" },
 ];
 
 export function HeroCarousel() {
