@@ -1,10 +1,10 @@
-import weDiffBlackAsset from "@/assets/we-different-black.asset.json";
-import weDiffWhiteAsset from "@/assets/we-different-white.asset.json";
-import weDiffBlackPortrait from "@/assets/we-different-black-portrait.jpg.asset.json";
-import weDiffWhiteLifestyle from "@/assets/we-different-white-lifestyle.jpg.asset.json";
-import moneyGangAsset from "@/assets/money-gang.asset.json";
-import moneyGangLifestyle from "@/assets/money-gang-lifestyle.jpg.asset.json";
-import beanieAsset from "@/assets/beanie-247.asset.json";
+import wdBlackFront from "@/assets/wd-black-front.jpg.asset.json";
+import wdBlackBack from "@/assets/wd-black-back.jpg.asset.json";
+import wdWhiteFront from "@/assets/wd-white-front.jpg.asset.json";
+import wdWhiteBack from "@/assets/wd-white-back.jpg.asset.json";
+import mgFront from "@/assets/mg-front.jpg.asset.json";
+import mgBack from "@/assets/mg-back.jpg.asset.json";
+import beanie from "@/assets/beanie.jpg.asset.json";
 
 export const NGN_TO_EUR = 1 / 1750;
 
@@ -34,52 +34,46 @@ export const products: Product[] = [
     name: "WE DIFFERENT TEE",
     category: "T-Shirt",
     priceNgn: 100_000,
-    image: weDiffBlackAsset.url,
-    gallery: [weDiffBlackAsset.url, weDiffBlackPortrait.url],
+    image: wdBlackFront.url,
+    gallery: [wdBlackFront.url, wdBlackBack.url],
     sizes: ["S", "M", "L", "XL", "XXL"],
     colors: [
       {
         name: "Black",
         swatch: "#000000",
-        images: [weDiffBlackAsset.url, weDiffBlackPortrait.url],
+        images: [wdBlackFront.url, wdBlackBack.url],
         inStock: true,
       },
       {
         name: "White",
         swatch: "#ffffff",
-        images: [weDiffWhiteAsset.url, weDiffWhiteLifestyle.url],
+        images: [wdWhiteFront.url, wdWhiteBack.url],
         inStock: true,
       },
     ],
     inStock: true,
     description:
-      "Heavyweight cotton tee with hand-finished 'WE DIFFERENT' graphic at the chest and the signature 247 drip emblem at the back.",
+      "Heavyweight cotton tee with the signature 'WE DIFFERENT' chest graphic and the 247 drip emblem at the back.",
   },
   {
     slug: "money-gang-tee",
     name: "MONEY GANG TEE",
     category: "T-Shirt",
     priceNgn: 100_000,
-    image: moneyGangAsset.url,
-    gallery: [moneyGangAsset.url, moneyGangLifestyle.url],
+    image: mgFront.url,
+    gallery: [mgFront.url, mgBack.url],
     sizes: ["S", "M", "L", "XL", "XXL"],
     colors: [
       {
         name: "Black",
         swatch: "#000000",
-        images: [moneyGangAsset.url, moneyGangLifestyle.url],
+        images: [mgFront.url, mgBack.url],
         inStock: true,
-      },
-      {
-        name: "White",
-        swatch: "#ffffff",
-        images: [moneyGangAsset.url],
-        inStock: false,
       },
     ],
     inStock: true,
     description:
-      "Oversized box-fit tee with archival 'MONEY GANG' portrait print and metallic foil typography.",
+      "Oversized box-fit tee with archival 'MONEY GANG' portrait print on the chest and the metallic gold 247 star at the back.",
   },
 ];
 
@@ -93,7 +87,8 @@ export const outOfStock: Product[] = [
     name: "247 BEANIE",
     category: "Headwear",
     priceNgn: 45_000,
-    image: beanieAsset.url,
+    image: beanie.url,
+    gallery: [beanie.url],
     inStock: false,
     description: "All-over camouflage knit beanie with embroidered 247 leaf motifs.",
   },
