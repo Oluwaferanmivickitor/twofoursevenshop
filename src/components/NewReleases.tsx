@@ -114,10 +114,14 @@ function HorizontalRail({
 
 export function NewReleases() {
   return (
-    <>
-      <section
+    <section id="shop" aria-label="Shop" className="border-t border-border">
+      <div className="px-5 pt-16 sm:px-8 sm:pt-24">
+        <p className="eyebrow text-muted-foreground">Shop</p>
+      </div>
+
+      <div
         aria-labelledby="new-releases-heading"
-        className="px-5 py-16 sm:px-8 sm:py-24"
+        className="px-5 pt-6 pb-16 sm:px-8 sm:pt-8 sm:pb-24"
       >
         <div className="mb-10 sm:mb-14">
           <p className="eyebrow text-muted-foreground">Drop 01 — Available Now</p>
@@ -130,10 +134,10 @@ export function NewReleases() {
         </div>
 
         <HorizontalRail items={newReleases} idPrefix="nr" />
-      </section>
+      </div>
 
       {outOfStock.length > 0 && (
-        <section
+        <div
           aria-labelledby="oos-heading"
           className="border-t border-border bg-secondary/40 px-5 py-16 sm:px-8 sm:py-24"
         >
@@ -151,8 +155,8 @@ export function NewReleases() {
           </div>
 
           <HorizontalRail items={outOfStock} soldOut idPrefix="oos" />
-        </section>
+        </div>
       )}
-    </>
+    </section>
   );
 }
