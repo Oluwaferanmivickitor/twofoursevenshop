@@ -1,6 +1,9 @@
 import weDiffBlackAsset from "@/assets/we-different-black.asset.json";
 import weDiffWhiteAsset from "@/assets/we-different-white.asset.json";
+import weDiffBlackPortrait from "@/assets/we-different-black-portrait.jpg.asset.json";
+import weDiffWhiteLifestyle from "@/assets/we-different-white-lifestyle.jpg.asset.json";
 import moneyGangAsset from "@/assets/money-gang.asset.json";
+import moneyGangLifestyle from "@/assets/money-gang-lifestyle.jpg.asset.json";
 import beanieAsset from "@/assets/beanie-247.asset.json";
 
 export const NGN_TO_EUR = 1 / 1750;
@@ -8,7 +11,7 @@ export const NGN_TO_EUR = 1 / 1750;
 export type ColorVariant = {
   name: string;
   swatch: string;
-  image: string;
+  images: string[];
   inStock: boolean;
 };
 
@@ -18,6 +21,7 @@ export type Product = {
   category: string;
   priceNgn: number;
   image: string;
+  gallery?: string[];
   sizes?: string[];
   colors?: ColorVariant[];
   inStock: boolean;
@@ -31,10 +35,21 @@ export const products: Product[] = [
     category: "T-Shirt",
     priceNgn: 100_000,
     image: weDiffBlackAsset.url,
+    gallery: [weDiffBlackAsset.url, weDiffBlackPortrait.url],
     sizes: ["S", "M", "L", "XL", "XXL"],
     colors: [
-      { name: "Black", swatch: "#000000", image: weDiffBlackAsset.url, inStock: true },
-      { name: "White", swatch: "#ffffff", image: weDiffWhiteAsset.url, inStock: true },
+      {
+        name: "Black",
+        swatch: "#000000",
+        images: [weDiffBlackAsset.url, weDiffBlackPortrait.url],
+        inStock: true,
+      },
+      {
+        name: "White",
+        swatch: "#ffffff",
+        images: [weDiffWhiteAsset.url, weDiffWhiteLifestyle.url],
+        inStock: true,
+      },
     ],
     inStock: true,
     description:
@@ -46,40 +61,41 @@ export const products: Product[] = [
     category: "T-Shirt",
     priceNgn: 100_000,
     image: moneyGangAsset.url,
+    gallery: [moneyGangAsset.url, moneyGangLifestyle.url],
     sizes: ["S", "M", "L", "XL", "XXL"],
     colors: [
-      { name: "Black", swatch: "#000000", image: moneyGangAsset.url, inStock: true },
-      { name: "White", swatch: "#ffffff", image: moneyGangAsset.url, inStock: false },
+      {
+        name: "Black",
+        swatch: "#000000",
+        images: [moneyGangAsset.url, moneyGangLifestyle.url],
+        inStock: true,
+      },
+      {
+        name: "White",
+        swatch: "#ffffff",
+        images: [moneyGangAsset.url],
+        inStock: false,
+      },
     ],
     inStock: true,
     description:
       "Oversized box-fit tee with archival 'MONEY GANG' portrait print and metallic foil typography.",
   },
+];
+
+// Available collection (in-stock products)
+export const newReleases = products.filter((p) => p.inStock);
+
+// Archive — sold out / unavailable
+export const outOfStock: Product[] = [
   {
     slug: "247-beanie",
     name: "247 BEANIE",
     category: "Headwear",
     priceNgn: 45_000,
     image: beanieAsset.url,
-    sizes: ["One Size"],
-    inStock: true,
-    description:
-      "All-over camouflage knit beanie with embroidered 247 leaf motifs and a soft turn-up cuff.",
-  },
-];
-
-export const newReleases = products.filter((p) => p.inStock);
-
-// Demo out-of-stock item — re-uses MONEY GANG white colorway view.
-export const outOfStock: Product[] = [
-  {
-    slug: "money-gang-tee-white",
-    name: "MONEY GANG TEE — White",
-    category: "T-Shirt",
-    priceNgn: 100_000,
-    image: moneyGangAsset.url,
     inStock: false,
-    description: "Sold out — restock pending.",
+    description: "All-over camouflage knit beanie with embroidered 247 leaf motifs.",
   },
 ];
 
@@ -98,5 +114,5 @@ export const formatNgn = (n: number) => ngn.format(n);
 export const formatEur = (n: number) => eur.format(Math.round(n * NGN_TO_EUR));
 
 export function getProduct(slug: string): Product | undefined {
-  return products.find((p) => p.slug === slug);
+  return [...products, ...outOfStock].find((p) => p.slug === slug);
 }
