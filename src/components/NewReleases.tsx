@@ -5,6 +5,83 @@ import { newReleases, outOfStock, formatNgn, formatEur, type Product } from "@/l
 
 const allProducts: Product[] = [...newReleases, ...outOfStock];
 
+const findProduct = (slug: string) => allProducts.find((p) => p.slug === slug);
+const beanieProduct = findProduct("247-beanie");
+const weDifferentProduct = findProduct("we-different-tee");
+const moneyGangProduct = findProduct("money-gang-tee");
+
+function PriceLine({ p, soldOut }: { p: Product; soldOut: boolean }) {
+  return (
+    <div className="mt-4 space-y-1.5">
+      <h3 className="text-[0.8rem] font-normal tracking-wide text-foreground sm:text-sm">
+        {p.name}
+      </h3>
+      <div className="flex items-baseline gap-2">
+        <span
+          className={`text-[0.8rem] font-medium sm:text-sm ${
+            soldOut ? "text-muted-foreground line-through" : "text-foreground"
+          }`}
+        >
+          {formatNgn(p.priceNgn)}
+        </span>
+        <span className="text-[0.7rem] text-muted-foreground sm:text-xs">
+          / ~{formatEur(p.priceNgn)}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function ShopCard({
+  p,
+  fill = false,
+}: {
+  p: Product;
+  fill?: boolean;
+}) {
+  const soldOut = !p.inStock;
+  const imageWrapClass = fill
+    ? "relative h-full min-h-0 flex-1 overflow-hidden bg-secondary"
+    : "relative aspect-[3/4] overflow-hidden bg-secondary";
+
+  const inner = (
+    <div className="flex h-full flex-col">
+      <div className={imageWrapClass}>
+        <img
+          src={p.image}
+          alt={p.name}
+          loading="lazy"
+          className={`h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03] ${
+            soldOut ? "opacity-70" : ""
+          }`}
+        />
+        {soldOut && (
+          <>
+            <div className="absolute inset-0 bg-background/10" />
+            <span className="eyebrow absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border border-foreground bg-background/90 px-4 py-2 text-[0.65rem] tracking-[0.25em] text-foreground">
+              Sold Out
+            </span>
+          </>
+        )}
+      </div>
+      <PriceLine p={p} soldOut={soldOut} />
+    </div>
+  );
+
+  if (soldOut) {
+    return <div className="group h-full cursor-not-allowed">{inner}</div>;
+  }
+  return (
+    <Link
+      to="/product/$slug"
+      params={{ slug: p.slug }}
+      className="group block h-full"
+    >
+      {inner}
+    </Link>
+  );
+}
+
 function ProductCard({ p, soldOut = false }: { p: Product; soldOut?: boolean }) {
   const inner = (
     <>
@@ -130,13 +207,25 @@ export function NewReleases() {
         </div>
 
         <div className="px-5 pt-10 pb-16 sm:px-8 sm:pt-14 sm:pb-24">
-          <ul className="grid grid-cols-2 gap-x-4 gap-y-12 sm:gap-x-6 md:grid-cols-3 lg:gap-x-8 lg:gap-y-16">
-            {allProducts.map((p) => (
-              <li key={`shop-${p.slug}`}>
-                <ProductCard p={p} soldOut={!p.inStock} />
-              </li>
-            ))}
-          </ul>
+          <div className="grid grid-cols-2 items-stretch gap-4 sm:gap-6 lg:gap-8">
+            {/* Left — large dominant item */}
+            <div className="h-full">
+              {beanieProduct && <ShopCard p={beanieProduct} fill />}
+            </div>
+            {/* Right — two stacked items */}
+            <div className="flex h-full flex-col gap-4 sm:gap-6 lg:gap-8">
+              {weDifferentProduct && (
+                <div className="flex-1">
+                  <ShopCard p={weDifferentProduct} />
+                </div>
+              )}
+              {moneyGangProduct && (
+                <div className="flex-1">
+                  <ShopCard p={moneyGangProduct} />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </section>
 
