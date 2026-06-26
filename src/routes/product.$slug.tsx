@@ -49,7 +49,7 @@ function ProductPage() {
   // see every view of every color without toggling.
   const galleryImages =
     product.colors && product.colors.length > 0
-      ? product.colors.flatMap((c) => c.images)
+      ? product.colors.flatMap((c: ColorVariant) => c.images)
       : product.gallery ?? [product.image];
 
   return (
