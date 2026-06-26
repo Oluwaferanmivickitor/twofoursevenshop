@@ -3,6 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { newReleases, outOfStock, formatNgn, formatEur, type Product } from "@/lib/products";
 
+const allProducts: Product[] = [...newReleases, ...outOfStock];
+
 function ProductCard({ p, soldOut = false }: { p: Product; soldOut?: boolean }) {
   const inner = (
     <>
@@ -114,14 +116,34 @@ function HorizontalRail({
 
 export function NewReleases() {
   return (
-    <section id="shop" aria-label="Shop" className="border-t border-border">
-      <div className="px-5 pt-16 sm:px-8 sm:pt-24">
-        <p className="eyebrow text-muted-foreground">Shop</p>
-      </div>
+    <>
+      {/* Shop — static 3-column grid */}
+      <section id="shop" aria-labelledby="shop-heading" className="border-t border-border">
+        <div className="px-5 pt-16 sm:px-8 sm:pt-24">
+          <p className="eyebrow text-muted-foreground">Shop</p>
+          <h2
+            id="shop-heading"
+            className="mt-3 font-serif text-3xl font-light tracking-tight text-foreground sm:text-5xl"
+          >
+            All Pieces
+          </h2>
+        </div>
 
-      <div
+        <div className="px-5 pt-10 pb-16 sm:px-8 sm:pt-14 sm:pb-24">
+          <ul className="grid grid-cols-2 gap-x-4 gap-y-12 sm:gap-x-6 md:grid-cols-3 lg:gap-x-8 lg:gap-y-16">
+            {allProducts.map((p) => (
+              <li key={`shop-${p.slug}`}>
+                <ProductCard p={p} soldOut={!p.inStock} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* New Releases — horizontal scroll */}
+      <section
         aria-labelledby="new-releases-heading"
-        className="px-5 pt-6 pb-16 sm:px-8 sm:pt-8 sm:pb-24"
+        className="border-t border-border px-5 py-16 sm:px-8 sm:py-24"
       >
         <div className="mb-10 sm:mb-14">
           <p className="eyebrow text-muted-foreground">Drop 01 — Available Now</p>
@@ -132,12 +154,12 @@ export function NewReleases() {
             New Releases
           </h2>
         </div>
-
         <HorizontalRail items={newReleases} idPrefix="nr" />
-      </div>
+      </section>
 
+      {/* Out of Stock — horizontal scroll */}
       {outOfStock.length > 0 && (
-        <div
+        <section
           aria-labelledby="oos-heading"
           className="border-t border-border bg-secondary/40 px-5 py-16 sm:px-8 sm:py-24"
         >
@@ -153,10 +175,37 @@ export function NewReleases() {
               Previously released. Join the waitlist to be notified of restocks.
             </p>
           </div>
-
           <HorizontalRail items={outOfStock} soldOut idPrefix="oos" />
-        </div>
+        </section>
       )}
-    </section>
+
+      {/* Featured Collection — placeholder */}
+      <section
+        aria-labelledby="featured-heading"
+        className="border-t border-border px-5 py-16 sm:px-8 sm:py-24"
+      >
+        <div className="mb-10 sm:mb-14">
+          <p className="eyebrow text-muted-foreground">Editorial</p>
+          <h2
+            id="featured-heading"
+            className="mt-3 font-serif text-3xl font-light tracking-tight text-foreground sm:text-5xl"
+          >
+            Featured Collection
+          </h2>
+          <p className="mt-3 max-w-md text-sm text-muted-foreground">
+            Campaign imagery coming soon.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+          {[0, 1].map((i) => (
+            <div
+              key={i}
+              aria-hidden="true"
+              className="aspect-[4/5] w-full border border-dashed border-border bg-secondary/40"
+            />
+          ))}
+        </div>
+      </section>
+    </>
   );
 }
