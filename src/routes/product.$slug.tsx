@@ -44,7 +44,14 @@ export const Route = createFileRoute("/product/$slug")({
 
 function ProductPage() {
   const { product } = Route.useLoaderData();
-  const [colorIdx, setColorIdx] = useState(0);
+  const { color: colorParam } = Route.useSearch();
+  const initialColorIdx = Math.max(
+    0,
+    product.colors?.findIndex(
+      (c: ColorVariant) => c.name.toLowerCase() === (colorParam ?? "").toLowerCase(),
+    ) ?? 0,
+  );
+  const [colorIdx, setColorIdx] = useState(initialColorIdx);
   const [size, setSize] = useState<string | null>(null);
 
   const activeColor = product.colors?.[colorIdx];
