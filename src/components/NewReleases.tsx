@@ -207,13 +207,25 @@ export function NewReleases() {
         </div>
 
         <div className="px-5 pt-10 pb-16 sm:px-8 sm:pt-14 sm:pb-24">
-          <ul className="grid grid-cols-2 gap-x-4 gap-y-12 sm:gap-x-6 md:grid-cols-3 lg:gap-x-8 lg:gap-y-16">
-            {allProducts.map((p) => (
-              <li key={`shop-${p.slug}`}>
-                <ProductCard p={p} soldOut={!p.inStock} />
-              </li>
-            ))}
-          </ul>
+          <div className="grid grid-cols-2 items-stretch gap-4 sm:gap-6 lg:gap-8">
+            {/* Left — large dominant item */}
+            <div className="h-full">
+              {beanieProduct && <ShopCard p={beanieProduct} fill />}
+            </div>
+            {/* Right — two stacked items */}
+            <div className="flex h-full flex-col gap-4 sm:gap-6 lg:gap-8">
+              {weDifferentProduct && (
+                <div className="flex-1">
+                  <ShopCard p={weDifferentProduct} />
+                </div>
+              )}
+              {moneyGangProduct && (
+                <div className="flex-1">
+                  <ShopCard p={moneyGangProduct} />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </section>
 
