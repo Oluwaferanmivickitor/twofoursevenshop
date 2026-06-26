@@ -10,6 +10,43 @@ const beanieProduct = findProduct("247-beanie");
 const weDifferentProduct = findProduct("we-different-tee");
 const moneyGangProduct = findProduct("money-gang-tee");
 
+type ShopTile = {
+  key: string;
+  product: Product;
+  displayName: string;
+  image: string;
+  colorParam?: string;
+};
+
+const shopTiles: ShopTile[] = [
+  weDifferentProduct && {
+    key: "wd-black",
+    product: weDifferentProduct,
+    displayName: "WE DIFFERENT TEE — BLACK",
+    image: weDifferentProduct.colors?.[0]?.images[0] ?? weDifferentProduct.image,
+    colorParam: "Black",
+  },
+  weDifferentProduct && {
+    key: "wd-white",
+    product: weDifferentProduct,
+    displayName: "WE DIFFERENT TEE — WHITE",
+    image: weDifferentProduct.colors?.[1]?.images[0] ?? weDifferentProduct.image,
+    colorParam: "White",
+  },
+  moneyGangProduct && {
+    key: "mg",
+    product: moneyGangProduct,
+    displayName: moneyGangProduct.name,
+    image: moneyGangProduct.image,
+  },
+  beanieProduct && {
+    key: "beanie",
+    product: beanieProduct,
+    displayName: beanieProduct.name,
+    image: beanieProduct.image,
+  },
+].filter(Boolean) as ShopTile[];
+
 function PriceLine({ p, soldOut }: { p: Product; soldOut: boolean }) {
   return (
     <div className="mt-4 space-y-1.5">
