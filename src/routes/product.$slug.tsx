@@ -45,8 +45,12 @@ function ProductPage() {
   const [size, setSize] = useState<string | null>(null);
 
   const activeColor = product.colors?.[colorIdx];
+  // Combine every variant's imagery into a single swipable stream so customers
+  // see every view of every color without toggling.
   const galleryImages =
-    activeColor?.images ?? product.gallery ?? [product.image];
+    product.colors && product.colors.length > 0
+      ? product.colors.flatMap((c) => c.images)
+      : product.gallery ?? [product.image];
 
   return (
     <div className="min-h-screen bg-background">
