@@ -7,6 +7,9 @@ import { ProductGallery } from "@/components/ProductGallery";
 import { getProduct, formatNgn, formatEur, type ColorVariant } from "@/lib/products";
 
 export const Route = createFileRoute("/product/$slug")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    color: typeof search.color === "string" ? search.color : undefined,
+  }),
   loader: ({ params }) => {
     const product = getProduct(params.slug);
     if (!product) throw notFound();
