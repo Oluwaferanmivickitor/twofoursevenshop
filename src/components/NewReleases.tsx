@@ -244,24 +244,72 @@ export function NewReleases() {
         </div>
 
         <div className="px-5 pt-10 pb-16 sm:px-8 sm:pt-14 sm:pb-24">
-          <div className="grid grid-cols-2 items-stretch gap-4 sm:gap-6 lg:gap-8">
-            {/* Left — large dominant item */}
-            <div className="h-full">
-              {beanieProduct && <ShopCard p={beanieProduct} fill />}
-            </div>
-            {/* Right — two stacked items */}
-            <div className="flex h-full flex-col gap-4 sm:gap-6 lg:gap-8">
-              {weDifferentProduct && (
-                <div className="flex-1">
-                  <ShopCard p={weDifferentProduct} />
+          <div
+            className="grid grid-cols-2"
+            style={{ gridTemplateColumns: "repeat(2, 1fr)", gap: "20px" }}
+          >
+            {shopTiles.map((tile) => {
+              const soldOut = !tile.product.inStock;
+              const inner = (
+                <div className="flex h-full flex-col">
+                  <div className="relative aspect-[3/4] overflow-hidden bg-secondary">
+                    <img
+                      src={tile.image}
+                      alt={tile.displayName}
+                      loading="lazy"
+                      className={`h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03] ${
+                        soldOut ? "opacity-70" : ""
+                      }`}
+                    />
+                    {soldOut && (
+                      <>
+                        <div className="absolute inset-0 bg-background/10" />
+                        <span className="eyebrow absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border border-foreground bg-background/90 px-4 py-2 text-[0.65rem] tracking-[0.25em] text-foreground">
+                          Sold Out
+                        </span>
+                      </>
+                    )}
+                  </div>
+                  <div className="mt-4 space-y-1.5">
+                    <h3 className="text-[0.8rem] font-normal tracking-wide text-foreground sm:text-sm">
+                      {tile.displayName}
+                    </h3>
+                    <div className="flex items-baseline gap-2">
+                      <span
+                        className={`text-[0.8rem] font-medium sm:text-sm ${
+                          soldOut ? "text-muted-foreground line-through" : "text-foreground"
+                        }`}
+                      >
+                        {formatNgn(tile.product.priceNgn)}
+                      </span>
+                      <span className="text-[0.7rem] text-muted-foreground sm:text-xs">
+                        / ~{formatEur(tile.product.priceNgn)}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              )}
-              {moneyGangProduct && (
-                <div className="flex-1">
-                  <ShopCard p={moneyGangProduct} />
-                </div>
-              )}
-            </div>
+              );
+
+              if (soldOut) {
+                return (
+                  <div key={tile.key} className="group cursor-not-allowed">
+                    {inner}
+                  </div>
+                );
+              }
+
+              return (
+                <Link
+                  key={tile.key}
+                  to="/product/$slug"
+                  params={{ slug: tile.product.slug }}
+                  search={tile.colorParam ? { color: tile.colorParam } : undefined}
+                  className="group block"
+                >
+                  {inner}
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
