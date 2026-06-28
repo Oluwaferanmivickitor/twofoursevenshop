@@ -31,7 +31,7 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-border/30 bg-background/60 backdrop-blur">
         <div className="grid h-14 grid-cols-3 items-center px-5 sm:h-16 sm:px-8">
           <div className="flex items-center gap-1 justify-self-start">
             <button
@@ -58,7 +58,7 @@ export function Header() {
             <img
               src={logoAsset.url}
               alt="TWOFOURSEVEN"
-              className="h-8 w-auto sm:h-10"
+              className="h-12 w-auto max-w-full"
             />
           </Link>
 
@@ -170,3 +170,4 @@ function PanelHeader({ onClose, label }: { onClose: () => void; label: string })
     </div>
   );
 }
+
