@@ -109,3 +109,35 @@
   letter-spacing: var(--tracking-luxury);
   text-transform: uppercase;
 }
+
+/* Header overrides: transparent overlay with blurred backdrop */
+header {
+  background-color: transparent !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  position: absolute !important;
+  top: var(--header-top-offset, 0);
+  left: 0;
+  width: 100% !important;
+  border-bottom: none !important;
+  padding: 20px 40px !important;
+  z-index: 40;
+}
+
+@media (max-width: 640px) {
+  header {
+    padding: 14px 20px !important;
+  }
+}
+
+header img {
+  height: 50px !important;
+  width: auto !important;
+  max-height: 50px !important;
+  min-width: 150px !important;
+}
+
+/* Hero sits below the absolute header */
+main > section:first-child {
+  padding-top: 80px;
+}
