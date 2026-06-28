@@ -22,7 +22,7 @@ export function HeroCarousel() {
   return (
     <section
       aria-label="Featured collection"
-      className="relative w-full overflow-hidden bg-secondary"
+      className="hero-section relative w-full overflow-hidden bg-secondary"
     >
       <div className="relative h-[78vh] min-h-[480px] w-full sm:h-[88vh]">
         <div
