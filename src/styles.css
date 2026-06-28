@@ -114,12 +114,15 @@
 header {
   background: transparent !important;
   backdrop-filter: blur(8px) !important;
-  padding: 20px 40px !important;
+  height: 100px;
+  padding: 0 40px !important;
+  display: flex;
+  align-items: center;
 }
 
 @media (max-width: 640px) {
   header {
-    padding: 14px 20px !important;
+    padding: 0 20px !important;
   }
 }
 
@@ -143,4 +146,9 @@ header img {
   background-color: var(--foreground) !important;
   color: var(--background) !important;
   backdrop-filter: none;
+}
+
+/* Hero sits behind the transparent sticky header */
+.hero-section {
+  margin-top: -100px;
 }
