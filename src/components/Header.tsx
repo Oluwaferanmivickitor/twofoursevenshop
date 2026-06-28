@@ -53,12 +53,12 @@ export function Header() {
           <Link
             to="/"
             aria-label="TWOFOURSEVEN — Home"
-            className="justify-self-center"
+            className="logo-link justify-self-center"
           >
             <img
               src={logoAsset.url}
               alt="TWOFOURSEVEN"
-              className="h-12 w-auto max-w-full"
+              className="w-auto max-w-full"
             />
           </Link>
 
