@@ -88,7 +88,7 @@ function ShopCard({
           src={p.image}
           alt={p.name}
           loading="lazy"
-          className={`h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03] ${
+          className={`h-full w-full max-w-full object-contain transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03] ${
             soldOut ? "opacity-70" : ""
           }`}
         />
@@ -127,7 +127,7 @@ function ProductCard({ p, soldOut = false }: { p: Product; soldOut?: boolean }) 
           src={p.image}
           alt={p.name}
           loading="lazy"
-          className={`h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03] ${
+          className={`h-full w-full max-w-full object-contain transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03] ${
             soldOut ? "opacity-70" : ""
           }`}
         />
@@ -257,7 +257,7 @@ export function NewReleases() {
                       src={tile.image}
                       alt={tile.displayName}
                       loading="lazy"
-                      className={`h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03] ${
+                      className={`h-full w-full max-w-full object-contain transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03] ${
                         soldOut ? "opacity-70" : ""
                       }`}
                     />

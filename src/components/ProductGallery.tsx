@@ -47,7 +47,7 @@ export function ProductGallery({
               src={src}
               alt={`${alt} — view ${i + 1}`}
               loading={i === 0 ? "eager" : "lazy"}
-              className="h-full w-full object-cover"
+              className="h-full w-full max-w-full object-contain"
             />
           </div>
         ))}
