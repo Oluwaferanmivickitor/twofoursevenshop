@@ -32,7 +32,7 @@ export function Header() {
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-border/30 bg-background/60 backdrop-blur">
-        <div className="grid h-14 grid-cols-3 items-center px-5 sm:h-16 sm:px-8">
+        <div className="grid w-full grid-cols-3 items-center">
           <div className="flex items-center gap-1 justify-self-start">
             <button
               aria-label="Open menu"
