@@ -83,7 +83,7 @@ function ProductPage() {
               {formatNgn(product.priceNgn)}
             </span>
             <span className="text-sm text-muted-foreground">
-              / ~{formatEur(product.priceNgn)} EUR
+            / {formatEur(product.priceNgn)}
             </span>
           </div>
 

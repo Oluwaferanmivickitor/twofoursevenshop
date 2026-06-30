@@ -62,7 +62,7 @@ function PriceLine({ p, soldOut }: { p: Product; soldOut: boolean }) {
           {formatNgn(p.priceNgn)}
         </span>
         <span className="text-[0.7rem] text-muted-foreground sm:text-xs">
-          / ~{formatEur(p.priceNgn)}
+          / {formatEur(p.priceNgn)}
         </span>
       </div>
     </div>
@@ -153,7 +153,7 @@ function ProductCard({ p, soldOut = false }: { p: Product; soldOut?: boolean }) 
             {formatNgn(p.priceNgn)}
           </span>
           <span className="text-[0.7rem] text-muted-foreground sm:text-xs">
-            / ~{formatEur(p.priceNgn)}
+          / {formatEur(p.priceNgn)}
           </span>
         </div>
       </div>
@@ -283,7 +283,7 @@ export function NewReleases() {
                         {formatNgn(tile.product.priceNgn)}
                       </span>
                       <span className="text-[0.7rem] text-muted-foreground sm:text-xs">
-                        / ~{formatEur(tile.product.priceNgn)}
+                      / {formatEur(tile.product.priceNgn)}
                       </span>
                     </div>
                   </div>
