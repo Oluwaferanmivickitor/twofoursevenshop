@@ -3,11 +3,22 @@ import { Menu, Search, ShoppingBag, X } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import logoAsset from "@/assets/twofourseven-logo.png.asset.json";
 
-const navLinks = [
-  { label: "Shop All", href: "#" },
-  { label: "New Arrivals", href: "#" },
-  { label: "About the Brand", href: "#" },
-  { label: "International Shipping", href: "#" },
+const navLinks: { label: string; to: string }[] = [
+  { label: "Shop All", to: "/" },
+  { label: "New Arrivals", to: "/" },
+  { label: "About the Brand", to: "/about" },
+  { label: "International Shipping", to: "/shipping" },
+];
+
+const shopCategories: { label: string; slug: string }[] = [
+  { label: "Tees", slug: "tees" },
+  { label: "T-Shirts", slug: "t-shirts" },
+  { label: "Headwear", slug: "headwear" },
+  { label: "Skirts", slug: "skirts" },
+  { label: "Pants", slug: "pants" },
+  { label: "Jorts", slug: "jorts" },
+  { label: "Slides", slug: "slides" },
+  { label: "Shoes", slug: "shoes" },
 ];
 
 type Panel = null | "menu" | "search" | "cart";
