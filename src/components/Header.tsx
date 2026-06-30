@@ -87,20 +87,37 @@ export function Header() {
 
       {/* Full-screen menu */}
       {panel === "menu" && (
-        <div className="fixed inset-0 z-50 animate-in fade-in duration-300 bg-background">
+        <div className="fixed inset-0 z-50 overflow-y-auto animate-in fade-in duration-300 bg-background">
           <PanelHeader onClose={close} label="Menu" />
-          <nav className="flex h-[calc(100vh-3.5rem)] flex-col items-start justify-center gap-6 px-8 sm:items-center sm:gap-8">
-            {navLinks.map((l) => (
-              <a
-                key={l.label}
-                href={l.href}
-                onClick={close}
-                className="font-serif text-4xl font-light text-foreground transition-opacity hover:opacity-60 sm:text-6xl"
-              >
-                {l.label}
-              </a>
-            ))}
-          </nav>
+          <div className="mx-auto flex max-w-6xl flex-col gap-16 px-6 py-16 sm:px-10 md:flex-row md:gap-24 md:py-24">
+            <nav className="flex flex-col items-start gap-5 md:gap-6">
+              <p className="eyebrow text-muted-foreground">Navigate</p>
+              {navLinks.map((l) => (
+                <Link
+                  key={l.label}
+                  to={l.to}
+                  onClick={close}
+                  className="font-serif text-4xl font-light text-foreground transition-opacity hover:opacity-60 sm:text-5xl"
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </nav>
+            <nav className="flex flex-col items-start gap-4">
+              <p className="eyebrow text-muted-foreground">Shop</p>
+              {shopCategories.map((c) => (
+                <Link
+                  key={c.slug}
+                  to="/category/$slug"
+                  params={{ slug: c.slug }}
+                  onClick={close}
+                  className="font-serif text-2xl font-light text-foreground transition-opacity hover:opacity-60 sm:text-3xl"
+                >
+                  {c.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
         </div>
       )}
 
