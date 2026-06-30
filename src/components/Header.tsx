@@ -3,11 +3,22 @@ import { Menu, Search, ShoppingBag, X } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import logoAsset from "@/assets/twofourseven-logo.png.asset.json";
 
-const navLinks = [
-  { label: "Shop All", href: "#" },
-  { label: "New Arrivals", href: "#" },
-  { label: "About the Brand", href: "#" },
-  { label: "International Shipping", href: "#" },
+const navLinks: { label: string; to: string }[] = [
+  { label: "Shop All", to: "/" },
+  { label: "New Arrivals", to: "/" },
+  { label: "About the Brand", to: "/about" },
+  { label: "International Shipping", to: "/shipping" },
+];
+
+const shopCategories: { label: string; slug: string }[] = [
+  { label: "Tees", slug: "tees" },
+  { label: "T-Shirts", slug: "t-shirts" },
+  { label: "Headwear", slug: "headwear" },
+  { label: "Skirts", slug: "skirts" },
+  { label: "Pants", slug: "pants" },
+  { label: "Jorts", slug: "jorts" },
+  { label: "Slides", slug: "slides" },
+  { label: "Shoes", slug: "shoes" },
 ];
 
 type Panel = null | "menu" | "search" | "cart";
@@ -76,20 +87,37 @@ export function Header() {
 
       {/* Full-screen menu */}
       {panel === "menu" && (
-        <div className="fixed inset-0 z-50 animate-in fade-in duration-300 bg-background">
+        <div className="fixed inset-0 z-50 overflow-y-auto animate-in fade-in duration-300 bg-background">
           <PanelHeader onClose={close} label="Menu" />
-          <nav className="flex h-[calc(100vh-3.5rem)] flex-col items-start justify-center gap-6 px-8 sm:items-center sm:gap-8">
-            {navLinks.map((l) => (
-              <a
-                key={l.label}
-                href={l.href}
-                onClick={close}
-                className="font-serif text-4xl font-light text-foreground transition-opacity hover:opacity-60 sm:text-6xl"
-              >
-                {l.label}
-              </a>
-            ))}
-          </nav>
+          <div className="mx-auto flex max-w-6xl flex-col gap-16 px-6 py-16 sm:px-10 md:flex-row md:gap-24 md:py-24">
+            <nav className="flex flex-col items-start gap-5 md:gap-6">
+              <p className="eyebrow text-muted-foreground">Navigate</p>
+              {navLinks.map((l) => (
+                <Link
+                  key={l.label}
+                  to={l.to}
+                  onClick={close}
+                  className="font-serif text-4xl font-light text-foreground transition-opacity hover:opacity-60 sm:text-5xl"
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </nav>
+            <nav className="flex flex-col items-start gap-4">
+              <p className="eyebrow text-muted-foreground">Shop</p>
+              {shopCategories.map((c) => (
+                <Link
+                  key={c.slug}
+                  to="/category/$slug"
+                  params={{ slug: c.slug }}
+                  onClick={close}
+                  className="font-serif text-2xl font-light text-foreground transition-opacity hover:opacity-60 sm:text-3xl"
+                >
+                  {c.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
         </div>
       )}
 

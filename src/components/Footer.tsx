@@ -1,17 +1,25 @@
 import { useState } from "react";
 import { Instagram, Linkedin, Twitter } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 const quickLinks = [
-  { label: "Shipping Policy", href: "#" },
-  { label: "Returns & Refunds", href: "#" },
-  { label: "Contact Us", href: "#" },
-  { label: "Size Guide", href: "#" },
+  { label: "Shipping Policy", to: "/shipping" as const },
+  { label: "Returns & Refunds", to: "/returns" as const },
+  { label: "Contact Us", to: "/contact" as const },
+  { label: "Size Guide", to: "/size-guide" as const },
 ];
 
 const socials = [
-  { label: "Instagram", href: "#", Icon: Instagram },
-  { label: "X (Twitter)", href: "#", Icon: Twitter },
-  { label: "LinkedIn", href: "#", Icon: Linkedin },
+  { label: "Instagram", href: "https://instagram.com", Icon: Instagram },
+  { label: "X (Twitter)", href: "https://x.com", Icon: Twitter },
+  { label: "LinkedIn", href: "https://linkedin.com", Icon: Linkedin },
+];
+
+const contact = [
+  { label: "Location", value: "Lagos, Nigeria" },
+  { label: "Email", value: "247.freeworld@gmail.com", href: "mailto:247.freeworld@gmail.com" },
+  { label: "Phone", value: "0806 006 3068", href: "tel:+2348060063068" },
+  { label: "WhatsApp", value: "0704 690 0261", href: "https://wa.me/2347046900261" },
 ];
 
 export function Footer() {
@@ -21,9 +29,9 @@ export function Footer() {
   return (
     <footer className="mt-16 border-t border-border bg-background">
       <div className="px-5 py-16 sm:px-8 sm:py-20">
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-3 md:gap-10">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-4 md:gap-10">
           {/* Newsletter */}
-          <div className="md:col-span-1">
+          <div>
             <p className="eyebrow text-muted-foreground">Newsletter</p>
             <h3 className="mt-3 font-serif text-2xl font-light text-foreground sm:text-3xl">
               Private dispatches.
@@ -67,12 +75,33 @@ export function Footer() {
             <ul className="mt-5 space-y-3">
               {quickLinks.map((l) => (
                 <li key={l.label}>
-                  <a
-                    href={l.href}
+                  <Link
+                    to={l.to}
                     className="text-sm text-foreground transition-opacity hover:opacity-60"
                   >
                     {l.label}
-                  </a>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <p className="eyebrow text-muted-foreground">Contact</p>
+            <ul className="mt-5 space-y-3">
+              {contact.map((c) => (
+                <li key={c.label} className="text-sm text-foreground/80">
+                  <span className="block text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
+                    {c.label}
+                  </span>
+                  {c.href ? (
+                    <a href={c.href} className="transition-opacity hover:opacity-60">
+                      {c.value}
+                    </a>
+                  ) : (
+                    <span>{c.value}</span>
+                  )}
                 </li>
               ))}
             </ul>
@@ -86,6 +115,8 @@ export function Footer() {
                 <li key={label}>
                   <a
                     href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     aria-label={label}
                     className="block text-foreground transition-opacity hover:opacity-60"
                   >
