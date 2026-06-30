@@ -6,7 +6,7 @@ import mgFront from "@/assets/mg-front.jpg.asset.json";
 import mgBack from "@/assets/mg-back.jpg.asset.json";
 import beanie from "@/assets/beanie.jpg.asset.json";
 
-export const NGN_TO_EUR = 1 / 1750;
+export const NGN_TO_EUR = 1 / 1575.5;
 
 export type ColorVariant = {
   name: string;
@@ -59,7 +59,7 @@ export const products: Product[] = [
     slug: "money-gang-tee",
     name: "MONEY GANG TEE",
     category: "T-Shirt",
-    priceNgn: 100_000,
+    priceNgn: 130_000,
     image: mgFront.url,
     gallery: [mgFront.url, mgBack.url],
     sizes: ["S", "M", "L", "XL", "XXL"],
@@ -86,7 +86,7 @@ export const outOfStock: Product[] = [
     slug: "247-beanie",
     name: "247 BEANIE",
     category: "Headwear",
-    priceNgn: 45_000,
+    priceNgn: 99_900,
     image: beanie.url,
     gallery: [beanie.url],
     inStock: false,
@@ -102,11 +102,11 @@ const ngn = new Intl.NumberFormat("en-NG", {
 const eur = new Intl.NumberFormat("en-IE", {
   style: "currency",
   currency: "EUR",
-  maximumFractionDigits: 0,
+  maximumFractionDigits: 2,
 });
 
 export const formatNgn = (n: number) => ngn.format(n);
-export const formatEur = (n: number) => eur.format(Math.round(n * NGN_TO_EUR));
+export const formatEur = (n: number) => eur.format(n * NGN_TO_EUR);
 
 export function getProduct(slug: string): Product | undefined {
   return [...products, ...outOfStock].find((p) => p.slug === slug);
