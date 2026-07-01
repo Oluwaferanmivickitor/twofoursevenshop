@@ -54,6 +54,7 @@ function ProductPage() {
   );
   const [colorIdx, setColorIdx] = useState(initialColorIdx);
   const [size, setSize] = useState<string | null>(null);
+  const { addItem } = useCart();
 
   const activeColor = product.colors?.[colorIdx];
   // Combine every variant's imagery into a single swipable stream so customers
