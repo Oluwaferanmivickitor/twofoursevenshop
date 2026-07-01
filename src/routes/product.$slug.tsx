@@ -5,6 +5,7 @@ import { TopBanner } from "@/components/TopBanner";
 import { Footer } from "@/components/Footer";
 import { ProductGallery } from "@/components/ProductGallery";
 import { getProduct, formatNgn, formatEur, type ColorVariant } from "@/lib/products";
+import { useCart } from "@/lib/cart";
 
 export const Route = createFileRoute("/product/$slug")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -53,6 +54,7 @@ function ProductPage() {
   );
   const [colorIdx, setColorIdx] = useState(initialColorIdx);
   const [size, setSize] = useState<string | null>(null);
+  const { addItem } = useCart();
 
   const activeColor = product.colors?.[colorIdx];
   // Combine every variant's imagery into a single swipable stream so customers
@@ -151,6 +153,16 @@ function ProductPage() {
           <button
             className="eyebrow mt-10 border border-foreground bg-foreground px-6 py-4 text-background transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
             disabled={!!product.sizes && !size}
+            onClick={() => {
+              addItem({
+                slug: product.slug,
+                name: product.name,
+                color: activeColor?.name,
+                size: size ?? undefined,
+                image: activeColor?.images[0] ?? product.image,
+                priceNgn: product.priceNgn,
+              });
+            }}
           >
             {product.sizes && !size ? "Select a Size" : "Add to Bag"}
           </button>
