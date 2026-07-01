@@ -8,6 +8,7 @@ const CATEGORIES: Record<string, { name: string; blurb: string }> = {
   skirts: { name: "Skirts", blurb: "Tailored silhouettes for the season ahead." },
   pants: { name: "Pants", blurb: "Trousers cut with intention." },
   jorts: { name: "Jorts", blurb: "Denim, cropped — the 247 way." },
+  jackets: { name: "Jackets", blurb: "Outerwear built for the long walk home." },
   slides: { name: "Slides", blurb: "Footwear arriving with the next drop." },
   shoes: { name: "Shoes", blurb: "Footwear arriving with the next drop." },
 };
