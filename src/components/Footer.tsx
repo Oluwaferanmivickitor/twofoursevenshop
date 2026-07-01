@@ -3,6 +3,7 @@ import { Instagram, Linkedin, Twitter } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 const quickLinks = [
+  { label: "FAQ", to: "/faq" as const },
   { label: "Shipping Policy", to: "/shipping" as const },
   { label: "Returns & Refunds", to: "/returns" as const },
   { label: "Contact Us", to: "/contact" as const },
