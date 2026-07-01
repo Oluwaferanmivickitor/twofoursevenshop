@@ -43,7 +43,7 @@ function AboutPage() {
   return (
     <PageLayout>
       <section className="px-5 pt-24 pb-10 sm:px-8 sm:pt-32">
-        <div className="mx-auto max-w-4xl">
+        <div className="mx-auto max-w-4xl text-center">
           <p className="eyebrow text-muted-foreground">About the Brand</p>
           <h1 className="mt-5 font-serif text-5xl font-light leading-[1.05] text-foreground sm:text-7xl">
             The 247 Narrative
@@ -52,21 +52,16 @@ function AboutPage() {
       </section>
 
       <section className="px-5 pb-24 sm:px-8 sm:pb-32">
-        <div className="mx-auto max-w-4xl divide-y divide-border">
+        <div className="mx-auto max-w-3xl divide-y divide-border">
           {sections.map((s) => (
-            <article
-              key={s.title}
-              className="grid grid-cols-1 gap-6 py-12 md:grid-cols-[80px_1fr] md:gap-12 md:py-16"
-            >
+            <article key={s.title} className="flex flex-col items-center gap-6 py-12 text-center md:py-16">
               <p className="eyebrow text-muted-foreground">{s.eyebrow}</p>
-              <div>
-                <h2 className="font-serif text-3xl font-light text-foreground sm:text-4xl">
-                  {s.title}
-                </h2>
-                <p className="mt-6 max-w-prose text-base leading-relaxed text-foreground/80 sm:text-lg">
-                  {s.body}
-                </p>
-              </div>
+              <h2 className="font-serif text-3xl font-light text-foreground sm:text-4xl">
+                {s.title}
+              </h2>
+              <p className="mx-auto max-w-2xl text-base leading-relaxed text-foreground/80 sm:text-lg">
+                {s.body}
+              </p>
             </article>
           ))}
         </div>
