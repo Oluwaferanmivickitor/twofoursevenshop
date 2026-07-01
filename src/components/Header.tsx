@@ -4,10 +4,11 @@ import { Link } from "@tanstack/react-router";
 import logoAsset from "@/assets/twofourseven-logo.png.asset.json";
 
 const navLinks: { label: string; to: string }[] = [
-  { label: "Shop All", to: "/" },
-  { label: "New Arrivals", to: "/" },
-  { label: "About the Brand", to: "/about" },
-  { label: "International Shipping", to: "/shipping" },
+  { label: "Home", to: "/" },
+  { label: "Shop", to: "/" },
+  { label: "About", to: "/about" },
+  { label: "FAQ", to: "/faq" },
+  { label: "Contact", to: "/contact" },
 ];
 
 const shopCategories: { label: string; slug: string }[] = [
@@ -17,6 +18,7 @@ const shopCategories: { label: string; slug: string }[] = [
   { label: "Skirts", slug: "skirts" },
   { label: "Pants", slug: "pants" },
   { label: "Jorts", slug: "jorts" },
+  { label: "Jackets", slug: "jackets" },
   { label: "Slides", slug: "slides" },
   { label: "Shoes", slug: "shoes" },
 ];
