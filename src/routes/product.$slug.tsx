@@ -5,6 +5,7 @@ import { TopBanner } from "@/components/TopBanner";
 import { Footer } from "@/components/Footer";
 import { ProductGallery } from "@/components/ProductGallery";
 import { getProduct, formatNgn, formatEur, type ColorVariant } from "@/lib/products";
+import { useCart } from "@/lib/cart";
 
 export const Route = createFileRoute("/product/$slug")({
   validateSearch: (search: Record<string, unknown>) => ({

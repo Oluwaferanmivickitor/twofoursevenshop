@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SizeGuideRouteImport } from './routes/size-guide'
+import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShippingRouteImport } from './routes/shipping'
 import { Route as ReturnsRouteImport } from './routes/returns'
 import { Route as FaqRouteImport } from './routes/faq'
@@ -23,6 +24,11 @@ import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 const SizeGuideRoute = SizeGuideRouteImport.update({
   id: '/size-guide',
   path: '/size-guide',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShopRoute = ShopRouteImport.update({
+  id: '/shop',
+  path: '/shop',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShippingRoute = ShippingRouteImport.update({
@@ -79,6 +85,7 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/returns': typeof ReturnsRoute
   '/shipping': typeof ShippingRoute
+  '/shop': typeof ShopRoute
   '/size-guide': typeof SizeGuideRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$slug': typeof ProductSlugRoute
@@ -91,6 +98,7 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/returns': typeof ReturnsRoute
   '/shipping': typeof ShippingRoute
+  '/shop': typeof ShopRoute
   '/size-guide': typeof SizeGuideRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$slug': typeof ProductSlugRoute
@@ -104,6 +112,7 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/returns': typeof ReturnsRoute
   '/shipping': typeof ShippingRoute
+  '/shop': typeof ShopRoute
   '/size-guide': typeof SizeGuideRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$slug': typeof ProductSlugRoute
@@ -118,6 +127,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/returns'
     | '/shipping'
+    | '/shop'
     | '/size-guide'
     | '/category/$slug'
     | '/product/$slug'
@@ -130,6 +140,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/returns'
     | '/shipping'
+    | '/shop'
     | '/size-guide'
     | '/category/$slug'
     | '/product/$slug'
@@ -142,6 +153,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/returns'
     | '/shipping'
+    | '/shop'
     | '/size-guide'
     | '/category/$slug'
     | '/product/$slug'
@@ -155,6 +167,7 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   ReturnsRoute: typeof ReturnsRoute
   ShippingRoute: typeof ShippingRoute
+  ShopRoute: typeof ShopRoute
   SizeGuideRoute: typeof SizeGuideRoute
   CategorySlugRoute: typeof CategorySlugRoute
   ProductSlugRoute: typeof ProductSlugRoute
@@ -167,6 +180,13 @@ declare module '@tanstack/react-router' {
       path: '/size-guide'
       fullPath: '/size-guide'
       preLoaderRoute: typeof SizeGuideRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shop': {
+      id: '/shop'
+      path: '/shop'
+      fullPath: '/shop'
+      preLoaderRoute: typeof ShopRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shipping': {
@@ -243,6 +263,7 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   ReturnsRoute: ReturnsRoute,
   ShippingRoute: ShippingRoute,
+  ShopRoute: ShopRoute,
   SizeGuideRoute: SizeGuideRoute,
   CategorySlugRoute: CategorySlugRoute,
   ProductSlugRoute: ProductSlugRoute,
