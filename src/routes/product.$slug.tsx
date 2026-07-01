@@ -153,6 +153,16 @@ function ProductPage() {
           <button
             className="eyebrow mt-10 border border-foreground bg-foreground px-6 py-4 text-background transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
             disabled={!!product.sizes && !size}
+            onClick={() => {
+              addItem({
+                slug: product.slug,
+                name: product.name,
+                color: activeColor?.name,
+                size: size ?? undefined,
+                image: activeColor?.images[0] ?? product.image,
+                priceNgn: product.priceNgn,
+              });
+            }}
           >
             {product.sizes && !size ? "Select a Size" : "Add to Bag"}
           </button>
