@@ -110,6 +110,8 @@ function CheckoutPage() {
       ),
       "",
       `Subtotal: ${formatNgn(subtotalNgn)} (${formatEur(subtotalNgn)})`,
+      `Shipping: ${formatNgn(shippingNgn)}`,
+      `Total: ${formatNgn(totalNgn)} (${formatEur(totalNgn)})`,
       "",
       "PAYMENT",
       `Method: Bank Transfer — Access Bank 8127106754 (Ibrahim Lekan Osho)`,
