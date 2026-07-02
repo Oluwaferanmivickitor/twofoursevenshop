@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ThankYouRouteImport } from './routes/thank-you'
 import { Route as SizeGuideRouteImport } from './routes/size-guide'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShippingRouteImport } from './routes/shipping'
@@ -21,6 +22,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 
+const ThankYouRoute = ThankYouRouteImport.update({
+  id: '/thank-you',
+  path: '/thank-you',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SizeGuideRoute = SizeGuideRouteImport.update({
   id: '/size-guide',
   path: '/size-guide',
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/shipping': typeof ShippingRoute
   '/shop': typeof ShopRoute
   '/size-guide': typeof SizeGuideRoute
+  '/thank-you': typeof ThankYouRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$slug': typeof ProductSlugRoute
 }
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/shipping': typeof ShippingRoute
   '/shop': typeof ShopRoute
   '/size-guide': typeof SizeGuideRoute
+  '/thank-you': typeof ThankYouRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$slug': typeof ProductSlugRoute
 }
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/shipping': typeof ShippingRoute
   '/shop': typeof ShopRoute
   '/size-guide': typeof SizeGuideRoute
+  '/thank-you': typeof ThankYouRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$slug': typeof ProductSlugRoute
 }
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
     | '/shipping'
     | '/shop'
     | '/size-guide'
+    | '/thank-you'
     | '/category/$slug'
     | '/product/$slug'
   fileRoutesByTo: FileRoutesByTo
@@ -142,6 +152,7 @@ export interface FileRouteTypes {
     | '/shipping'
     | '/shop'
     | '/size-guide'
+    | '/thank-you'
     | '/category/$slug'
     | '/product/$slug'
   id:
@@ -155,6 +166,7 @@ export interface FileRouteTypes {
     | '/shipping'
     | '/shop'
     | '/size-guide'
+    | '/thank-you'
     | '/category/$slug'
     | '/product/$slug'
   fileRoutesById: FileRoutesById
@@ -169,12 +181,20 @@ export interface RootRouteChildren {
   ShippingRoute: typeof ShippingRoute
   ShopRoute: typeof ShopRoute
   SizeGuideRoute: typeof SizeGuideRoute
+  ThankYouRoute: typeof ThankYouRoute
   CategorySlugRoute: typeof CategorySlugRoute
   ProductSlugRoute: typeof ProductSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/thank-you': {
+      id: '/thank-you'
+      path: '/thank-you'
+      fullPath: '/thank-you'
+      preLoaderRoute: typeof ThankYouRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/size-guide': {
       id: '/size-guide'
       path: '/size-guide'
@@ -265,6 +285,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShippingRoute: ShippingRoute,
   ShopRoute: ShopRoute,
   SizeGuideRoute: SizeGuideRoute,
+  ThankYouRoute: ThankYouRoute,
   CategorySlugRoute: CategorySlugRoute,
   ProductSlugRoute: ProductSlugRoute,
 }
