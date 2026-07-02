@@ -284,6 +284,9 @@ export function Header() {
                       <span className="text-muted-foreground">/ {formatEur(subtotalNgn)}</span>
                     </p>
                   </div>
+                  <p className="mt-3 text-[0.7rem] leading-relaxed text-muted-foreground">
+                    A flat-rate shipping fee of ₦3,000 is applied to all domestic orders.
+                  </p>
                   <Link
                     to="/checkout"
                     onClick={close}
