@@ -2,6 +2,15 @@ import { useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { newReleases, outOfStock, formatNgn, formatEur, type Product } from "@/lib/products";
+import featuredGreenTee from "@/assets/featured-we-different-green.jpg.asset.json";
+import featuredBandana from "@/assets/featured-247-bandana.jpg.asset.json";
+import featuredCamoBeanie from "@/assets/featured-247-beanie-camo.jpg.asset.json";
+
+const featuredCollection = [
+  { src: featuredGreenTee.url, title: "WE DIFFERENT — Forest", caption: "Preview" },
+  { src: featuredBandana.url, title: "247 Bandana — Leopard", caption: "Preview" },
+  { src: featuredCamoBeanie.url, title: "247 Beanie — Camo", caption: "Preview" },
+];
 
 const allProducts: Product[] = [...newReleases, ...outOfStock];
 
@@ -367,16 +376,27 @@ export function NewReleases() {
             Featured Collection
           </h2>
           <p className="mt-3 max-w-md text-sm text-muted-foreground">
-            Campaign imagery coming soon.
+            A closer look at upcoming pieces and prints.
           </p>
         </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
-          {[0, 1].map((i) => (
-            <div
-              key={i}
-              aria-hidden="true"
-              className="aspect-[4/5] w-full border border-dashed border-border bg-secondary/40"
-            />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
+          {featuredCollection.map((item) => (
+            <figure key={item.title} className="group">
+              <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
+                <img
+                  src={item.src}
+                  alt={item.title}
+                  loading="lazy"
+                  className="h-full w-full max-w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03]"
+                />
+              </div>
+              <figcaption className="mt-4 space-y-1.5">
+                <p className="eyebrow text-muted-foreground">{item.caption}</p>
+                <h3 className="text-[0.8rem] font-normal tracking-wide text-foreground sm:text-sm">
+                  {item.title}
+                </h3>
+              </figcaption>
+            </figure>
           ))}
         </div>
       </section>
