@@ -42,14 +42,20 @@ const EMPTY: Details = {
   postal: "",
 };
 
+const SHIPPING_NGN = 3000;
+
 function CheckoutPage() {
   const { items, subtotalNgn, clear } = useCart();
   const navigate = useNavigate();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [details, setDetails] = useState<Details>(EMPTY);
   const [receipt, setReceipt] = useState<File | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<"bank" | "card">("bank");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const shippingNgn = items.length > 0 ? SHIPPING_NGN : 0;
+  const totalNgn = subtotalNgn + shippingNgn;
 
   const canContinueStep1 = useMemo(
     () =>
@@ -104,6 +110,8 @@ function CheckoutPage() {
       ),
       "",
       `Subtotal: ${formatNgn(subtotalNgn)} (${formatEur(subtotalNgn)})`,
+      `Shipping: ${formatNgn(shippingNgn)}`,
+      `Total: ${formatNgn(totalNgn)} (${formatEur(totalNgn)})`,
       "",
       "PAYMENT",
       `Method: Bank Transfer — Access Bank 8127106754 (Ibrahim Lekan Osho)`,
@@ -221,12 +229,26 @@ function CheckoutPage() {
                   </li>
                 ))}
               </ul>
-              <div className="flex items-baseline justify-between">
-                <span className="eyebrow text-muted-foreground">Subtotal</span>
-                <span className="text-base">
-                  {formatNgn(subtotalNgn)} <span className="text-muted-foreground text-sm">/ {formatEur(subtotalNgn)}</span>
-                </span>
-              </div>
+              <dl className="divide-y divide-border border-b border-border">
+                <div className="flex items-baseline justify-between py-3">
+                  <dt className="eyebrow text-muted-foreground">Subtotal</dt>
+                  <dd className="text-sm">{formatNgn(subtotalNgn)}</dd>
+                </div>
+                <div className="flex items-baseline justify-between py-3">
+                  <dt className="eyebrow text-muted-foreground">Shipping</dt>
+                  <dd className="text-sm">{formatNgn(shippingNgn)}</dd>
+                </div>
+                <div className="flex items-baseline justify-between py-3">
+                  <dt className="eyebrow text-foreground">Total</dt>
+                  <dd className="text-base font-medium">
+                    {formatNgn(totalNgn)}{" "}
+                    <span className="text-muted-foreground text-sm">/ {formatEur(totalNgn)}</span>
+                  </dd>
+                </div>
+              </dl>
+              <p className="text-xs text-muted-foreground">
+                A flat-rate shipping fee of ₦3,000 is applied to all domestic orders.
+              </p>
               <div className="text-sm text-muted-foreground">
                 <p><strong className="text-foreground">Ship to:</strong> {details.fullName}</p>
                 <p>{details.address}, {details.city}, {details.state} {details.postal}, {details.country}</p>
@@ -250,66 +272,137 @@ function CheckoutPage() {
             <div className="mt-12 space-y-10">
               <div>
                 <p className="eyebrow text-muted-foreground">Step 03</p>
-                <h2 className="mt-3 font-serif text-2xl font-light">Payment — Bank Transfer</h2>
+                <h2 className="mt-3 font-serif text-2xl font-light">Payment Method</h2>
                 <p className="mt-3 text-sm text-muted-foreground">
-                  Transfer the total below to the account, then upload your receipt.
+                  Choose how you'd like to settle{" "}
+                  <span className="text-foreground">{formatNgn(totalNgn)}</span>.
                 </p>
               </div>
 
-              <div className="border border-foreground/20 bg-secondary/40 p-6 sm:p-8">
-                <dl className="divide-y divide-border">
-                  {bank.map((b) => (
-                    <div key={b.label} className="flex items-center justify-between py-3">
-                      <dt className="eyebrow text-muted-foreground">{b.label}</dt>
-                      <dd className="text-sm font-medium text-foreground sm:text-base">{b.value}</dd>
-                    </div>
-                  ))}
-                  <div className="flex items-center justify-between py-3">
-                    <dt className="eyebrow text-muted-foreground">Amount</dt>
-                    <dd className="text-sm font-medium sm:text-base">{formatNgn(subtotalNgn)}</dd>
-                  </div>
-                  <div className="flex items-center justify-between py-3">
-                    <dt className="eyebrow text-muted-foreground">Reference</dt>
-                    <dd className="text-sm font-mono">{orderRef}</dd>
-                  </div>
-                </dl>
+              <div className="grid grid-cols-2 border border-border">
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod("bank")}
+                  className={`eyebrow px-4 py-4 text-center transition-colors ${
+                    paymentMethod === "bank"
+                      ? "bg-foreground text-background"
+                      : "bg-background text-foreground hover:bg-secondary"
+                  }`}
+                >
+                  Bank Transfer
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod("card")}
+                  className={`eyebrow px-4 py-4 text-center transition-colors ${
+                    paymentMethod === "card"
+                      ? "bg-foreground text-background"
+                      : "bg-background text-foreground hover:bg-secondary"
+                  }`}
+                >
+                  Card Payment
+                  <span
+                    className={`ml-2 text-[0.6rem] tracking-[0.2em] ${
+                      paymentMethod === "card" ? "text-background/70" : "text-muted-foreground"
+                    }`}
+                  >
+                    · Soon
+                  </span>
+                </button>
               </div>
 
-              <div>
-                <p className="eyebrow text-foreground">Payment Verification</p>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Upload a screenshot or PDF of your transfer receipt (.jpg, .png, .pdf).
-                </p>
-                <label className="mt-5 flex cursor-pointer flex-col items-center justify-center gap-2 border-2 border-dashed border-border bg-background px-6 py-10 text-center transition-colors hover:border-foreground">
-                  <input
-                    type="file"
-                    accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
-                    className="sr-only"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0] ?? null;
-                      if (f && f.size > 8 * 1024 * 1024) {
-                        setError("File too large. Max 8MB.");
-                        return;
-                      }
-                      setError(null);
-                      setReceipt(f);
-                    }}
-                  />
-                  {receipt ? (
-                    <>
-                      <p className="text-sm text-foreground">{receipt.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {Math.round(receipt.size / 1024)} KB · Click to replace
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <p className="eyebrow text-foreground">Upload Receipt</p>
-                      <p className="text-xs text-muted-foreground">JPG, PNG or PDF · up to 8MB</p>
-                    </>
-                  )}
-                </label>
-              </div>
+              {paymentMethod === "bank" && (
+                <>
+                  <div className="border border-foreground/20 bg-secondary/40 p-6 sm:p-8">
+                    <p className="eyebrow text-muted-foreground">Bank Account</p>
+                    <dl className="mt-4 divide-y divide-border">
+                      {bank.map((b) => (
+                        <div key={b.label} className="flex items-center justify-between py-3">
+                          <dt className="eyebrow text-muted-foreground">{b.label}</dt>
+                          <dd className="text-sm font-medium text-foreground sm:text-base">{b.value}</dd>
+                        </div>
+                      ))}
+                      <div className="flex items-center justify-between py-3">
+                        <dt className="eyebrow text-muted-foreground">Subtotal</dt>
+                        <dd className="text-sm sm:text-base">{formatNgn(subtotalNgn)}</dd>
+                      </div>
+                      <div className="flex items-center justify-between py-3">
+                        <dt className="eyebrow text-muted-foreground">Shipping</dt>
+                        <dd className="text-sm sm:text-base">{formatNgn(shippingNgn)}</dd>
+                      </div>
+                      <div className="flex items-center justify-between py-3">
+                        <dt className="eyebrow text-foreground">Amount to Transfer</dt>
+                        <dd className="text-base font-semibold text-foreground">{formatNgn(totalNgn)}</dd>
+                      </div>
+                      <div className="flex items-center justify-between py-3">
+                        <dt className="eyebrow text-muted-foreground">Reference</dt>
+                        <dd className="text-sm font-mono">{orderRef}</dd>
+                      </div>
+                    </dl>
+                    <p className="mt-4 text-xs text-muted-foreground">
+                      A flat-rate shipping fee of ₦3,000 is applied to all domestic orders.
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="eyebrow text-foreground">
+                      Upload Payment Receipt <span className="text-destructive">*</span>
+                    </p>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Required. Attach a screenshot or PDF of your transfer receipt so we can verify your payment.
+                    </p>
+                    <label className="mt-5 flex cursor-pointer flex-col items-center justify-center gap-2 border-2 border-dashed border-border bg-background px-6 py-10 text-center transition-colors hover:border-foreground">
+                      <input
+                        type="file"
+                        accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
+                        className="sr-only"
+                        onChange={(e) => {
+                          const f = e.target.files?.[0] ?? null;
+                          if (f && f.size > 8 * 1024 * 1024) {
+                            setError("File too large. Max 8MB.");
+                            return;
+                          }
+                          setError(null);
+                          setReceipt(f);
+                        }}
+                      />
+                      {receipt ? (
+                        <>
+                          <p className="text-sm text-foreground">{receipt.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {Math.round(receipt.size / 1024)} KB · Click to replace
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="eyebrow text-foreground">Upload Receipt</p>
+                          <p className="text-xs text-muted-foreground">JPG, PNG or PDF · up to 8MB</p>
+                        </>
+                      )}
+                    </label>
+                  </div>
+                </>
+              )}
+
+              {paymentMethod === "card" && (
+                <div className="border border-border bg-secondary/40 p-8 text-center sm:p-12">
+                  <p className="eyebrow text-muted-foreground">Coming Soon</p>
+                  <h3 className="mt-4 font-serif text-2xl font-light text-foreground">
+                    Card payments are on the way.
+                  </h3>
+                  <p className="mx-auto mt-4 max-w-md text-sm text-muted-foreground">
+                    Secure Visa, Mastercard and Verve processing will be enabled shortly. For now,
+                    please complete your order via Bank Transfer.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("bank")}
+                    className="eyebrow mt-8 inline-block border border-foreground px-8 py-3 text-foreground transition-colors hover:bg-foreground hover:text-background"
+                  >
+                    Use Bank Transfer
+                  </button>
+                </div>
+              )}
 
               {error && <p className="text-sm text-destructive">{error}</p>}
 
@@ -319,7 +412,7 @@ function CheckoutPage() {
                 </button>
                 <button
                   onClick={handleSubmit}
-                  disabled={submitting || !receipt}
+                  disabled={submitting || paymentMethod !== "bank" || !receipt}
                   className="eyebrow border border-foreground bg-foreground px-8 py-4 text-background transition-opacity hover:opacity-80 disabled:opacity-40"
                 >
                   {submitting ? "Submitting…" : "Complete Order"}

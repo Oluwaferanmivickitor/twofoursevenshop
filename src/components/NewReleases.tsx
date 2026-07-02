@@ -8,7 +8,7 @@ import featuredCamoBeanie from "@/assets/featured-247-beanie-camo.jpg.asset.json
 
 const featuredCollection = [
   { src: featuredGreenTee.url, title: "WE DIFFERENT — Forest", caption: "Preview" },
-  { src: featuredBandana.url, title: "247 Bandana — Leopard", caption: "Preview" },
+  { src: featuredBandana.url, title: "Midnight Safari Scarf", caption: "Preview" },
   { src: featuredCamoBeanie.url, title: "247 Beanie — Camo", caption: "Preview" },
 ];
 
