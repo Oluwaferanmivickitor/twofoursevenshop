@@ -229,12 +229,26 @@ function CheckoutPage() {
                   </li>
                 ))}
               </ul>
-              <div className="flex items-baseline justify-between">
-                <span className="eyebrow text-muted-foreground">Subtotal</span>
-                <span className="text-base">
-                  {formatNgn(subtotalNgn)} <span className="text-muted-foreground text-sm">/ {formatEur(subtotalNgn)}</span>
-                </span>
-              </div>
+              <dl className="divide-y divide-border border-b border-border">
+                <div className="flex items-baseline justify-between py-3">
+                  <dt className="eyebrow text-muted-foreground">Subtotal</dt>
+                  <dd className="text-sm">{formatNgn(subtotalNgn)}</dd>
+                </div>
+                <div className="flex items-baseline justify-between py-3">
+                  <dt className="eyebrow text-muted-foreground">Shipping</dt>
+                  <dd className="text-sm">{formatNgn(shippingNgn)}</dd>
+                </div>
+                <div className="flex items-baseline justify-between py-3">
+                  <dt className="eyebrow text-foreground">Total</dt>
+                  <dd className="text-base font-medium">
+                    {formatNgn(totalNgn)}{" "}
+                    <span className="text-muted-foreground text-sm">/ {formatEur(totalNgn)}</span>
+                  </dd>
+                </div>
+              </dl>
+              <p className="text-xs text-muted-foreground">
+                A flat-rate shipping fee of ₦3,000 is applied to all domestic orders.
+              </p>
               <div className="text-sm text-muted-foreground">
                 <p><strong className="text-foreground">Ship to:</strong> {details.fullName}</p>
                 <p>{details.address}, {details.city}, {details.state} {details.postal}, {details.country}</p>
