@@ -42,14 +42,20 @@ const EMPTY: Details = {
   postal: "",
 };
 
+const SHIPPING_NGN = 3000;
+
 function CheckoutPage() {
   const { items, subtotalNgn, clear } = useCart();
   const navigate = useNavigate();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [details, setDetails] = useState<Details>(EMPTY);
   const [receipt, setReceipt] = useState<File | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<"bank" | "card">("bank");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const shippingNgn = items.length > 0 ? SHIPPING_NGN : 0;
+  const totalNgn = subtotalNgn + shippingNgn;
 
   const canContinueStep1 = useMemo(
     () =>
