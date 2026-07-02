@@ -249,30 +249,12 @@ function FaqPage() {
       </section>
 
       <div className="mx-auto flex max-w-5xl flex-col gap-16 px-5 pb-24 sm:px-8 sm:pb-32">
-        <Section
-          eyebrow="01"
-          title="Shipping Policy"
-          items={shipping}
-          idPrefix="ship"
-        />
-        <Section
-          eyebrow="02"
-          title="Returns & Refunds"
-          items={returns}
-          idPrefix="ret"
-        />
-        <Section
-          eyebrow="03"
-          title="Payment Information"
-          items={payment}
-          idPrefix="pay"
-        />
-        <Section
-          eyebrow="04"
-          title="Contact Details"
-          items={contact}
-          idPrefix="con"
-        />
+        <Section eyebrow="01" title="Shipping Policy" items={shipping} idPrefix="ship" />
+        <Section eyebrow="02" title="Returns & Refunds" items={returns} idPrefix="ret" />
+        <Section eyebrow="03" title="Payment Information" items={payment} idPrefix="pay" />
+        <Section eyebrow="04" title="Sizing & Product Care" items={sizing} idPrefix="size" />
+        <Section eyebrow="05" title="Orders & Account" items={orders} idPrefix="ord" />
+        <Section eyebrow="06" title="Contact Details" items={contact} idPrefix="con" />
       </div>
     </PageLayout>
   );
