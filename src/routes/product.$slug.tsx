@@ -128,9 +128,9 @@ function ProductPage() {
             <div className="mt-8">
               <div className="flex items-center justify-between">
                 <p className="eyebrow text-foreground">Size</p>
-                <a href="#size-guide" className="text-xs underline text-muted-foreground hover:text-foreground">
+                <Link to="/size-guide" className="text-xs underline text-muted-foreground hover:text-foreground">
                   Sizing Guide
-                </a>
+                </Link>
               </div>
               <div className="mt-3 grid grid-cols-5 gap-2 sm:max-w-sm">
                 {product.sizes.map((s: string) => (
