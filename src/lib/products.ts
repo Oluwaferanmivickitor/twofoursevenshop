@@ -77,6 +77,30 @@ export const products: Product[] = [
     description:
       "Oversized box-fit tee with archival 'MONEY GANG' portrait print on the chest and the metallic gold 247 star at the back.",
   },
+  {
+    slug: "money-gang-white-tee",
+    name: "MONEY GANG WHITE TEE",
+    category: "T-Shirt",
+    priceNgn: 130_000,
+    image: mgWhiteFront.url,
+    gallery: [mgWhiteFront.url, mgWhiteBack.url],
+    sizes: ["S", "M", "L", "XL", "XXL"],
+    colors: [
+      {
+        name: "White",
+        swatch: "#ffffff",
+        images: [mgWhiteFront.url, mgWhiteBack.url],
+        inStock: true,
+      },
+    ],
+    inStock: true,
+    description:
+      "Heavyweight white cotton tee with the archival 'MONEY GANG' portrait print on the chest and the polished gold 247 star medallion at the back.",
+  },
+    inStock: true,
+    description:
+      "Oversized box-fit tee with archival 'MONEY GANG' portrait print on the chest and the metallic gold 247 star at the back.",
+  },
 ];
 
 // Available collection (in-stock products)
