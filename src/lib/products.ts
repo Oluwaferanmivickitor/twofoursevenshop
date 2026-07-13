@@ -97,10 +97,6 @@ export const products: Product[] = [
     description:
       "Heavyweight white cotton tee with the archival 'MONEY GANG' portrait print on the chest and the polished gold 247 star medallion at the back.",
   },
-    inStock: true,
-    description:
-      "Oversized box-fit tee with archival 'MONEY GANG' portrait print on the chest and the metallic gold 247 star at the back.",
-  },
 ];
 
 // Available collection (in-stock products)
