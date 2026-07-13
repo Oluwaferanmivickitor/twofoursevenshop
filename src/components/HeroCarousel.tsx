@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import hero1 from "@/assets/hero-wd-black.jpg.asset.json";
-import hero2 from "@/assets/hero-wd-white.jpg.asset.json";
-import hero3 from "@/assets/hero-mg.jpg.asset.json";
+import hero1 from "@/assets/hero-money-gang-arch.jpg.asset.json";
+import hero2 from "@/assets/hero-we-different-venue.jpg.asset.json";
+import hero3 from "@/assets/hero-money-gang-doorway.jpg.asset.json";
+import hero4 from "@/assets/hero-247-bed.jpg.asset.json";
 
 const slides = [
-  { src: hero1.url, alt: "TWOFOURSEVEN — WE DIFFERENT campaign portrait" },
-  { src: hero2.url, alt: "TWOFOURSEVEN — WE DIFFERENT lifestyle" },
-  { src: hero3.url, alt: "TWOFOURSEVEN — MONEY GANG editorial" },
+  { src: hero1.url, alt: "TWOFOURSEVEN — Money Gang editorial portrait" },
+  { src: hero2.url, alt: "TWOFOURSEVEN — WE DIFFERENT venue lookbook" },
+  { src: hero3.url, alt: "TWOFOURSEVEN — Money Gang doorway campaign" },
+  { src: hero4.url, alt: "TWOFOURSEVEN — 247 I'm not weird, we just different tee" },
 ];
 
 export function HeroCarousel() {
@@ -36,7 +38,7 @@ export function HeroCarousel() {
                 alt={s.alt}
                 loading={i === 0 ? "eager" : "lazy"}
                 fetchPriority={i === 0 ? "high" : "auto"}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover object-center"
               />
             </div>
           ))}
