@@ -167,6 +167,13 @@ function ProductPage() {
             {product.sizes && !size ? "Select a Size" : "Add to Bag"}
           </button>
 
+          <Link
+            to="/size-guide"
+            className="eyebrow mt-4 self-start text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
+          >
+            View Size Guide
+          </Link>
+
           <p className="mt-6 text-xs text-muted-foreground">
             Worldwide shipping. Duties calculated at checkout.
           </p>
