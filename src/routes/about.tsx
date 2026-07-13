@@ -1,5 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageLayout } from "@/components/PageLayout";
+import mgDoorway from "@/assets/about-mg-doorway.jpg.asset.json";
+import duoArch from "@/assets/about-duo-arch.jpg.asset.json";
+import starBack from "@/assets/about-star-back.jpg.asset.json";
+import wdBed from "@/assets/about-wd-bed.jpg.asset.json";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -48,6 +52,32 @@ function AboutPage() {
           <h1 className="mt-5 font-serif text-5xl font-light leading-[1.05] text-foreground sm:text-7xl">
             The 247 Narrative
           </h1>
+        </div>
+      </section>
+
+      {/* Editorial model grid */}
+      <section className="px-5 pb-20 sm:px-8 sm:pb-28">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-10 text-center sm:mb-14">
+            <p className="eyebrow text-muted-foreground">Campaign</p>
+            <h2 className="mt-3 font-serif text-3xl font-light text-foreground sm:text-4xl">
+              In The Frame
+            </h2>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
+            <figure className="col-span-2 row-span-2 aspect-[3/4] overflow-hidden bg-secondary lg:col-span-2 lg:row-span-2">
+              <img src={duoArch.url} alt="Two models in Money Gang tees under an arch" loading="lazy" className="h-full w-full object-cover" />
+            </figure>
+            <figure className="aspect-[3/4] overflow-hidden bg-secondary">
+              <img src={mgDoorway.url} alt="Model in Money Gang tee framed in a doorway" loading="lazy" className="h-full w-full object-cover" />
+            </figure>
+            <figure className="aspect-[3/4] overflow-hidden bg-secondary">
+              <img src={wdBed.url} alt="Model in the WE DIFFERENT tee" loading="lazy" className="h-full w-full object-cover" />
+            </figure>
+            <figure className="col-span-2 aspect-[3/2] overflow-hidden bg-secondary lg:col-span-2 lg:aspect-[3/4]">
+              <img src={starBack.url} alt="Model wearing the 247 gold star tee, back view" loading="lazy" className="h-full w-full object-cover" />
+            </figure>
+          </div>
         </div>
       </section>
 
