@@ -4,6 +4,8 @@ import wdWhiteFront from "@/assets/wd-white-front.jpg.asset.json";
 import wdWhiteBack from "@/assets/wd-white-back.jpg.asset.json";
 import mgFront from "@/assets/mg-front.jpg.asset.json";
 import mgBack from "@/assets/mg-back.jpg.asset.json";
+import mgWhiteFront from "@/assets/mg-white-front.jpg.asset.json";
+import mgWhiteBack from "@/assets/mg-white-back.jpg.asset.json";
 import beanie from "@/assets/beanie.jpg.asset.json";
 
 export const NGN_TO_EUR = 1 / 1575.5;
