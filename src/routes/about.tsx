@@ -1,5 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageLayout } from "@/components/PageLayout";
+import mgDoorway from "@/assets/about-mg-doorway.jpg.asset.json";
+import duoArch from "@/assets/about-duo-arch.jpg.asset.json";
+import starBack from "@/assets/about-star-back.jpg.asset.json";
+import wdBed from "@/assets/about-wd-bed.jpg.asset.json";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
