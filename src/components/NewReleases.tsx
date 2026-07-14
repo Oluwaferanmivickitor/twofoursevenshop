@@ -1,5 +1,23 @@
+import { useRef } from "react";
 import { Link } from "@tanstack/react-router";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { newReleases, outOfStock, formatNgn, formatEur, type Product } from "@/lib/products";
+import featuredGreenTee from "@/assets/featured-we-different-green.jpg.asset.json";
+import featuredBandana from "@/assets/featured-247-bandana.jpg.asset.json";
+import featuredCamoBeanie from "@/assets/featured-247-beanie-camo.jpg.asset.json";
+
+const featuredCollection = [
+  { src: featuredGreenTee.url, title: "WE DIFFERENT — Forest", caption: "Preview" },
+  { src: featuredBandana.url, title: "Midnight Safari Scarf", caption: "Preview" },
+  { src: featuredCamoBeanie.url, title: "247 Beanie — Camo", caption: "Preview" },
+];
+
+const allProducts: Product[] = [...newReleases, ...outOfStock];
+
+const findProduct = (slug: string) => allProducts.find((p) => p.slug === slug);
+const beanieProduct = findProduct("247-beanie");
+const weDifferentProduct = findProduct("we-different-tee");
+const moneyGangProduct = findProduct("money-gang-tee");
 
 type ShopTile = {
   key: string;
@@ -7,227 +25,381 @@ type ShopTile = {
   displayName: string;
   image: string;
   colorParam?: string;
-  soldOut?: boolean;
 };
 
-const findProduct = (slug: string) =>
-  [...newReleases, ...outOfStock].find((p) => p.slug === slug);
-
-const weDifferent = findProduct("we-different-tee");
-const moneyGangBlack = findProduct("money-gang-tee");
-const moneyGangWhite = findProduct("money-gang-white-tee");
-
-// --- New Releases: latest drops (max 4) ---
-const newReleaseTiles: ShopTile[] = [
-  weDifferent && {
+const shopTiles: ShopTile[] = [
+  weDifferentProduct && {
     key: "wd-black",
-    product: weDifferent,
+    product: weDifferentProduct,
     displayName: "WE DIFFERENT TEE — BLACK",
-    image: weDifferent.colors?.[0]?.images[0] ?? weDifferent.image,
+    image: weDifferentProduct.colors?.[0]?.images[0] ?? weDifferentProduct.image,
     colorParam: "Black",
   },
-  weDifferent && {
+  weDifferentProduct && {
     key: "wd-white",
-    product: weDifferent,
+    product: weDifferentProduct,
     displayName: "WE DIFFERENT TEE — WHITE",
-    image: weDifferent.colors?.[1]?.images[0] ?? weDifferent.image,
+    image: weDifferentProduct.colors?.[1]?.images[0] ?? weDifferentProduct.image,
     colorParam: "White",
   },
-  moneyGangBlack && {
-    key: "mg-black",
-    product: moneyGangBlack,
-    displayName: "MONEY GANG TEE — BLACK",
-    image: moneyGangBlack.image,
+  moneyGangProduct && {
+    key: "mg",
+    product: moneyGangProduct,
+    displayName: moneyGangProduct.name,
+    image: moneyGangProduct.image,
   },
-  moneyGangWhite && {
-    key: "mg-white",
-    product: moneyGangWhite,
-    displayName: "MONEY GANG TEE — WHITE",
-    image: moneyGangWhite.image,
+  beanieProduct && {
+    key: "beanie",
+    product: beanieProduct,
+    displayName: beanieProduct.name,
+    image: beanieProduct.image,
   },
 ].filter(Boolean) as ShopTile[];
 
-// --- Featured Collection: editorial picks (max 4) ---
-const featuredTiles: ShopTile[] = [
-  moneyGangWhite && {
-    key: "feat-mg-white",
-    product: moneyGangWhite,
-    displayName: "MONEY GANG — IVORY",
-    image: moneyGangWhite.gallery?.[1] ?? moneyGangWhite.image,
-  },
-  weDifferent && {
-    key: "feat-wd-back",
-    product: weDifferent,
-    displayName: "WE DIFFERENT — REVERSE",
-    image: weDifferent.colors?.[0]?.images[1] ?? weDifferent.image,
-    colorParam: "Black",
-  },
-  moneyGangBlack && {
-    key: "feat-mg-back",
-    product: moneyGangBlack,
-    displayName: "MONEY GANG — 247 STAR",
-    image: moneyGangBlack.gallery?.[1] ?? moneyGangBlack.image,
-  },
-  weDifferent && {
-    key: "feat-wd-white-back",
-    product: weDifferent,
-    displayName: "WE DIFFERENT — IVORY REVERSE",
-    image: weDifferent.colors?.[1]?.images[1] ?? weDifferent.image,
-    colorParam: "White",
-  },
-].filter(Boolean) as ShopTile[];
-
-// --- Out of Stock / Archive (max 4) ---
-const outOfStockTiles: ShopTile[] = outOfStock.slice(0, 4).map((p) => ({
-  key: `oos-${p.slug}`,
-  product: p,
-  displayName: p.name,
-  image: p.image,
-  soldOut: true,
-}));
-
-type SectionProps = {
-  id: string;
-  eyebrow: string;
-  heading: string;
-  copy: string;
-  tiles: ShopTile[];
-  ctaLabel?: string;
-  border?: boolean;
-};
-
-function TileGrid({ tiles }: { tiles: ShopTile[] }) {
+function PriceLine({ p, soldOut }: { p: Product; soldOut: boolean }) {
   return (
-    <div className="mx-auto grid max-w-6xl grid-cols-2 gap-5 sm:gap-8 lg:grid-cols-4">
-      {tiles.map((tile) => {
-        const inner = (
-          <>
-            <div className="relative aspect-[3/4] overflow-hidden bg-secondary">
-              <img
-                src={tile.image}
-                alt={tile.displayName}
-                loading="lazy"
-                className={`h-full w-full max-w-full object-contain transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03] ${
-                  tile.soldOut ? "opacity-70" : ""
-                }`}
-              />
-              {tile.soldOut && (
-                <span className="eyebrow absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border border-foreground bg-background/90 px-4 py-2 text-[0.65rem] tracking-[0.25em]">
-                  Sold Out
-                </span>
-              )}
-            </div>
-            <div className="mt-4 space-y-1.5 text-center">
-              <h3 className="text-[0.8rem] font-normal tracking-wide text-foreground sm:text-sm">
-                {tile.displayName}
-              </h3>
-              <div className="flex items-baseline justify-center gap-2">
-                <span
-                  className={`text-[0.8rem] font-medium sm:text-sm ${
-                    tile.soldOut ? "text-muted-foreground line-through" : "text-foreground"
-                  }`}
-                >
-                  {formatNgn(tile.product.priceNgn)}
-                </span>
-                <span className="text-[0.7rem] text-muted-foreground sm:text-xs">
-                  / {formatEur(tile.product.priceNgn)}
-                </span>
-              </div>
-            </div>
-          </>
-        );
-        if (tile.soldOut) {
-          return (
-            <div key={tile.key} className="group cursor-not-allowed">
-              {inner}
-            </div>
-          );
-        }
-        return (
-          <Link
-            key={tile.key}
-            to="/product/$slug"
-            params={{ slug: tile.product.slug }}
-            search={tile.colorParam ? { color: tile.colorParam } : undefined}
-            className="group block"
-          >
-            {inner}
-          </Link>
-        );
-      })}
+    <div className="mt-4 space-y-1.5">
+      <h3 className="text-[0.8rem] font-normal tracking-wide text-foreground sm:text-sm">
+        {p.name}
+      </h3>
+      <div className="flex items-baseline gap-2">
+        <span
+          className={`text-[0.8rem] font-medium sm:text-sm ${
+            soldOut ? "text-muted-foreground line-through" : "text-foreground"
+          }`}
+        >
+          {formatNgn(p.priceNgn)}
+        </span>
+        <span className="text-[0.7rem] text-muted-foreground sm:text-xs">
+          / {formatEur(p.priceNgn)}
+        </span>
+      </div>
     </div>
   );
 }
 
-function Section({ id, eyebrow, heading, copy, tiles, ctaLabel = "View All", border }: SectionProps) {
-  if (tiles.length === 0) return null;
-  return (
-    <section
-      id={id}
-      aria-labelledby={`${id}-heading`}
-      className={border ? "border-t border-border" : undefined}
-    >
-      <div className="px-5 pt-16 text-center sm:px-8 sm:pt-24">
-        <p className="eyebrow text-muted-foreground">{eyebrow}</p>
-        <h2
-          id={`${id}-heading`}
-          className="mt-3 font-serif text-3xl font-light tracking-tight text-foreground sm:text-5xl"
-        >
-          {heading}
-        </h2>
-        <p className="mx-auto mt-5 max-w-md text-sm leading-relaxed text-muted-foreground">
-          {copy}
-        </p>
+function ShopCard({
+  p,
+  fill = false,
+}: {
+  p: Product;
+  fill?: boolean;
+}) {
+  const soldOut = !p.inStock;
+  const imageWrapClass = fill
+    ? "relative h-full min-h-0 flex-1 overflow-hidden bg-secondary"
+    : "relative aspect-[3/4] overflow-hidden bg-secondary";
+
+  const inner = (
+    <div className="flex h-full flex-col">
+      <div className={imageWrapClass}>
+        <img
+          src={p.image}
+          alt={p.name}
+          loading="lazy"
+          className={`h-full w-full max-w-full object-contain transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03] ${
+            soldOut ? "opacity-70" : ""
+          }`}
+        />
+        {soldOut && (
+          <>
+            <div className="absolute inset-0 bg-background/10" />
+            <span className="eyebrow absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border border-foreground bg-background/90 px-4 py-2 text-[0.65rem] tracking-[0.25em] text-foreground">
+              Sold Out
+            </span>
+          </>
+        )}
       </div>
+      <PriceLine p={p} soldOut={soldOut} />
+    </div>
+  );
 
-      <div className="px-5 pt-10 pb-16 sm:px-8 sm:pt-14 sm:pb-20">
-        <TileGrid tiles={tiles} />
+  if (soldOut) {
+    return <div className="group h-full cursor-not-allowed">{inner}</div>;
+  }
+  return (
+    <Link
+      to="/product/$slug"
+      params={{ slug: p.slug }}
+      className="group block h-full"
+    >
+      {inner}
+    </Link>
+  );
+}
 
-        <div className="mt-14 flex justify-center">
-          <Link
-            to="/shop"
-            className="eyebrow border border-foreground px-8 py-4 text-foreground transition-colors hover:bg-foreground hover:text-background"
+function ProductCard({ p, soldOut = false }: { p: Product; soldOut?: boolean }) {
+  const inner = (
+    <>
+      <div className="relative aspect-[3/4] overflow-hidden bg-secondary">
+        <img
+          src={p.image}
+          alt={p.name}
+          loading="lazy"
+          className={`h-full w-full max-w-full object-contain transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03] ${
+            soldOut ? "opacity-70" : ""
+          }`}
+        />
+        {soldOut && (
+          <>
+            <div className="absolute inset-0 bg-background/10" />
+            <span className="eyebrow absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border border-foreground bg-background/90 px-4 py-2 text-[0.65rem] tracking-[0.25em] text-foreground">
+              Sold Out
+            </span>
+          </>
+        )}
+      </div>
+      <div className="mt-4 space-y-1.5">
+        <h3 className="text-[0.8rem] font-normal tracking-wide text-foreground sm:text-sm">
+          {p.name}
+        </h3>
+        <div className="flex items-baseline gap-2">
+          <span
+            className={`text-[0.8rem] font-medium sm:text-sm ${
+              soldOut ? "text-muted-foreground line-through" : "text-foreground"
+            }`}
           >
-            {ctaLabel}
-          </Link>
+            {formatNgn(p.priceNgn)}
+          </span>
+          <span className="text-[0.7rem] text-muted-foreground sm:text-xs">
+          / {formatEur(p.priceNgn)}
+          </span>
         </div>
       </div>
-    </section>
+    </>
+  );
+
+  if (soldOut) {
+    return <div className="group cursor-not-allowed">{inner}</div>;
+  }
+
+  return (
+    <Link to="/product/$slug" params={{ slug: p.slug }} className="group block">
+      {inner}
+    </Link>
+  );
+}
+
+function HorizontalRail({
+  items,
+  soldOut = false,
+  idPrefix,
+}: {
+  items: Product[];
+  soldOut?: boolean;
+  idPrefix: string;
+}) {
+  const railRef = useRef<HTMLUListElement>(null);
+
+  const scrollBy = (dir: 1 | -1) => {
+    const el = railRef.current;
+    if (!el) return;
+    const card = el.querySelector<HTMLElement>("li");
+    const step = card ? card.offsetWidth + 24 : el.clientWidth * 0.8;
+    el.scrollBy({ left: dir * step, behavior: "smooth" });
+  };
+
+  return (
+    <div className="relative">
+      <ul
+        ref={railRef}
+        className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-8 sm:gap-6 sm:px-8"
+      >
+        {items.map((p) => (
+          <li
+            key={`${idPrefix}-${p.slug}`}
+            className="w-[64%] shrink-0 snap-start sm:w-[40%] lg:w-[24%]"
+          >
+            <ProductCard p={p} soldOut={soldOut} />
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-6 flex items-center gap-2">
+        <button
+          type="button"
+          aria-label="Scroll left"
+          onClick={() => scrollBy(-1)}
+          className="grid h-10 w-10 place-items-center border border-border text-foreground transition-colors hover:border-foreground"
+        >
+          <ChevronLeft strokeWidth={1.25} className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          aria-label="Scroll right"
+          onClick={() => scrollBy(1)}
+          className="grid h-10 w-10 place-items-center border border-border text-foreground transition-colors hover:border-foreground"
+        >
+          <ChevronRight strokeWidth={1.25} className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
   );
 }
 
 export function NewReleases() {
   return (
     <>
-      <Section
-        id="new-releases"
-        eyebrow="Just Landed"
-        heading="New Releases"
-        copy="The latest drop from the current season. Limited quantities, considered pieces."
-        tiles={newReleaseTiles}
-        ctaLabel="Shop New Releases"
-        border
-      />
+      {/* Shop — static 3-column grid */}
+      <section id="shop" aria-labelledby="shop-heading" className="border-t border-border">
+        <div className="px-5 pt-16 sm:px-8 sm:pt-24">
+          <p className="eyebrow text-muted-foreground">Shop</p>
+          <h2
+            id="shop-heading"
+            className="mt-3 font-serif text-3xl font-light tracking-tight text-foreground sm:text-5xl"
+          >
+            All Pieces
+          </h2>
+        </div>
 
-      <Section
-        id="featured"
-        eyebrow="Editor's Selection"
-        heading="Featured Collection"
-        copy="A curated look at signature pieces and archival details from the current release."
-        tiles={featuredTiles}
-        ctaLabel="Explore The Shop"
-        border
-      />
+        <div className="px-5 pt-10 pb-16 sm:px-8 sm:pt-14 sm:pb-24">
+          <div
+            className="grid grid-cols-2"
+            style={{ gridTemplateColumns: "repeat(2, 1fr)", gap: "20px" }}
+          >
+            {shopTiles.map((tile) => {
+              const soldOut = !tile.product.inStock;
+              const inner = (
+                <div className="flex h-full flex-col">
+                  <div className="relative aspect-[3/4] overflow-hidden bg-secondary">
+                    <img
+                      src={tile.image}
+                      alt={tile.displayName}
+                      loading="lazy"
+                      className={`h-full w-full max-w-full object-contain transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03] ${
+                        soldOut ? "opacity-70" : ""
+                      }`}
+                    />
+                    {soldOut && (
+                      <>
+                        <div className="absolute inset-0 bg-background/10" />
+                        <span className="eyebrow absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border border-foreground bg-background/90 px-4 py-2 text-[0.65rem] tracking-[0.25em] text-foreground">
+                          Sold Out
+                        </span>
+                      </>
+                    )}
+                  </div>
+                  <div className="mt-4 space-y-1.5">
+                    <h3 className="text-[0.8rem] font-normal tracking-wide text-foreground sm:text-sm">
+                      {tile.displayName}
+                    </h3>
+                    <div className="flex items-baseline gap-2">
+                      <span
+                        className={`text-[0.8rem] font-medium sm:text-sm ${
+                          soldOut ? "text-muted-foreground line-through" : "text-foreground"
+                        }`}
+                      >
+                        {formatNgn(tile.product.priceNgn)}
+                      </span>
+                      <span className="text-[0.7rem] text-muted-foreground sm:text-xs">
+                      / {formatEur(tile.product.priceNgn)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
 
-      <Section
-        id="archive"
-        eyebrow="The Archive"
-        heading="Out of Stock"
-        copy="Past releases that have sold through. Join the waitlist for future restocks."
-        tiles={outOfStockTiles}
-        ctaLabel="View Archive"
-        border
-      />
+              if (soldOut) {
+                return (
+                  <div key={tile.key} className="group cursor-not-allowed">
+                    {inner}
+                  </div>
+                );
+              }
+
+              return (
+                <Link
+                  key={tile.key}
+                  to="/product/$slug"
+                  params={{ slug: tile.product.slug }}
+                  search={tile.colorParam ? { color: tile.colorParam } : undefined}
+                  className="group block"
+                >
+                  {inner}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* New Releases — horizontal scroll */}
+      <section
+        aria-labelledby="new-releases-heading"
+        className="border-t border-border px-5 py-16 sm:px-8 sm:py-24"
+      >
+        <div className="mb-10 sm:mb-14">
+          <p className="eyebrow text-muted-foreground">Drop 01 — Available Now</p>
+          <h2
+            id="new-releases-heading"
+            className="mt-3 font-serif text-3xl font-light tracking-tight text-foreground sm:text-5xl"
+          >
+            New Releases
+          </h2>
+        </div>
+        <HorizontalRail items={newReleases} idPrefix="nr" />
+      </section>
+
+      {/* Out of Stock — horizontal scroll */}
+      {outOfStock.length > 0 && (
+        <section
+          aria-labelledby="oos-heading"
+          className="border-t border-border bg-secondary/40 px-5 py-16 sm:px-8 sm:py-24"
+        >
+          <div className="mb-10 sm:mb-14">
+            <p className="eyebrow text-muted-foreground">Archive</p>
+            <h2
+              id="oos-heading"
+              className="mt-3 font-serif text-3xl font-light tracking-tight text-foreground sm:text-5xl"
+            >
+              Out of Stock
+            </h2>
+            <p className="mt-3 max-w-md text-sm text-muted-foreground">
+              Previously released. Join the waitlist to be notified of restocks.
+            </p>
+          </div>
+          <HorizontalRail items={outOfStock} soldOut idPrefix="oos" />
+        </section>
+      )}
+
+      {/* Featured Collection — placeholder */}
+      <section
+        aria-labelledby="featured-heading"
+        className="border-t border-border px-5 py-16 sm:px-8 sm:py-24"
+      >
+        <div className="mb-10 sm:mb-14">
+          <p className="eyebrow text-muted-foreground">Editorial</p>
+          <h2
+            id="featured-heading"
+            className="mt-3 font-serif text-3xl font-light tracking-tight text-foreground sm:text-5xl"
+          >
+            Featured Collection
+          </h2>
+          <p className="mt-3 max-w-md text-sm text-muted-foreground">
+            A closer look at upcoming pieces and prints.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
+          {featuredCollection.map((item) => (
+            <figure key={item.title} className="group">
+              <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
+                <img
+                  src={item.src}
+                  alt={item.title}
+                  loading="lazy"
+                  className="h-full w-full max-w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03]"
+                />
+              </div>
+              <figcaption className="mt-4 space-y-1.5">
+                <p className="eyebrow text-muted-foreground">{item.caption}</p>
+                <h3 className="text-[0.8rem] font-normal tracking-wide text-foreground sm:text-sm">
+                  {item.title}
+                </h3>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
     </>
   );
 }

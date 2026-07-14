@@ -128,9 +128,9 @@ function ProductPage() {
             <div className="mt-8">
               <div className="flex items-center justify-between">
                 <p className="eyebrow text-foreground">Size</p>
-                <Link to="/size-guide" className="text-xs underline text-muted-foreground hover:text-foreground">
+                <a href="#size-guide" className="text-xs underline text-muted-foreground hover:text-foreground">
                   Sizing Guide
-                </Link>
+                </a>
               </div>
               <div className="mt-3 grid grid-cols-5 gap-2 sm:max-w-sm">
                 {product.sizes.map((s: string) => (
@@ -166,13 +166,6 @@ function ProductPage() {
           >
             {product.sizes && !size ? "Select a Size" : "Add to Bag"}
           </button>
-
-          <Link
-            to="/size-guide"
-            className="eyebrow mt-4 self-start text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
-          >
-            View Size Guide
-          </Link>
 
           <p className="mt-6 text-xs text-muted-foreground">
             Worldwide shipping. Duties calculated at checkout.
