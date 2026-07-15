@@ -37,9 +37,9 @@ export const products: Product[] = [
     slug: "we-different-tee",
     name: "WE DIFFERENT TEE",
     category: "T-Shirt",
-    priceNgn: 100_000,
+    priceNgn: 110_000,
     image: wdBlackFront.url,
-    gallery: [wdBlackFront.url, wdBlackBack.url],
+    gallery: [wdBlackFront.url, wdBlackBack.url, wdWhiteFront.url, wdWhiteBack.url],
     sizes: ["S", "M", "L", "XL", "XXL"],
     colors: [
       {
@@ -54,10 +54,16 @@ export const products: Product[] = [
         images: [wdWhiteFront.url, wdWhiteBack.url],
         inStock: true,
       },
+      {
+        name: "Green",
+        swatch: "#1f4d2b",
+        images: [wdBlackFront.url, wdBlackBack.url],
+        inStock: false,
+      },
     ],
     inStock: true,
     description:
-      "Heavyweight cotton tee with the signature 'WE DIFFERENT' chest graphic and the 247 drip emblem at the back.",
+      "Heavyweight cotton tee with the signature 'WE DIFFERENT' chest graphic and the 247 drip emblem at the back. Available in Black, White, and Green (coming soon).",
   },
   {
     slug: "money-gang-tee",
@@ -65,7 +71,7 @@ export const products: Product[] = [
     category: "T-Shirt",
     priceNgn: 130_000,
     image: mgFront.url,
-    gallery: [mgFront.url, mgBack.url],
+    gallery: [mgFront.url, mgBack.url, mgWhiteFront.url, mgWhiteBack.url],
     sizes: ["S", "M", "L", "XL", "XXL"],
     colors: [
       {
@@ -74,20 +80,6 @@ export const products: Product[] = [
         images: [mgFront.url, mgBack.url],
         inStock: true,
       },
-    ],
-    inStock: true,
-    description:
-      "Oversized box-fit tee with archival 'MONEY GANG' portrait print on the chest and the metallic gold 247 star at the back.",
-  },
-  {
-    slug: "money-gang-white-tee",
-    name: "MONEY GANG WHITE TEE",
-    category: "T-Shirt",
-    priceNgn: 130_000,
-    image: mgWhiteFront.url,
-    gallery: [mgWhiteFront.url, mgWhiteBack.url],
-    sizes: ["S", "M", "L", "XL", "XXL"],
-    colors: [
       {
         name: "White",
         swatch: "#ffffff",
@@ -97,7 +89,27 @@ export const products: Product[] = [
     ],
     inStock: true,
     description:
-      "Oversized box-fit white tee with the signature 'MONEY GANG' portrait chest print and the metallic gold 247 star emblem at the back.",
+      "Oversized box-fit tee with archival 'MONEY GANG' portrait print on the chest and the metallic gold 247 star at the back. Available in Black and White.",
+  },
+  {
+    slug: "abnormal-we-different-tee",
+    name: "ABNORMAL WE DIFFERENT TEE",
+    category: "T-Shirt",
+    priceNgn: 70_000,
+    image: abnormalFront.url,
+    gallery: [abnormalFront.url, abnormalBack.url],
+    sizes: ["S", "M", "L", "XL", "XXL"],
+    colors: [
+      {
+        name: "Black",
+        swatch: "#000000",
+        images: [abnormalFront.url, abnormalBack.url],
+        inStock: true,
+      },
+    ],
+    inStock: true,
+    description:
+      "Statement graphic tee — bold '247 · I'm not weird, we just different · R&W' chest print with the hand-painted 'WE DIFFERENT' back hit. Cut heavyweight in classic black.",
   },
 ];
 
