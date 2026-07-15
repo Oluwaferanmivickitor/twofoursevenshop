@@ -119,7 +119,7 @@ function ShopPage() {
             </h2>
           </div>
           <div className="grid grid-cols-2 gap-5 sm:gap-8 md:grid-cols-3 lg:grid-cols-4">
-            {all.map((p) => (
+            {all.map((p: Product) => (
               <Card key={p.slug} p={p} />
             ))}
           </div>
