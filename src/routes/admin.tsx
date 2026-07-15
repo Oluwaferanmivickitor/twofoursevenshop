@@ -73,7 +73,7 @@ function AdminDashboard() {
       const { data: userData } = await supabase.auth.getUser();
       if (cancelled) return;
       if (!userData.user) {
-        router.navigate({ to: "/admin_/login" as string as never });
+        router.navigate({ to: "/admin/login" });
         return;
       }
       try {
@@ -113,7 +113,7 @@ function AdminDashboard() {
           variant="outline"
           onClick={async () => {
             await supabase.auth.signOut();
-            router.navigate({ to: "/admin_/login" as string as never });
+            router.navigate({ to: "/admin/login" });
           }}
         >
           Sign out
@@ -190,7 +190,7 @@ function AdminContent({ email }: { email: string | null }) {
             variant="outline"
             onClick={async () => {
               await supabase.auth.signOut();
-              router.navigate({ to: "/admin_/login" as string as never });
+              router.navigate({ to: "/admin/login" });
             }}
           >
             <LogOut className="mr-1 h-3.5 w-3.5" /> Sign out
