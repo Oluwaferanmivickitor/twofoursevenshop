@@ -4,6 +4,7 @@ import { HeroCarousel } from "@/components/HeroCarousel";
 import { NewReleases } from "@/components/NewReleases";
 import { TopBanner } from "@/components/TopBanner";
 import { Footer } from "@/components/Footer";
+import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { listProducts } from "@/lib/products.functions";
 
 export const Route = createFileRoute("/")({
@@ -44,6 +45,7 @@ function Index() {
         <NewReleases products={products} />
       </main>
       <Footer />
+      <WhatsAppButton />
     </div>
   );
 }
