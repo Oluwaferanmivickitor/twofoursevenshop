@@ -19,7 +19,7 @@ const channels = [
   { label: "Location", value: "Lagos, Nigeria" },
   { label: "Customer Support", value: "247.freeworld@gmail.com", href: "mailto:247.freeworld@gmail.com" },
   { label: "Phone", value: "0806 006 3068", href: "tel:+2348060063068" },
-  { label: "WhatsApp", value: "0704 690 0261", href: "https://wa.me/2347046900261" },
+  { label: "WhatsApp", value: "0806 006 3068", href: "https://wa.me/2348060063068" },
 ];
 
 function ContactPage() {
