@@ -3,6 +3,7 @@ import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { Header } from "@/components/Header";
 import { TopBanner } from "@/components/TopBanner";
 import { Footer } from "@/components/Footer";
+import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { ProductGallery } from "@/components/ProductGallery";
 import { formatNgn, formatEur, type ColorVariant } from "@/lib/products";
 import { getProductBySlug } from "@/lib/products.functions";
@@ -174,6 +175,7 @@ function ProductPage() {
         </div>
       </main>
       <Footer />
+      <WhatsAppButton />
     </div>
   );
 }
