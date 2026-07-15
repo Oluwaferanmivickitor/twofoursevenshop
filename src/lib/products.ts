@@ -1,15 +1,3 @@
-import wdBlackFront from "@/assets/wd-black-front.jpg.asset.json";
-import wdBlackBack from "@/assets/wd-black-back.jpg.asset.json";
-import wdWhiteFront from "@/assets/wd-white-front.jpg.asset.json";
-import wdWhiteBack from "@/assets/wd-white-back.jpg.asset.json";
-import mgFront from "@/assets/mg-front.jpg.asset.json";
-import mgBack from "@/assets/mg-back.jpg.asset.json";
-import mgWhiteFront from "@/assets/mg-white-front.jpg.asset.json";
-import mgWhiteBack from "@/assets/mg-white-back.jpg.asset.json";
-import abnormalFront from "@/assets/abnormal-wd-front.jpg.asset.json";
-import abnormalBack from "@/assets/abnormal-wd-back.jpg.asset.json";
-import beanie from "@/assets/beanie.jpg.asset.json";
-
 export const NGN_TO_EUR = 1 / 1575.5;
 
 export type ColorVariant = {
@@ -20,6 +8,7 @@ export type ColorVariant = {
 };
 
 export type Product = {
+  id?: string;
   slug: string;
   name: string;
   category: string;
@@ -29,101 +18,10 @@ export type Product = {
   sizes?: string[];
   colors?: ColorVariant[];
   inStock: boolean;
+  isArchived?: boolean;
+  sortOrder?: number;
   description: string;
 };
-
-export const products: Product[] = [
-  {
-    slug: "we-different-tee",
-    name: "WE DIFFERENT TEE",
-    category: "T-Shirt",
-    priceNgn: 125_000,
-    image: wdBlackFront.url,
-    gallery: [wdBlackFront.url, wdBlackBack.url, wdWhiteFront.url, wdWhiteBack.url],
-    sizes: ["S", "M", "L", "XL", "XXL"],
-    colors: [
-      {
-        name: "Black",
-        swatch: "#000000",
-        images: [wdBlackFront.url, wdBlackBack.url],
-        inStock: true,
-      },
-      {
-        name: "White",
-        swatch: "#ffffff",
-        images: [wdWhiteFront.url, wdWhiteBack.url],
-        inStock: true,
-      },
-    ],
-    inStock: true,
-    description:
-      "Heavyweight cotton tee with the signature 'WE DIFFERENT' chest graphic and the 247 drip emblem at the back. Available in Black and White.",
-  },
-  {
-    slug: "money-gang-tee",
-    name: "MONEY GANG TEE",
-    category: "T-Shirt",
-    priceNgn: 150_000,
-    image: mgFront.url,
-    gallery: [mgFront.url, mgBack.url, mgWhiteFront.url, mgWhiteBack.url],
-    sizes: ["S", "M", "L", "XL", "XXL"],
-    colors: [
-      {
-        name: "Black",
-        swatch: "#000000",
-        images: [mgFront.url, mgBack.url],
-        inStock: true,
-      },
-      {
-        name: "White",
-        swatch: "#ffffff",
-        images: [mgWhiteFront.url, mgWhiteBack.url],
-        inStock: true,
-      },
-    ],
-    inStock: true,
-    description:
-      "Oversized box-fit tee with archival 'MONEY GANG' portrait print on the chest and the metallic gold 247 star at the back. Available in Black and White.",
-  },
-  {
-    slug: "abnormal-we-different-tee",
-    name: "ABNORMAL WE DIFFERENT TEE",
-    category: "T-Shirt",
-    priceNgn: 80_000,
-
-    image: abnormalFront.url,
-    gallery: [abnormalFront.url, abnormalBack.url],
-    sizes: ["S", "M", "L", "XL", "XXL"],
-    colors: [
-      {
-        name: "Black",
-        swatch: "#000000",
-        images: [abnormalFront.url, abnormalBack.url],
-        inStock: true,
-      },
-    ],
-    inStock: true,
-    description:
-      "Statement graphic tee — bold '247 · I'm not weird, we just different · R&W' chest print with the hand-painted 'WE DIFFERENT' back hit. Cut heavyweight in classic black.",
-  },
-];
-
-// Available collection (in-stock products)
-export const newReleases = products.filter((p) => p.inStock);
-
-// Archive — sold out / unavailable
-export const outOfStock: Product[] = [
-  {
-    slug: "247-beanie",
-    name: "247 BEANIE",
-    category: "Headwear",
-    priceNgn: 99_900,
-    image: beanie.url,
-    gallery: [beanie.url],
-    inStock: false,
-    description: "All-over camouflage knit beanie with embroidered 247 leaf motifs.",
-  },
-];
 
 const ngn = new Intl.NumberFormat("en-NG", {
   style: "currency",
@@ -139,6 +37,56 @@ const eur = new Intl.NumberFormat("en-IE", {
 export const formatNgn = (n: number) => ngn.format(n);
 export const formatEur = (n: number) => eur.format(n * NGN_TO_EUR);
 
-export function getProduct(slug: string): Product | undefined {
-  return [...products, ...outOfStock].find((p) => p.slug === slug);
+type ProductRow = {
+  id: string;
+  slug: string;
+  name: string;
+  category: string;
+  price_ngn: number;
+  description: string;
+  image: string;
+  gallery: unknown;
+  sizes: unknown;
+  colors: unknown;
+  in_stock: boolean;
+  is_archived: boolean;
+  sort_order: number;
+};
+
+function asStringArray(v: unknown): string[] {
+  return Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [];
+}
+
+function asColorArray(v: unknown): ColorVariant[] {
+  if (!Array.isArray(v)) return [];
+  return v
+    .map((c) => {
+      if (!c || typeof c !== "object") return null;
+      const o = c as Record<string, unknown>;
+      return {
+        name: typeof o.name === "string" ? o.name : "",
+        swatch: typeof o.swatch === "string" ? o.swatch : "#000000",
+        images: asStringArray(o.images),
+        inStock: typeof o.inStock === "boolean" ? o.inStock : true,
+      };
+    })
+    .filter((c): c is ColorVariant => c !== null && c.name.length > 0);
+}
+
+export function mapProductRow(row: ProductRow): Product {
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    category: row.category,
+    priceNgn: row.price_ngn,
+    description: row.description,
+    image: row.image,
+    gallery: asStringArray(row.gallery),
+    sizes: asStringArray(row.sizes),
+    colors: asColorArray(row.colors),
+    inStock: row.in_stock,
+    isArchived: row.is_archived,
+    sortOrder: row.sort_order,
+  };
 }
