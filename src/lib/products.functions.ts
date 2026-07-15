@@ -91,6 +91,23 @@ async function assertAdmin(supabase: {
 export const checkIsAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    // Auto-grant admin to the configured ADMIN_EMAIL on first sign-in.
+    const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase();
+    const userEmail = (context.claims?.email as string | undefined)?.toLowerCase();
+    if (adminEmail && userEmail && adminEmail === userEmail) {
+      const { data: existing } = await context.supabase
+        .from("user_roles")
+        .select("id")
+        .eq("user_id", context.userId)
+        .eq("role", "admin")
+        .maybeSingle();
+      if (!existing) {
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        await supabaseAdmin
+          .from("user_roles")
+          .insert({ user_id: context.userId, role: "admin" });
+      }
+    }
     const { data, error } = await context.supabase.rpc("has_role", {
       _user_id: context.userId,
       _role: "admin",
