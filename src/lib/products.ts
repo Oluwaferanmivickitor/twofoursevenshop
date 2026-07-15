@@ -6,6 +6,8 @@ import mgFront from "@/assets/mg-front.jpg.asset.json";
 import mgBack from "@/assets/mg-back.jpg.asset.json";
 import mgWhiteFront from "@/assets/mg-white-front.jpg.asset.json";
 import mgWhiteBack from "@/assets/mg-white-back.jpg.asset.json";
+import abnormalFront from "@/assets/abnormal-wd-front.jpg.asset.json";
+import abnormalBack from "@/assets/abnormal-wd-back.jpg.asset.json";
 import beanie from "@/assets/beanie.jpg.asset.json";
 
 export const NGN_TO_EUR = 1 / 1575.5;
