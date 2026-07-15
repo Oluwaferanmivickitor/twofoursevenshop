@@ -18,6 +18,7 @@ const findProduct = (slug: string) => allProducts.find((p) => p.slug === slug);
 const beanieProduct = findProduct("247-beanie");
 const weDifferentProduct = findProduct("we-different-tee");
 const moneyGangProduct = findProduct("money-gang-tee");
+const abnormalProduct = findProduct("abnormal-we-different-tee");
 
 type ShopTile = {
   key: string;
@@ -29,24 +30,22 @@ type ShopTile = {
 
 const shopTiles: ShopTile[] = [
   weDifferentProduct && {
-    key: "wd-black",
+    key: "wd",
     product: weDifferentProduct,
-    displayName: "WE DIFFERENT TEE — BLACK",
-    image: weDifferentProduct.colors?.[0]?.images[0] ?? weDifferentProduct.image,
-    colorParam: "Black",
-  },
-  weDifferentProduct && {
-    key: "wd-white",
-    product: weDifferentProduct,
-    displayName: "WE DIFFERENT TEE — WHITE",
-    image: weDifferentProduct.colors?.[1]?.images[0] ?? weDifferentProduct.image,
-    colorParam: "White",
+    displayName: weDifferentProduct.name,
+    image: weDifferentProduct.image,
   },
   moneyGangProduct && {
     key: "mg",
     product: moneyGangProduct,
     displayName: moneyGangProduct.name,
     image: moneyGangProduct.image,
+  },
+  abnormalProduct && {
+    key: "abnormal",
+    product: abnormalProduct,
+    displayName: abnormalProduct.name,
+    image: abnormalProduct.image,
   },
   beanieProduct && {
     key: "beanie",
@@ -55,6 +54,7 @@ const shopTiles: ShopTile[] = [
     image: beanieProduct.image,
   },
 ].filter(Boolean) as ShopTile[];
+
 
 function PriceLine({ p, soldOut }: { p: Product; soldOut: boolean }) {
   return (
