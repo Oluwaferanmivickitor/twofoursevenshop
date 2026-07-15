@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageLayout } from "@/components/PageLayout";
-import { formatEur, formatNgn, newReleases, outOfStock, type Product } from "@/lib/products";
+import { formatEur, formatNgn, type Product } from "@/lib/products";
+import { listProducts } from "@/lib/products.functions";
 
 export const Route = createFileRoute("/shop")({
+  loader: () => listProducts(),
   head: () => ({
     meta: [
       { title: "Shop — TWOFOURSEVEN" },
@@ -17,6 +19,12 @@ export const Route = createFileRoute("/shop")({
       },
     ],
   }),
+  errorComponent: ({ error }) => (
+    <div className="p-10 text-center text-sm text-muted-foreground">{error.message}</div>
+  ),
+  notFoundComponent: () => (
+    <div className="p-10 text-center text-sm text-muted-foreground">Not found.</div>
+  ),
   component: ShopPage,
 });
 
@@ -71,7 +79,7 @@ function Card({ p }: { p: Product }) {
 }
 
 function ShopPage() {
-  const all = [...newReleases, ...outOfStock];
+  const all = Route.useLoaderData();
   return (
     <PageLayout>
       <section className="px-5 pt-24 pb-10 text-center sm:px-8 sm:pt-32">
@@ -87,7 +95,6 @@ function ShopPage() {
         </div>
       </section>
 
-      {/* Category chips */}
       <section className="px-5 pb-16 sm:px-8">
         <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-center gap-3">
           {categories.map((c) => (
@@ -103,7 +110,6 @@ function ShopPage() {
         </div>
       </section>
 
-      {/* All products grid — centered */}
       <section className="px-5 pb-24 sm:px-8 sm:pb-32">
         <div className="mx-auto max-w-6xl">
           <div className="mb-10 text-center">
@@ -113,7 +119,7 @@ function ShopPage() {
             </h2>
           </div>
           <div className="grid grid-cols-2 gap-5 sm:gap-8 md:grid-cols-3 lg:grid-cols-4">
-            {all.map((p) => (
+            {all.map((p: Product) => (
               <Card key={p.slug} p={p} />
             ))}
           </div>

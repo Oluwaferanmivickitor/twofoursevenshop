@@ -4,8 +4,10 @@ import { HeroCarousel } from "@/components/HeroCarousel";
 import { NewReleases } from "@/components/NewReleases";
 import { TopBanner } from "@/components/TopBanner";
 import { Footer } from "@/components/Footer";
+import { listProducts } from "@/lib/products.functions";
 
 export const Route = createFileRoute("/")({
+  loader: () => listProducts(),
   head: () => ({
     meta: [
       { title: "TWOFOURSEVEN — Premium Ready-to-Wear" },
@@ -22,17 +24,24 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
+  errorComponent: ({ error }) => (
+    <div className="p-10 text-center text-sm text-muted-foreground">{error.message}</div>
+  ),
+  notFoundComponent: () => (
+    <div className="p-10 text-center text-sm text-muted-foreground">Not found.</div>
+  ),
   component: Index,
 });
 
 function Index() {
+  const products = Route.useLoaderData();
   return (
     <div className="min-h-screen bg-background">
       <TopBanner />
       <Header />
       <main>
         <HeroCarousel />
-        <NewReleases />
+        <NewReleases products={products} />
       </main>
       <Footer />
     </div>
