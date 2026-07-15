@@ -60,6 +60,8 @@
   --border: oklch(0.92 0 0);
   --input: oklch(0.92 0 0);
   --ring: oklch(0.12 0 0);
+  --whatsapp: #25D366;
+  --whatsapp-foreground: #FFFFFF;
 }
 
 .dark {
