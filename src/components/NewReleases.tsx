@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { newReleases, outOfStock, formatNgn, formatEur, type Product } from "@/lib/products";
+import { formatNgn, formatEur, type Product } from "@/lib/products";
 import featuredGreenTee from "@/assets/featured-we-different-green.jpg.asset.json";
 import featuredBandana from "@/assets/featured-247-bandana.jpg.asset.json";
 import featuredCamoBeanie from "@/assets/featured-247-beanie-camo.jpg.asset.json";
@@ -11,50 +11,6 @@ const featuredCollection = [
   { src: featuredBandana.url, title: "Midnight Safari Scarf", caption: "Preview" },
   { src: featuredCamoBeanie.url, title: "247 Beanie — Camo", caption: "Preview" },
 ];
-
-const allProducts: Product[] = [...newReleases, ...outOfStock];
-
-const findProduct = (slug: string) => allProducts.find((p) => p.slug === slug);
-const beanieProduct = findProduct("247-beanie");
-const weDifferentProduct = findProduct("we-different-tee");
-const moneyGangProduct = findProduct("money-gang-tee");
-const abnormalProduct = findProduct("abnormal-we-different-tee");
-
-type ShopTile = {
-  key: string;
-  product: Product;
-  displayName: string;
-  image: string;
-  colorParam?: string;
-};
-
-const shopTiles: ShopTile[] = [
-  weDifferentProduct && {
-    key: "wd",
-    product: weDifferentProduct,
-    displayName: weDifferentProduct.name,
-    image: weDifferentProduct.image,
-  },
-  moneyGangProduct && {
-    key: "mg",
-    product: moneyGangProduct,
-    displayName: moneyGangProduct.name,
-    image: moneyGangProduct.image,
-  },
-  abnormalProduct && {
-    key: "abnormal",
-    product: abnormalProduct,
-    displayName: abnormalProduct.name,
-    image: abnormalProduct.image,
-  },
-  beanieProduct && {
-    key: "beanie",
-    product: beanieProduct,
-    displayName: beanieProduct.name,
-    image: beanieProduct.image,
-  },
-].filter(Boolean) as ShopTile[];
-
 
 function PriceLine({ p, soldOut }: { p: Product; soldOut: boolean }) {
   return (
@@ -75,56 +31,6 @@ function PriceLine({ p, soldOut }: { p: Product; soldOut: boolean }) {
         </span>
       </div>
     </div>
-  );
-}
-
-function ShopCard({
-  p,
-  fill = false,
-}: {
-  p: Product;
-  fill?: boolean;
-}) {
-  const soldOut = !p.inStock;
-  const imageWrapClass = fill
-    ? "relative h-full min-h-0 flex-1 overflow-hidden bg-secondary"
-    : "relative aspect-[3/4] overflow-hidden bg-secondary";
-
-  const inner = (
-    <div className="flex h-full flex-col">
-      <div className={imageWrapClass}>
-        <img
-          src={p.image}
-          alt={p.name}
-          loading="lazy"
-          className={`h-full w-full max-w-full object-contain transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03] ${
-            soldOut ? "opacity-70" : ""
-          }`}
-        />
-        {soldOut && (
-          <>
-            <div className="absolute inset-0 bg-background/10" />
-            <span className="eyebrow absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border border-foreground bg-background/90 px-4 py-2 text-[0.65rem] tracking-[0.25em] text-foreground">
-              Sold Out
-            </span>
-          </>
-        )}
-      </div>
-      <PriceLine p={p} soldOut={soldOut} />
-    </div>
-  );
-
-  if (soldOut) {
-    return <div className="group h-full cursor-not-allowed">{inner}</div>;
-  }
-  return (
-    <Link
-      to="/product/$slug"
-      params={{ slug: p.slug }}
-      className="group block h-full"
-    >
-      {inner}
-    </Link>
   );
 }
 
@@ -149,23 +55,7 @@ function ProductCard({ p, soldOut = false }: { p: Product; soldOut?: boolean }) 
           </>
         )}
       </div>
-      <div className="mt-4 space-y-1.5">
-        <h3 className="text-[0.8rem] font-normal tracking-wide text-foreground sm:text-sm">
-          {p.name}
-        </h3>
-        <div className="flex items-baseline gap-2">
-          <span
-            className={`text-[0.8rem] font-medium sm:text-sm ${
-              soldOut ? "text-muted-foreground line-through" : "text-foreground"
-            }`}
-          >
-            {formatNgn(p.priceNgn)}
-          </span>
-          <span className="text-[0.7rem] text-muted-foreground sm:text-xs">
-          / {formatEur(p.priceNgn)}
-          </span>
-        </div>
-      </div>
+      <PriceLine p={p} soldOut={soldOut} />
     </>
   );
 
@@ -237,10 +127,14 @@ function HorizontalRail({
   );
 }
 
-export function NewReleases() {
+export function NewReleases({ products }: { products: Product[] }) {
+  const shopTiles = products.filter((p) => !p.isArchived);
+  const newReleasesList = products.filter((p) => p.inStock && !p.isArchived);
+  const outOfStockList = products.filter((p) => p.isArchived || !p.inStock);
+
   return (
     <>
-      {/* Shop — static 3-column grid */}
+      {/* Shop — grid */}
       <section id="shop" aria-labelledby="shop-heading" className="border-t border-border">
         <div className="px-5 pt-16 sm:px-8 sm:pt-24">
           <p className="eyebrow text-muted-foreground">Shop</p>
@@ -257,14 +151,14 @@ export function NewReleases() {
             className="grid grid-cols-2"
             style={{ gridTemplateColumns: "repeat(2, 1fr)", gap: "20px" }}
           >
-            {shopTiles.map((tile) => {
-              const soldOut = !tile.product.inStock;
+            {shopTiles.map((p) => {
+              const soldOut = !p.inStock;
               const inner = (
                 <div className="flex h-full flex-col">
                   <div className="relative aspect-[3/4] overflow-hidden bg-secondary">
                     <img
-                      src={tile.image}
-                      alt={tile.displayName}
+                      src={p.image}
+                      alt={p.name}
                       loading="lazy"
                       className={`h-full w-full max-w-full object-contain transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03] ${
                         soldOut ? "opacity-70" : ""
@@ -279,29 +173,13 @@ export function NewReleases() {
                       </>
                     )}
                   </div>
-                  <div className="mt-4 space-y-1.5">
-                    <h3 className="text-[0.8rem] font-normal tracking-wide text-foreground sm:text-sm">
-                      {tile.displayName}
-                    </h3>
-                    <div className="flex items-baseline gap-2">
-                      <span
-                        className={`text-[0.8rem] font-medium sm:text-sm ${
-                          soldOut ? "text-muted-foreground line-through" : "text-foreground"
-                        }`}
-                      >
-                        {formatNgn(tile.product.priceNgn)}
-                      </span>
-                      <span className="text-[0.7rem] text-muted-foreground sm:text-xs">
-                      / {formatEur(tile.product.priceNgn)}
-                      </span>
-                    </div>
-                  </div>
+                  <PriceLine p={p} soldOut={soldOut} />
                 </div>
               );
 
               if (soldOut) {
                 return (
-                  <div key={tile.key} className="group cursor-not-allowed">
+                  <div key={p.slug} className="group cursor-not-allowed">
                     {inner}
                   </div>
                 );
@@ -309,10 +187,9 @@ export function NewReleases() {
 
               return (
                 <Link
-                  key={tile.key}
+                  key={p.slug}
                   to="/product/$slug"
-                  params={{ slug: tile.product.slug }}
-                  search={tile.colorParam ? { color: tile.colorParam } : undefined}
+                  params={{ slug: p.slug }}
                   className="group block"
                 >
                   {inner}
@@ -323,25 +200,27 @@ export function NewReleases() {
         </div>
       </section>
 
-      {/* New Releases — horizontal scroll */}
-      <section
-        aria-labelledby="new-releases-heading"
-        className="border-t border-border px-5 py-16 sm:px-8 sm:py-24"
-      >
-        <div className="mb-10 sm:mb-14">
-          <p className="eyebrow text-muted-foreground">Drop 01 — Available Now</p>
-          <h2
-            id="new-releases-heading"
-            className="mt-3 font-serif text-3xl font-light tracking-tight text-foreground sm:text-5xl"
-          >
-            New Releases
-          </h2>
-        </div>
-        <HorizontalRail items={newReleases} idPrefix="nr" />
-      </section>
+      {/* New Releases */}
+      {newReleasesList.length > 0 && (
+        <section
+          aria-labelledby="new-releases-heading"
+          className="border-t border-border px-5 py-16 sm:px-8 sm:py-24"
+        >
+          <div className="mb-10 sm:mb-14">
+            <p className="eyebrow text-muted-foreground">Drop 01 — Available Now</p>
+            <h2
+              id="new-releases-heading"
+              className="mt-3 font-serif text-3xl font-light tracking-tight text-foreground sm:text-5xl"
+            >
+              New Releases
+            </h2>
+          </div>
+          <HorizontalRail items={newReleasesList} idPrefix="nr" />
+        </section>
+      )}
 
-      {/* Out of Stock — horizontal scroll */}
-      {outOfStock.length > 0 && (
+      {/* Out of Stock */}
+      {outOfStockList.length > 0 && (
         <section
           aria-labelledby="oos-heading"
           className="border-t border-border bg-secondary/40 px-5 py-16 sm:px-8 sm:py-24"
@@ -358,11 +237,11 @@ export function NewReleases() {
               Previously released. Join the waitlist to be notified of restocks.
             </p>
           </div>
-          <HorizontalRail items={outOfStock} soldOut idPrefix="oos" />
+          <HorizontalRail items={outOfStockList} soldOut idPrefix="oos" />
         </section>
       )}
 
-      {/* Featured Collection — placeholder */}
+      {/* Featured Collection */}
       <section
         aria-labelledby="featured-heading"
         className="border-t border-border px-5 py-16 sm:px-8 sm:py-24"

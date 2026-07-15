@@ -4,15 +4,16 @@ import { Header } from "@/components/Header";
 import { TopBanner } from "@/components/TopBanner";
 import { Footer } from "@/components/Footer";
 import { ProductGallery } from "@/components/ProductGallery";
-import { getProduct, formatNgn, formatEur, type ColorVariant } from "@/lib/products";
+import { formatNgn, formatEur, type ColorVariant } from "@/lib/products";
+import { getProductBySlug } from "@/lib/products.functions";
 import { useCart } from "@/lib/cart";
 
 export const Route = createFileRoute("/product/$slug")({
   validateSearch: (search: Record<string, unknown>) => ({
     color: typeof search.color === "string" ? search.color : undefined,
   }),
-  loader: ({ params }) => {
-    const product = getProduct(params.slug);
+  loader: async ({ params }) => {
+    const product = await getProductBySlug({ data: { slug: params.slug } });
     if (!product) throw notFound();
     return { product };
   },
