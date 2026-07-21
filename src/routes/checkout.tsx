@@ -90,59 +90,40 @@ function CheckoutPage() {
       return;
     }
     setSubmitting(true);
-
-    // Compose email body
-    const lines = [
-      `New order — ${orderRef}`,
-      "",
-      "CUSTOMER",
-      `Name: ${details.fullName}`,
-      `Email: ${details.email}`,
-      `Phone: ${details.phone}`,
-      "",
-      "SHIPPING",
-      `${details.address}`,
-      `${details.city}, ${details.state} ${details.postal}`,
-      `${details.country}`,
-      "",
-      "ITEMS",
-      ...items.map(
-        (i) =>
-          `- ${i.name}${i.color ? ` / ${i.color}` : ""}${i.size ? ` / ${i.size}` : ""} × ${i.quantity} — ${formatNgn(i.priceNgn * i.quantity)}`,
-      ),
-      "",
-      `Subtotal: ${formatNgn(subtotalNgn)} (${formatEur(subtotalNgn)})`,
-      `Shipping: ${formatNgn(shippingNgn)}`,
-      `Total: ${formatNgn(totalNgn)} (${formatEur(totalNgn)})`,
-      "",
-      "PAYMENT",
-      `Method: Bank Transfer — Access Bank 8127106754 (Ibrahim Lekan Osho)`,
-      `Receipt file: ${receipt.name} (${Math.round(receipt.size / 1024)} KB) — attach the file downloaded to your device.`,
-    ].join("\n");
-
-    // Trigger a local download so the shop owner / customer keeps a copy of the receipt
     try {
-      const url = URL.createObjectURL(receipt);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${orderRef}-${receipt.name}`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 2000);
-    } catch {}
-
-    // Open mail client prefilled to the shop
-    const mailto = `mailto:247.freeworld@gmail.com?subject=${encodeURIComponent(
-      `Order ${orderRef} — ${details.fullName}`,
-    )}&body=${encodeURIComponent(lines)}`;
-    window.location.href = mailto;
-
-    // Clear cart and route to confirmation
-    setTimeout(() => {
+      const receiptPayload = await fileToBase64(receipt);
+      await submitOrder({
+        data: {
+          reference: orderRef,
+          fullName: details.fullName,
+          email: details.email,
+          phone: details.phone,
+          address: details.address,
+          city: details.city,
+          state: details.state,
+          country: details.country,
+          postal: details.postal,
+          items: items.map((i) => ({
+            slug: i.slug,
+            name: i.name,
+            color: i.color,
+            size: i.size,
+            priceNgn: i.priceNgn,
+            quantity: i.quantity,
+          })),
+          subtotalNgn: subtotalNgn,
+          shippingNgn: shippingNgn,
+          totalNgn: totalNgn,
+          paymentMethod: "bank",
+          receipt: receiptPayload,
+        },
+      });
       clear();
       navigate({ to: "/thank-you", search: { ref: orderRef } });
-    }, 400);
+    } catch (e) {
+      setError((e as Error).message || "Failed to submit order. Please try again.");
+      setSubmitting(false);
+    }
   }
 
   return (
