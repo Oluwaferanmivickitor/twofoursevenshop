@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, LogOut, ExternalLink } from "lucide-react";
+import { Pencil, Trash2, Plus, LogOut, ExternalLink, Upload, X as XIcon, Loader2, ClipboardList } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   adminListProducts,
@@ -11,7 +11,9 @@ import {
   deleteProduct,
   toggleProductStock,
   updateProduct,
+  uploadProductImage,
 } from "@/lib/products.functions";
+import { fileToBase64 } from "@/lib/file-to-base64";
 import { formatNgn, type ColorVariant, type Product } from "@/lib/products";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
