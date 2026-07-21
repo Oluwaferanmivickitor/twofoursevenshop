@@ -30,8 +30,32 @@ type Panel = null | "menu" | "search" | "cart";
 export function Header() {
   const [panel, setPanel] = useState<Panel>(null);
   const [shopOpen, setShopOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchProducts, setSearchProducts] = useState<Product[] | null>(null);
+  const [searchLoading, setSearchLoading] = useState(false);
   const { items, count, subtotalNgn, updateQty, removeItem } = useCart();
   const close = () => setPanel(null);
+
+  useEffect(() => {
+    if (panel !== "search" || searchProducts !== null) return;
+    setSearchLoading(true);
+    listProducts()
+      .then((data) => setSearchProducts(data))
+      .catch(() => setSearchProducts([]))
+      .finally(() => setSearchLoading(false));
+  }, [panel, searchProducts]);
+
+  const searchResults = useMemo(() => {
+    if (!searchProducts) return [];
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return searchProducts;
+    return searchProducts.filter((p) =>
+      [p.name, p.category, p.description, p.slug]
+        .join(" ")
+        .toLowerCase()
+        .includes(q),
+    );
+  }, [searchProducts, searchQuery]);
 
   useEffect(() => {
     const onOpen = () => setPanel("cart");
