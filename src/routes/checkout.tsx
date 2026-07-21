@@ -3,6 +3,8 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { PageLayout } from "@/components/PageLayout";
 import { useCart } from "@/lib/cart";
 import { formatNgn, formatEur } from "@/lib/products";
+import { submitOrder } from "@/lib/orders.functions";
+import { fileToBase64 } from "@/lib/file-to-base64";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
