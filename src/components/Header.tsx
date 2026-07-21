@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronDown, Menu, Minus, Plus, Search, ShoppingBag, X } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import logoAsset from "@/assets/twofourseven-logo.png.asset.json";
 import { useCart } from "@/lib/cart";
-import { formatEur, formatNgn } from "@/lib/products";
+import { formatEur, formatNgn, type Product } from "@/lib/products";
+import { listProducts } from "@/lib/products.functions";
 
 const navLinks: { label: string; to: string }[] = [
   { label: "Home", to: "/" },
