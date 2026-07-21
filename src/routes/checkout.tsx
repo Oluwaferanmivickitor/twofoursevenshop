@@ -403,8 +403,7 @@ function CheckoutPage() {
               </div>
 
               <p className="text-xs text-muted-foreground">
-                Submitting opens your email app to send the order to 247.freeworld@gmail.com.
-                Please attach the receipt file (it will be downloaded automatically for convenience).
+                We'll receive your order and receipt instantly and reach out via email or WhatsApp to confirm dispatch.
               </p>
             </div>
           )}
