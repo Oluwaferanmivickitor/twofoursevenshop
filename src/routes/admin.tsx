@@ -182,6 +182,12 @@ function AdminContent({ email }: { email: string | null }) {
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
           <span>{email}</span>
           <Link
+            to="/admin/orders"
+            className="inline-flex items-center gap-1 text-foreground/70 hover:text-foreground"
+          >
+            <ClipboardList className="h-3.5 w-3.5" /> Orders
+          </Link>
+          <Link
             to="/"
             className="inline-flex items-center gap-1 text-foreground/70 hover:text-foreground"
           >
