@@ -119,7 +119,7 @@ function CategoryPage() {
         <div className="mx-auto max-w-6xl">
           {hasProducts ? (
             <div className="grid grid-cols-2 gap-5 sm:gap-8 md:grid-cols-3 lg:grid-cols-4">
-              {products.map((p) => (
+              {products.map((p: Product) => (
                 <Card key={p.slug} p={p} />
               ))}
             </div>
