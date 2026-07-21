@@ -521,22 +521,23 @@ function ProductForm({
             />
           </div>
           <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="image">Main image URL</Label>
-            <Input
-              id="image"
-              value={form.image}
-              onChange={(e) => setForm({ ...form, image: e.target.value })}
-              placeholder="https://…"
+            <Label>Main image</Label>
+            <ImageUploader
+              value={form.image ? [form.image] : []}
+              multiple={false}
+              onChange={(urls) => setForm({ ...form, image: urls[0] ?? "" })}
             />
           </div>
           <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="gallery">Gallery image URLs (one per line)</Label>
-            <Textarea
-              id="gallery"
-              rows={3}
+            <Label>Gallery images</Label>
+            <ImageUploader
               value={form.gallery}
-              onChange={(e) => setForm({ ...form, gallery: e.target.value })}
+              multiple
+              onChange={(urls) => setForm({ ...form, gallery: urls })}
             />
+            <p className="text-xs text-muted-foreground">
+              Upload multiple product shots. Drag files or click to browse. First image is shown first in the gallery.
+            </p>
           </div>
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="sizes">Sizes (comma separated)</Label>
