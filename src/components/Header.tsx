@@ -195,9 +195,9 @@ export function Header() {
 
       {/* Search overlay */}
       {panel === "search" && (
-        <div className="fixed inset-0 z-50 animate-in fade-in duration-200 bg-background">
+        <div className="fixed inset-0 z-50 overflow-y-auto animate-in fade-in duration-200 bg-background">
           <PanelHeader onClose={close} label="Search" />
-          <div className="px-5 pt-10 sm:px-8 sm:pt-16">
+          <div className="px-5 pt-10 pb-16 sm:px-8 sm:pt-16">
             <form onSubmit={(e) => e.preventDefault()} className="mx-auto max-w-3xl">
               <label htmlFor="search-q" className="eyebrow text-muted-foreground">
                 What are you looking for?
@@ -208,15 +208,59 @@ export function Header() {
                   id="search-q"
                   type="search"
                   autoFocus
-                  placeholder="Search tees, headwear, jackets…"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search tees, headwear, pants…"
                   className="w-full bg-transparent px-3 py-3 font-serif text-2xl font-light text-foreground placeholder:text-muted-foreground focus:outline-none sm:text-3xl"
                 />
               </div>
-              <p className="mt-6 text-xs text-muted-foreground">Press Esc to close.</p>
+              <p className="mt-4 text-xs text-muted-foreground">Press Esc to close.</p>
             </form>
+
+            <div className="mx-auto mt-10 max-w-3xl">
+              {searchLoading && (
+                <p className="eyebrow text-center text-muted-foreground">Loading…</p>
+              )}
+              {!searchLoading && searchResults.length === 0 && (
+                <p className="eyebrow text-center text-muted-foreground">
+                  {searchQuery.trim() ? "No pieces match your search." : "No products available."}
+                </p>
+              )}
+              {!searchLoading && searchResults.length > 0 && (
+                <ul className="grid grid-cols-2 gap-5 sm:grid-cols-3 sm:gap-8">
+                  {searchResults.slice(0, 12).map((p) => (
+                    <li key={p.slug}>
+                      <Link
+                        to="/product/$slug"
+                        params={{ slug: p.slug }}
+                        onClick={close}
+                        className="group block"
+                      >
+                        <div className="relative aspect-[3/4] overflow-hidden bg-secondary">
+                          <img
+                            src={p.image}
+                            alt={p.name}
+                            loading="lazy"
+                            className="h-full w-full object-contain transition-transform duration-[800ms] ease-out group-hover:scale-[1.03]"
+                          />
+                        </div>
+                        <div className="mt-3 text-center">
+                          <p className="text-sm text-foreground">{p.name}</p>
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            {formatNgn(p.priceNgn)}{" "}
+                            <span className="opacity-70">/ {formatEur(p.priceNgn)}</span>
+                          </p>
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         </div>
       )}
+
 
       {/* Slide-out cart */}
       {panel === "cart" && (
