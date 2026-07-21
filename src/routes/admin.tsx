@@ -422,10 +422,7 @@ function ProductForm({
         priceNgn: Number(form.priceNgn),
         description: form.description,
         image: form.image.trim(),
-        gallery: form.gallery
-          .split("\n")
-          .map((s) => s.trim())
-          .filter(Boolean),
+        gallery: form.gallery.filter((s) => s && s.trim().length > 0),
         sizes: form.sizes
           .split(",")
           .map((s) => s.trim())
