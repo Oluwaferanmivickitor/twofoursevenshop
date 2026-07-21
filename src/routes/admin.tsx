@@ -363,7 +363,7 @@ type FormState = {
   priceNgn: string;
   description: string;
   image: string;
-  gallery: string;
+  gallery: string[];
   sizes: string;
   colors: string;
   inStock: boolean;
@@ -379,7 +379,7 @@ function toFormState(p: Product | null): FormState {
     priceNgn: p?.priceNgn?.toString() ?? "0",
     description: p?.description ?? "",
     image: p?.image ?? "",
-    gallery: (p?.gallery ?? []).join("\n"),
+    gallery: p?.gallery ?? [],
     sizes: (p?.sizes ?? []).join(", "),
     colors: JSON.stringify(p?.colors ?? [], null, 2),
     inStock: p?.inStock ?? true,
