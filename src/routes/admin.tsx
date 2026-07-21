@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, LogOut, ExternalLink } from "lucide-react";
+import { Pencil, Trash2, Plus, LogOut, ExternalLink, Upload, X as XIcon, Loader2, ClipboardList } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   adminListProducts,
@@ -11,7 +11,9 @@ import {
   deleteProduct,
   toggleProductStock,
   updateProduct,
+  uploadProductImage,
 } from "@/lib/products.functions";
+import { fileToBase64 } from "@/lib/file-to-base64";
 import { formatNgn, type ColorVariant, type Product } from "@/lib/products";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -179,6 +181,12 @@ function AdminContent({ email }: { email: string | null }) {
         </div>
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
           <span>{email}</span>
+          <Link
+            to="/admin/orders"
+            className="inline-flex items-center gap-1 text-foreground/70 hover:text-foreground"
+          >
+            <ClipboardList className="h-3.5 w-3.5" /> Orders
+          </Link>
           <Link
             to="/"
             className="inline-flex items-center gap-1 text-foreground/70 hover:text-foreground"
@@ -355,7 +363,7 @@ type FormState = {
   priceNgn: string;
   description: string;
   image: string;
-  gallery: string;
+  gallery: string[];
   sizes: string;
   colors: string;
   inStock: boolean;
@@ -371,7 +379,7 @@ function toFormState(p: Product | null): FormState {
     priceNgn: p?.priceNgn?.toString() ?? "0",
     description: p?.description ?? "",
     image: p?.image ?? "",
-    gallery: (p?.gallery ?? []).join("\n"),
+    gallery: p?.gallery ?? [],
     sizes: (p?.sizes ?? []).join(", "),
     colors: JSON.stringify(p?.colors ?? [], null, 2),
     inStock: p?.inStock ?? true,
@@ -414,10 +422,7 @@ function ProductForm({
         priceNgn: Number(form.priceNgn),
         description: form.description,
         image: form.image.trim(),
-        gallery: form.gallery
-          .split("\n")
-          .map((s) => s.trim())
-          .filter(Boolean),
+        gallery: form.gallery.filter((s) => s && s.trim().length > 0),
         sizes: form.sizes
           .split(",")
           .map((s) => s.trim())
@@ -516,22 +521,23 @@ function ProductForm({
             />
           </div>
           <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="image">Main image URL</Label>
-            <Input
-              id="image"
-              value={form.image}
-              onChange={(e) => setForm({ ...form, image: e.target.value })}
-              placeholder="https://…"
+            <Label>Main image</Label>
+            <ImageUploader
+              value={form.image ? [form.image] : []}
+              multiple={false}
+              onChange={(urls) => setForm({ ...form, image: urls[0] ?? "" })}
             />
           </div>
           <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="gallery">Gallery image URLs (one per line)</Label>
-            <Textarea
-              id="gallery"
-              rows={3}
+            <Label>Gallery images</Label>
+            <ImageUploader
               value={form.gallery}
-              onChange={(e) => setForm({ ...form, gallery: e.target.value })}
+              multiple
+              onChange={(urls) => setForm({ ...form, gallery: urls })}
             />
+            <p className="text-xs text-muted-foreground">
+              Upload multiple product shots. Drag files or click to browse. First image is shown first in the gallery.
+            </p>
           </div>
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="sizes">Sizes (comma separated)</Label>
@@ -590,5 +596,103 @@ function ProductForm({
         </form>
       </DialogContent>
     </Dialog>
+  );
+}
+
+// -------- Image uploader --------
+
+function ImageUploader({
+  value,
+  onChange,
+  multiple,
+}: {
+  value: string[];
+  onChange: (urls: string[]) => void;
+  multiple: boolean;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  async function handleFiles(files: FileList | null) {
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    try {
+      const list = Array.from(files);
+      const uploaded: string[] = [];
+      for (const file of list) {
+        if (file.size > 10 * 1024 * 1024) {
+          toast.error(`${file.name} is larger than 10MB`);
+          continue;
+        }
+        const payload = await fileToBase64(file);
+        const res = await uploadProductImage({ data: payload });
+        uploaded.push(res.url);
+      }
+      if (uploaded.length === 0) return;
+      onChange(multiple ? [...value, ...uploaded] : uploaded.slice(-1));
+    } catch (e) {
+      toast.error(`Upload failed: ${(e as Error).message}`);
+    } finally {
+      setUploading(false);
+      if (inputRef.current) inputRef.current.value = "";
+    }
+  }
+
+  function removeAt(idx: number) {
+    onChange(value.filter((_, i) => i !== idx));
+  }
+
+  return (
+    <div className="space-y-3">
+      {value.length > 0 && (
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+          {value.map((url, idx) => (
+            <div key={`${url}-${idx}`} className="relative aspect-square overflow-hidden rounded-md border border-border bg-secondary">
+              <img src={url} alt="" className="h-full w-full object-cover" />
+              <button
+                type="button"
+                onClick={() => removeAt(idx)}
+                aria-label="Remove image"
+                className="absolute right-1 top-1 grid h-6 w-6 place-items-center rounded-full bg-background/90 text-foreground shadow hover:bg-background"
+              >
+                <XIcon className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+      <div
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+          e.preventDefault();
+          handleFiles(e.dataTransfer.files);
+        }}
+        onClick={() => inputRef.current?.click()}
+        className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed border-border bg-background px-4 py-6 text-center transition-colors hover:border-foreground"
+      >
+        {uploading ? (
+          <>
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            <p className="text-xs text-muted-foreground">Uploading…</p>
+          </>
+        ) : (
+          <>
+            <Upload className="h-5 w-5 text-muted-foreground" />
+            <p className="text-sm text-foreground">
+              {multiple ? "Upload images" : value.length > 0 ? "Replace image" : "Upload image"}
+            </p>
+            <p className="text-xs text-muted-foreground">Drag files here or click to browse · PNG, JPG, WebP · up to 10MB</p>
+          </>
+        )}
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          multiple={multiple}
+          className="hidden"
+          onChange={(e) => handleFiles(e.target.files)}
+        />
+      </div>
+    </div>
   );
 }

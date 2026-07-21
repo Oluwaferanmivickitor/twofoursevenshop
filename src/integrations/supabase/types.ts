@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      orders: {
+        Row: {
+          address: string
+          city: string
+          country: string
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          items: Json
+          notified: boolean
+          payment_method: string
+          phone: string
+          postal: string
+          receipt_path: string | null
+          reference: string
+          shipping_ngn: number
+          state: string
+          status: string
+          subtotal_ngn: number
+          total_ngn: number
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          city: string
+          country: string
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          items?: Json
+          notified?: boolean
+          payment_method?: string
+          phone: string
+          postal?: string
+          receipt_path?: string | null
+          reference: string
+          shipping_ngn?: number
+          state?: string
+          status?: string
+          subtotal_ngn?: number
+          total_ngn?: number
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          city?: string
+          country?: string
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          items?: Json
+          notified?: boolean
+          payment_method?: string
+          phone?: string
+          postal?: string
+          receipt_path?: string | null
+          reference?: string
+          shipping_ngn?: number
+          state?: string
+          status?: string
+          subtotal_ngn?: number
+          total_ngn?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category: string
