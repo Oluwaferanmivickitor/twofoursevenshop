@@ -1,17 +1,18 @@
-export function fileToBase64(file: File): Promise<{ dataBase64: string; contentType: string; filename: string }> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(new Error("Failed to read file"));
-    reader.onload = () => {
-      const result = reader.result as string;
-      const commaIdx = result.indexOf(",");
-      const dataBase64 = commaIdx >= 0 ? result.slice(commaIdx + 1) : result;
-      resolve({
-        dataBase64,
-        contentType: file.type || "application/octet-stream",
-        filename: file.name,
-      });
-    };
-    reader.readAsDataURL(file);
-  });
+export async function fileToBase64(file: File): Promise<{
+  filename: string;
+  contentType: string;
+  dataBase64: string;
+}> {
+  const buffer = await file.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  return {
+    filename: file.name,
+    contentType: file.type || "application/octet-stream",
+    dataBase64: btoa(binary),
+  };
 }
