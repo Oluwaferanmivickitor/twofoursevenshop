@@ -1,6 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const ItemSchema = z.object({
   slug: z.string().min(1).max(200),
@@ -137,7 +136,6 @@ export const submitOrder = createServerFn({ method: "POST" })
       `Payment: ${data.paymentMethod === "bank" ? "Bank Transfer" : "Card"}`,
       receiptPath ? `Receipt: uploaded (${receiptPath})` : "Receipt: not attached",
       "",
-      "View in admin: /admin/orders",
     ].join("\n");
 
     const emailResult = await sendAdminEmail(
