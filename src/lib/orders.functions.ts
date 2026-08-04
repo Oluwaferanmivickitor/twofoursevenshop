@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const ItemSchema = z.object({
   slug: z.string().min(1).max(200),
@@ -136,6 +137,7 @@ export const submitOrder = createServerFn({ method: "POST" })
       `Payment: ${data.paymentMethod === "bank" ? "Bank Transfer" : "Card"}`,
       receiptPath ? `Receipt: uploaded (${receiptPath})` : "Receipt: not attached",
       "",
+      "View in admin: /admin/orders",
     ].join("\n");
 
     const emailResult = await sendAdminEmail(
@@ -152,4 +154,38 @@ export const submitOrder = createServerFn({ method: "POST" })
     }
 
     return { ok: true as const, reference: data.reference, emailed: emailResult.ok };
+  });
+
+async function assertAdmin(supabase: {
+  rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }>;
+}, userId: string) {
+  const { data, error } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
+  if (error) throw new Error("Failed to verify admin role");
+  if (data !== true) throw new Error("Forbidden");
+}
+
+export const adminListOrders = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context.supabase as never, context.userId);
+    const { data, error } = await context.supabase
+      .from("orders")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const adminGetReceiptUrl = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ path: z.string().min(1) }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase as never, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: signed, error } = await supabaseAdmin.storage
+      .from("order-receipts")
+      .createSignedUrl(data.path, 60 * 60);
+    if (error || !signed) throw new Error(error?.message ?? "Failed to sign URL");
+    return { url: signed.signedUrl };
   });
