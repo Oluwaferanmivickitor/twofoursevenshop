@@ -21,7 +21,7 @@ const CATEGORIES: Record<string, { name: string; blurb: string; aliases: string[
   },
   skirts: { name: "Skirts", blurb: "Tailored silhouettes for the season ahead.", aliases: ["skirt", "skirts"] },
   pants: { name: "Pants", blurb: "Trousers cut with intention.", aliases: ["pants", "trousers", "shorts"] },
-  jorts: { name: "Jorts", blurb: "Denim, cropped — the 247 way.", aliases: ["jorts"] },
+  jorts: { name: "Jorts", blurb: "Denim, cropped — the TwoFourSeven way.", aliases: ["jorts"] },
   jackets: { name: "Jackets", blurb: "Outerwear built for the long walk home.", aliases: ["jacket", "jackets", "outerwear"] },
   slides: { name: "Slides", blurb: "Footwear arriving with the next drop.", aliases: ["slides"] },
   shoes: { name: "Shoes", blurb: "Footwear arriving with the next drop.", aliases: ["shoes", "sneakers", "footwear"] },
