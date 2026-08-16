@@ -10,9 +10,8 @@ import { getProductBySlug } from "@/lib/products.functions";
 import { useCart } from "@/lib/cart";
 
 export const Route = createFileRoute("/product/$slug")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    color: typeof search.color === "string" ? search.color : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { color?: string } =>
+    typeof search.color === "string" ? { color: search.color } : {},
   loader: async ({ params }) => {
     const product = await getProductBySlug({ data: { slug: params.slug } });
     if (!product) throw notFound();
