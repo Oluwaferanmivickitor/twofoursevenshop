@@ -11,18 +11,10 @@ export const Route = createFileRoute("/")({
   loader: () => listProducts(),
   head: () => ({
     meta: [
-      { title: "TWOFOURSEVEN — Premium Ready-to-Wear" },
-      {
-        name: "description",
-        content:
-          "TWOFOURSEVEN — a high-fashion ready-to-wear label. Considered tailoring and refined essentials, made for the everyday.",
-      },
-      { property: "og:title", content: "TWOFOURSEVEN — Premium Ready-to-Wear" },
-      {
-        property: "og:description",
-        content:
-          "TWOFOURSEVEN — a high-fashion ready-to-wear label. Considered tailoring and refined essentials, made for the everyday.",
-      },
+      { title: "TWOFOURSEVEN" },
+      { name: "description", content: "TWOFOURSEVEN" },
+      { property: "og:title", content: "TWOFOURSEVEN" },
+
     ],
   }),
   errorComponent: ({ error }) => (
