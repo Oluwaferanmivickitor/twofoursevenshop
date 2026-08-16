@@ -106,7 +106,7 @@ export const submitOrder = createServerFn({ method: "POST" })
     });
     if (insErr) throw new Error(insErr.message);
 
-    // Compose admin notification
+    // Compose order notification
     const fmt = (n: number) => `₦${n.toLocaleString("en-NG")}`;
     const itemLines = data.items
       .map(
@@ -137,7 +137,6 @@ export const submitOrder = createServerFn({ method: "POST" })
       `Payment: ${data.paymentMethod === "bank" ? "Bank Transfer" : "Card"}`,
       receiptPath ? `Receipt: uploaded (${receiptPath})` : "Receipt: not attached",
       "",
-      "View in admin: /admin/orders",
     ].join("\n");
 
     const emailResult = await sendAdminEmail(
