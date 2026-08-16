@@ -79,15 +79,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "TWOFOURSEVEN" },
-      { name: "description", content: "TWOFOURSEVEN — premium ready-to-wear." },
+      { name: "description", content: "TWOFOURSEVEN" },
       { property: "og:title", content: "TWOFOURSEVEN" },
-      { property: "og:description", content: "TWOFOURSEVEN — premium ready-to-wear." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:card", content: "summary" },
       { name: "twitter:title", content: "TWOFOURSEVEN" },
-      { name: "twitter:description", content: "TWOFOURSEVEN — premium ready-to-wear." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9c383b08-2aef-434b-99f4-c72194df2360/id-preview-31b12777--07b5cb66-7891-4df1-bfe0-6d65612a75d5.lovable.app-1782852401954.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9c383b08-2aef-434b-99f4-c72194df2360/id-preview-31b12777--07b5cb66-7891-4df1-bfe0-6d65612a75d5.lovable.app-1782852401954.png" },
+
     ],
     links: [
       { rel: "stylesheet", href: appCss },
