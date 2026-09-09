@@ -183,7 +183,7 @@ export const updateHeroSlide = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase as never, context.userId);
-    const patch: Record<string, unknown> = {};
+    const patch: { alt?: string; sort_order?: number; is_active?: boolean } = {};
     if (data.alt !== undefined) patch.alt = data.alt;
     if (data.sortOrder !== undefined) patch.sort_order = data.sortOrder;
     if (data.isActive !== undefined) patch.is_active = data.isActive;
