@@ -223,7 +223,7 @@ export const setProductStockAndDiscount = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase as never, context.userId);
-    const patch: Record<string, number | boolean> = {};
+    const patch: { stock_quantity?: number; in_stock?: boolean; discount_percent?: number } = {};
     if (data.stockQuantity !== undefined) {
       patch.stock_quantity = data.stockQuantity;
       patch.in_stock = data.stockQuantity > 0;
