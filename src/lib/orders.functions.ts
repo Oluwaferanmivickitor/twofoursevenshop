@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { assertAdmin } from "./products.functions";
 
 const ItemSchema = z.object({
   slug: z.string().min(1).max(200),
@@ -21,6 +22,7 @@ const OrderSchema = z.object({
   state: z.string().trim().max(120).default(""),
   country: z.string().trim().min(1).max(120),
   postal: z.string().trim().max(40).default(""),
+  deliveryLocation: z.string().trim().max(160).default(""),
   items: z.array(ItemSchema).min(1).max(50),
   subtotalNgn: z.number().int().min(0),
   shippingNgn: z.number().int().min(0),
@@ -97,6 +99,7 @@ export const submitOrder = createServerFn({ method: "POST" })
       state: data.state,
       country: data.country,
       postal: data.postal,
+      delivery_location: data.deliveryLocation,
       items: data.items,
       subtotal_ngn: data.subtotalNgn,
       shipping_ngn: data.shippingNgn,
@@ -126,6 +129,7 @@ export const submitOrder = createServerFn({ method: "POST" })
       data.address,
       `${data.city}, ${data.state} ${data.postal}`.trim(),
       data.country,
+      data.deliveryLocation ? `Delivery zone: ${data.deliveryLocation}` : "",
       "",
       "ITEMS",
       itemLines,
@@ -153,4 +157,47 @@ export const submitOrder = createServerFn({ method: "POST" })
     }
 
     return { ok: true as const, reference: data.reference, emailed: emailResult.ok };
+  });
+
+// ---------- Admin ----------
+
+export const adminListOrders = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context.supabase as never, context.userId);
+    const { data, error } = await context.supabase
+      .from("orders")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const adminGetReceiptUrl = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ path: z.string().min(1).max(500) }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase as never, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: signed, error } = await supabaseAdmin.storage
+      .from("order-receipts")
+      .createSignedUrl(data.path, 60 * 60);
+    if (error || !signed) throw new Error(error?.message ?? "Failed to sign receipt URL");
+    return { url: signed.signedUrl };
+  });
+
+export const adminSetOrderStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ id: z.string().uuid(), status: z.string().trim().min(1).max(40) }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase as never, context.userId);
+    const { error } = await context.supabase
+      .from("orders")
+      .update({ status: data.status })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true as const };
   });
