@@ -18,6 +18,8 @@ export type Product = {
   sizes?: string[];
   colors?: ColorVariant[];
   inStock: boolean;
+  discountPercent?: number;
+  stockQuantity?: number;
   isArchived?: boolean;
   sortOrder?: number;
   description: string;
@@ -49,6 +51,8 @@ type ProductRow = {
   sizes: unknown;
   colors: unknown;
   in_stock: boolean;
+  discount_percent: number;
+  stock_quantity: number;
   is_archived: boolean;
   sort_order: number;
 };
@@ -86,7 +90,27 @@ export function mapProductRow(row: ProductRow): Product {
     sizes: asStringArray(row.sizes),
     colors: asColorArray(row.colors),
     inStock: row.in_stock,
+    discountPercent: row.discount_percent ?? 0,
+    stockQuantity: row.stock_quantity ?? 0,
     isArchived: row.is_archived,
     sortOrder: row.sort_order,
   };
+}
+
+/** Price after the admin-set percentage discount. */
+export const salePriceNgn = (p: Pick<Product, "priceNgn" | "discountPercent">) =>
+  p.discountPercent && p.discountPercent > 0
+    ? Math.round((p.priceNgn * (100 - p.discountPercent)) / 100)
+    : p.priceNgn;
+
+export const hasDiscount = (p: Pick<Product, "discountPercent">) =>
+  !!p.discountPercent && p.discountPercent > 0;
+
+/** "Only 3 left" style note, or null when it shouldn't be shown. */
+export function stockNote(p: Pick<Product, "stockQuantity" | "inStock">) {
+  if (!p.inStock) return null;
+  const q = p.stockQuantity ?? 0;
+  if (q <= 0) return null;
+  if (q <= 5) return `Only ${q} left`;
+  return `${q} in stock`;
 }
