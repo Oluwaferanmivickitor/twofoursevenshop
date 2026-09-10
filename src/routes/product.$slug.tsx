@@ -81,13 +81,14 @@ function ProductPage() {
             {product.name}
           </h1>
 
-          <div className="mt-5 flex items-baseline gap-3">
-            <span className="text-base font-medium text-foreground">
-              {formatNgn(product.priceNgn)}
-            </span>
-            <span className="text-sm text-muted-foreground">
-            / {formatEur(product.priceNgn)}
-            </span>
+          <div className="mt-5">
+            <PriceTag p={product} soldOut={!product.inStock} size="lg" />
+            <StockNote p={product} />
+            {!product.inStock && (
+              <p className="mt-2 text-xs uppercase tracking-[0.25em] text-muted-foreground">
+                Sold out
+              </p>
+            )}
           </div>
 
           <p className="mt-6 max-w-md text-sm leading-relaxed text-muted-foreground">
