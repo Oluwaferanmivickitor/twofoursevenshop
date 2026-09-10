@@ -133,6 +133,9 @@ function CheckoutPage() {
           state: details.state,
           country: details.country,
           postal: details.postal,
+          deliveryLocation: isOther
+            ? "Other location — arranged on WhatsApp"
+            : (selectedLocation?.name ?? ""),
           items: items.map((i) => ({
             slug: i.slug,
             name: i.name,
