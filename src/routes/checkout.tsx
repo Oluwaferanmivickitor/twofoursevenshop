@@ -320,7 +320,11 @@ function CheckoutPage() {
                 </div>
               </dl>
               <p className="text-xs text-muted-foreground">
-                A flat-rate shipping fee of ₦3,000 is applied to all domestic orders.
+                {isOther
+                  ? "Delivery for your location is arranged on WhatsApp after checkout."
+                  : selectedLocation
+                    ? `Delivery to ${selectedLocation.name} — ${formatNgn(selectedLocation.feeNgn)}.`
+                    : "Delivery fee is based on the location you selected."}
               </p>
               <div className="text-sm text-muted-foreground">
                 <p><strong className="text-foreground">Ship to:</strong> {details.fullName}</p>
@@ -413,7 +417,11 @@ function CheckoutPage() {
                       </div>
                     </dl>
                     <p className="mt-4 text-xs text-muted-foreground">
-                      A flat-rate shipping fee of ₦3,000 is applied to all domestic orders.
+                      {isOther
+                        ? "Delivery for your location is arranged on WhatsApp after checkout."
+                        : selectedLocation
+                          ? `Includes delivery to ${selectedLocation.name} (${formatNgn(selectedLocation.feeNgn)}).`
+                          : "Delivery fee is based on the location you selected."}
                     </p>
                   </div>
 
