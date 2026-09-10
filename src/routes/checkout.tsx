@@ -216,6 +216,63 @@ function CheckoutPage() {
                 <Field label="State / Region" value={details.state} onChange={(v) => update("state", v)} />
                 <Field label="Postal Code" value={details.postal} onChange={(v) => update("postal", v)} />
               </div>
+
+              {locations.length > 0 && (
+                <div className="space-y-3 border-t border-border pt-6">
+                  <p className="eyebrow text-foreground">Delivery Location</p>
+                  <p className="text-xs text-muted-foreground">
+                    Choose your area — the delivery fee is added to your total automatically.
+                  </p>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {locations.map((l) => (
+                      <button
+                        key={l.id}
+                        type="button"
+                        onClick={() => setLocationId(l.id)}
+                        className={`flex items-center justify-between border px-4 py-3 text-left text-sm transition-colors ${
+                          locationId === l.id
+                            ? "border-foreground bg-foreground text-background"
+                            : "border-border hover:border-foreground"
+                        }`}
+                      >
+                        <span>{l.name}</span>
+                        <span className="text-xs">{formatNgn(l.feeNgn)}</span>
+                      </button>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => setLocationId(OTHER)}
+                      className={`flex items-center justify-between border px-4 py-3 text-left text-sm transition-colors ${
+                        isOther
+                          ? "border-foreground bg-foreground text-background"
+                          : "border-border hover:border-foreground"
+                      }`}
+                    >
+                      <span>Other location</span>
+                      <span className="text-xs">Quote on WhatsApp</span>
+                    </button>
+                  </div>
+                  {isOther && (
+                    <div className="border border-border bg-secondary/40 p-5 text-sm">
+                      <p className="text-muted-foreground">
+                        We'll arrange delivery for your area personally. Continue your order here,
+                        then message us on WhatsApp to confirm the delivery fee.
+                      </p>
+                      <a
+                        href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+                          `Hi TWOFOURSEVEN, I'm placing order ${orderRef} and need a delivery quote for my location.`,
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="eyebrow mt-4 inline-block border border-foreground px-6 py-3 text-foreground transition-colors hover:bg-foreground hover:text-background"
+                      >
+                        Chat on WhatsApp
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="flex justify-end pt-4">
                 <button
                   disabled={!canContinueStep1}
