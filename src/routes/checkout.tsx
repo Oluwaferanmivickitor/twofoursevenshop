@@ -1,10 +1,13 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { PageLayout } from "@/components/PageLayout";
 import { useCart } from "@/lib/cart";
 import { formatNgn, formatEur } from "@/lib/products";
 import { submitOrder } from "@/lib/orders.functions";
 import { fileToBase64 } from "@/lib/file-to-base64";
+import { listDeliveryLocations, type DeliveryLocation } from "@/lib/store.functions";
+
+const WHATSAPP_NUMBER = "2348060063068";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -45,6 +48,7 @@ const EMPTY: Details = {
 };
 
 const SHIPPING_NGN = 3000;
+const OTHER = "__other__";
 
 function CheckoutPage() {
   const { items, subtotalNgn, clear } = useCart();
@@ -55,8 +59,33 @@ function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<"bank" | "card">("bank");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [locations, setLocations] = useState<DeliveryLocation[]>([]);
+  const [locationId, setLocationId] = useState<string>("");
 
-  const shippingNgn = items.length > 0 ? SHIPPING_NGN : 0;
+  useEffect(() => {
+    let cancelled = false;
+    listDeliveryLocations()
+      .then((rows) => {
+        if (cancelled) return;
+        setLocations(rows.filter((r) => r.isActive));
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const selectedLocation = locations.find((l) => l.id === locationId) ?? null;
+  const isOther = locationId === OTHER;
+
+  const shippingNgn =
+    items.length === 0 || isOther
+      ? 0
+      : selectedLocation
+        ? selectedLocation.feeNgn
+        : locations.length > 0
+          ? 0
+          : SHIPPING_NGN;
   const totalNgn = subtotalNgn + shippingNgn;
 
   const canContinueStep1 = useMemo(
@@ -66,8 +95,9 @@ function CheckoutPage() {
       details.phone.trim() &&
       details.address.trim() &&
       details.city.trim() &&
-      details.country.trim(),
-    [details],
+      details.country.trim() &&
+      (locations.length === 0 || locationId !== ""),
+    [details, locations.length, locationId],
   );
 
   const orderRef = useMemo(
@@ -103,6 +133,9 @@ function CheckoutPage() {
           state: details.state,
           country: details.country,
           postal: details.postal,
+          deliveryLocation: isOther
+            ? "Other location — arranged on WhatsApp"
+            : (selectedLocation?.name ?? ""),
           items: items.map((i) => ({
             slug: i.slug,
             name: i.name,
@@ -183,6 +216,63 @@ function CheckoutPage() {
                 <Field label="State / Region" value={details.state} onChange={(v) => update("state", v)} />
                 <Field label="Postal Code" value={details.postal} onChange={(v) => update("postal", v)} />
               </div>
+
+              {locations.length > 0 && (
+                <div className="space-y-3 border-t border-border pt-6">
+                  <p className="eyebrow text-foreground">Delivery Location</p>
+                  <p className="text-xs text-muted-foreground">
+                    Choose your area — the delivery fee is added to your total automatically.
+                  </p>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {locations.map((l) => (
+                      <button
+                        key={l.id}
+                        type="button"
+                        onClick={() => setLocationId(l.id)}
+                        className={`flex items-center justify-between border px-4 py-3 text-left text-sm transition-colors ${
+                          locationId === l.id
+                            ? "border-foreground bg-foreground text-background"
+                            : "border-border hover:border-foreground"
+                        }`}
+                      >
+                        <span>{l.name}</span>
+                        <span className="text-xs">{formatNgn(l.feeNgn)}</span>
+                      </button>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => setLocationId(OTHER)}
+                      className={`flex items-center justify-between border px-4 py-3 text-left text-sm transition-colors ${
+                        isOther
+                          ? "border-foreground bg-foreground text-background"
+                          : "border-border hover:border-foreground"
+                      }`}
+                    >
+                      <span>Other location</span>
+                      <span className="text-xs">Quote on WhatsApp</span>
+                    </button>
+                  </div>
+                  {isOther && (
+                    <div className="border border-border bg-secondary/40 p-5 text-sm">
+                      <p className="text-muted-foreground">
+                        We'll arrange delivery for your area personally. Continue your order here,
+                        then message us on WhatsApp to confirm the delivery fee.
+                      </p>
+                      <a
+                        href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+                          `Hi TWOFOURSEVEN, I'm placing order ${orderRef} and need a delivery quote for my location.`,
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="eyebrow mt-4 inline-block border border-foreground px-6 py-3 text-foreground transition-colors hover:bg-foreground hover:text-background"
+                      >
+                        Chat on WhatsApp
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="flex justify-end pt-4">
                 <button
                   disabled={!canContinueStep1}
@@ -230,7 +320,11 @@ function CheckoutPage() {
                 </div>
               </dl>
               <p className="text-xs text-muted-foreground">
-                A flat-rate shipping fee of ₦3,000 is applied to all domestic orders.
+                {isOther
+                  ? "Delivery for your location is arranged on WhatsApp after checkout."
+                  : selectedLocation
+                    ? `Delivery to ${selectedLocation.name} — ${formatNgn(selectedLocation.feeNgn)}.`
+                    : "Delivery fee is based on the location you selected."}
               </p>
               <div className="text-sm text-muted-foreground">
                 <p><strong className="text-foreground">Ship to:</strong> {details.fullName}</p>
@@ -323,7 +417,11 @@ function CheckoutPage() {
                       </div>
                     </dl>
                     <p className="mt-4 text-xs text-muted-foreground">
-                      A flat-rate shipping fee of ₦3,000 is applied to all domestic orders.
+                      {isOther
+                        ? "Delivery for your location is arranged on WhatsApp after checkout."
+                        : selectedLocation
+                          ? `Includes delivery to ${selectedLocation.name} (${formatNgn(selectedLocation.feeNgn)}).`
+                          : "Delivery fee is based on the location you selected."}
                     </p>
                   </div>
 

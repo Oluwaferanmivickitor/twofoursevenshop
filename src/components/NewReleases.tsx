@@ -1,7 +1,8 @@
 import { useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { formatNgn, formatEur, type Product } from "@/lib/products";
+import { type Product } from "@/lib/products";
+import { PriceTag, StockNote } from "@/components/PriceTag";
 import featuredGreenTee from "@/assets/featured-we-different-green.jpg.asset.json";
 import featuredBandana from "@/assets/featured-247-bandana.jpg.asset.json";
 import featuredCamoBeanie from "@/assets/featured-247-beanie-camo.jpg.asset.json";
@@ -18,18 +19,8 @@ function PriceLine({ p, soldOut }: { p: Product; soldOut: boolean }) {
       <h3 className="text-[0.8rem] font-normal tracking-wide text-foreground sm:text-sm">
         {p.name}
       </h3>
-      <div className="flex items-baseline gap-2">
-        <span
-          className={`text-[0.8rem] font-medium sm:text-sm ${
-            soldOut ? "text-muted-foreground line-through" : "text-foreground"
-          }`}
-        >
-          {formatNgn(p.priceNgn)}
-        </span>
-        <span className="text-[0.7rem] text-muted-foreground sm:text-xs">
-          / {formatEur(p.priceNgn)}
-        </span>
-      </div>
+      <PriceTag p={p} soldOut={soldOut} />
+      <StockNote p={p} />
     </div>
   );
 }
