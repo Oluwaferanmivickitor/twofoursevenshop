@@ -48,6 +48,7 @@ const EMPTY: Details = {
 };
 
 const SHIPPING_NGN = 3000;
+const OTHER = "__other__";
 
 function CheckoutPage() {
   const { items, subtotalNgn, clear } = useCart();
@@ -58,8 +59,33 @@ function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<"bank" | "card">("bank");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [locations, setLocations] = useState<DeliveryLocation[]>([]);
+  const [locationId, setLocationId] = useState<string>("");
 
-  const shippingNgn = items.length > 0 ? SHIPPING_NGN : 0;
+  useEffect(() => {
+    let cancelled = false;
+    listDeliveryLocations()
+      .then((rows) => {
+        if (cancelled) return;
+        setLocations(rows.filter((r) => r.isActive));
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const selectedLocation = locations.find((l) => l.id === locationId) ?? null;
+  const isOther = locationId === OTHER;
+
+  const shippingNgn =
+    items.length === 0 || isOther
+      ? 0
+      : selectedLocation
+        ? selectedLocation.feeNgn
+        : locations.length > 0
+          ? 0
+          : SHIPPING_NGN;
   const totalNgn = subtotalNgn + shippingNgn;
 
   const canContinueStep1 = useMemo(
@@ -69,8 +95,9 @@ function CheckoutPage() {
       details.phone.trim() &&
       details.address.trim() &&
       details.city.trim() &&
-      details.country.trim(),
-    [details],
+      details.country.trim() &&
+      (locations.length === 0 || locationId !== ""),
+    [details, locations.length, locationId],
   );
 
   const orderRef = useMemo(
