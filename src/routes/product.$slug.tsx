@@ -5,7 +5,8 @@ import { TopBanner } from "@/components/TopBanner";
 import { Footer } from "@/components/Footer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { ProductGallery } from "@/components/ProductGallery";
-import { formatNgn, formatEur, type ColorVariant } from "@/lib/products";
+import { salePriceNgn, type ColorVariant } from "@/lib/products";
+import { PriceTag, StockNote } from "@/components/PriceTag";
 import { getProductBySlug } from "@/lib/products.functions";
 import { useCart } from "@/lib/cart";
 
@@ -154,7 +155,7 @@ function ProductPage() {
 
           <button
             className="eyebrow mt-10 border border-foreground bg-foreground px-6 py-4 text-background transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
-            disabled={!!product.sizes && !size}
+            disabled={!product.inStock || (!!product.sizes && product.sizes.length > 0 && !size)}
             onClick={() => {
               addItem({
                 slug: product.slug,
@@ -162,11 +163,15 @@ function ProductPage() {
                 color: activeColor?.name,
                 size: size ?? undefined,
                 image: activeColor?.images[0] ?? product.image,
-                priceNgn: product.priceNgn,
+                priceNgn: salePriceNgn(product),
               });
             }}
           >
-            {product.sizes && !size ? "Select a Size" : "Add to Bag"}
+            {!product.inStock
+              ? "Sold Out"
+              : product.sizes && product.sizes.length > 0 && !size
+                ? "Select a Size"
+                : "Add to Bag"}
           </button>
 
           <p className="mt-6 text-xs text-muted-foreground">
