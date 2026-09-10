@@ -1,10 +1,13 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { PageLayout } from "@/components/PageLayout";
 import { useCart } from "@/lib/cart";
 import { formatNgn, formatEur } from "@/lib/products";
 import { submitOrder } from "@/lib/orders.functions";
 import { fileToBase64 } from "@/lib/file-to-base64";
+import { listDeliveryLocations, type DeliveryLocation } from "@/lib/store.functions";
+
+const WHATSAPP_NUMBER = "2348060063068";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
