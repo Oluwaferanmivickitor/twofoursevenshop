@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { PageLayout } from "@/components/PageLayout";
-import { formatEur, formatNgn, type Product } from "@/lib/products";
+import { type Product } from "@/lib/products";
+import { PriceTag, StockNote } from "@/components/PriceTag";
 import { listProducts } from "@/lib/products.functions";
 
 const CATEGORIES: Record<string, { name: string; blurb: string; aliases: string[] }> = {
@@ -82,12 +83,10 @@ function Card({ p }: { p: Product }) {
       </div>
       <div className="mt-4 text-center">
         <h3 className="text-sm font-normal tracking-wide text-foreground">{p.name}</h3>
-        <p className="mt-1 text-xs">
-          <span className={soldOut ? "text-muted-foreground line-through" : "text-foreground"}>
-            {formatNgn(p.priceNgn)}
-          </span>
-          <span className="ml-2 text-muted-foreground">/ {formatEur(p.priceNgn)}</span>
-        </p>
+        <div className="mt-1 flex justify-center">
+          <PriceTag p={p} soldOut={soldOut} />
+        </div>
+        <StockNote p={p} />
       </div>
     </>
   );
