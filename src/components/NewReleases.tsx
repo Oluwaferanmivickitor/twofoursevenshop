@@ -3,14 +3,15 @@ import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { type Product } from "@/lib/products";
 import { PriceTag, StockNote } from "@/components/PriceTag";
+import { resolveImageUrl } from "@/lib/image-url";
 import featuredGreenTee from "@/assets/featured-we-different-green.jpg.asset.json";
 import featuredBandana from "@/assets/featured-247-bandana.jpg.asset.json";
 import featuredCamoBeanie from "@/assets/featured-247-beanie-camo.jpg.asset.json";
 
 const featuredCollection = [
-  { src: featuredGreenTee.url, title: "WE DIFFERENT — Forest", caption: "Preview" },
-  { src: featuredBandana.url, title: "Midnight Safari Scarf", caption: "Preview" },
-  { src: featuredCamoBeanie.url, title: "247 Beanie — Camo", caption: "Preview" },
+  { src: resolveImageUrl(featuredGreenTee.url), title: "WE DIFFERENT — Forest", caption: "Preview" },
+  { src: resolveImageUrl(featuredBandana.url), title: "Midnight Safari Scarf", caption: "Preview" },
+  { src: resolveImageUrl(featuredCamoBeanie.url), title: "247 Beanie — Camo", caption: "Preview" },
 ];
 
 function PriceLine({ p, soldOut }: { p: Product; soldOut: boolean }) {
@@ -30,7 +31,7 @@ function ProductCard({ p, soldOut = false }: { p: Product; soldOut?: boolean }) 
     <>
       <div className="relative aspect-[3/4] overflow-hidden bg-secondary">
         <img
-          src={p.image}
+          src={resolveImageUrl(p.image)}
           alt={p.name}
           loading="lazy"
           className={`h-full w-full max-w-full object-contain transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03] ${
@@ -148,7 +149,7 @@ export function NewReleases({ products }: { products: Product[] }) {
                 <div className="flex h-full flex-col">
                   <div className="relative aspect-[3/4] overflow-hidden bg-secondary">
                     <img
-                      src={p.image}
+                      src={resolveImageUrl(p.image)}
                       alt={p.name}
                       loading="lazy"
                       className={`h-full w-full max-w-full object-contain transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03] ${

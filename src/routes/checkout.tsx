@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { resolveImageUrl } from "@/lib/image-url";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { PageLayout } from "@/components/PageLayout";
 import { useCart } from "@/lib/cart";
@@ -291,7 +292,7 @@ function CheckoutPage() {
               <ul className="divide-y divide-border border-y border-border">
                 {items.map((i) => (
                   <li key={i.id} className="flex items-center gap-4 py-4">
-                    <img src={i.image} alt={i.name} className="h-16 w-16 object-cover" />
+                    <img src={resolveImageUrl(i.image)} alt={i.name} className="h-16 w-16 object-cover" />
                     <div className="flex-1 text-sm">
                       <p>{i.name}</p>
                       <p className="text-xs text-muted-foreground">

@@ -1,3 +1,5 @@
+import { resolveImageUrl, resolveImageUrls } from "./image-url";
+
 export const NGN_TO_EUR = 1 / 1575.5;
 
 export type ColorVariant = {
@@ -70,7 +72,7 @@ function asColorArray(v: unknown): ColorVariant[] {
       return {
         name: typeof o.name === "string" ? o.name : "",
         swatch: typeof o.swatch === "string" ? o.swatch : "#000000",
-        images: asStringArray(o.images),
+        images: resolveImageUrls(asStringArray(o.images)),
         inStock: typeof o.inStock === "boolean" ? o.inStock : true,
       };
     })
@@ -85,8 +87,8 @@ export function mapProductRow(row: ProductRow): Product {
     category: row.category,
     priceNgn: row.price_ngn,
     description: row.description,
-    image: row.image,
-    gallery: asStringArray(row.gallery),
+    image: resolveImageUrl(row.image),
+    gallery: resolveImageUrls(asStringArray(row.gallery)),
     sizes: asStringArray(row.sizes),
     colors: asColorArray(row.colors),
     inStock: row.in_stock,

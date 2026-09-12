@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ChevronDown, Menu, Minus, Plus, Search, ShoppingBag, X } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import logoAsset from "@/assets/twofourseven-logo.png.asset.json";
+import { resolveImageUrl } from "@/lib/image-url";
 import { useCart } from "@/lib/cart";
 import { formatEur, formatNgn, type Product } from "@/lib/products";
 import { listProducts } from "@/lib/products.functions";
@@ -103,7 +104,7 @@ export function Header() {
             className="logo-link justify-self-center"
           >
             <img
-              src={logoAsset.url}
+              src={resolveImageUrl(logoAsset.url)}
               alt="TWOFOURSEVEN"
               className="w-auto max-w-full"
             />
@@ -238,7 +239,7 @@ export function Header() {
                       >
                         <div className="relative aspect-[3/4] overflow-hidden bg-secondary">
                           <img
-                            src={p.image}
+                            src={resolveImageUrl(p.image)}
                             alt={p.name}
                             loading="lazy"
                             className="h-full w-full object-contain transition-transform duration-[800ms] ease-out group-hover:scale-[1.03]"
@@ -297,7 +298,7 @@ export function Header() {
                     <li key={it.id} className="flex gap-4 p-5">
                       <div className="h-24 w-20 shrink-0 overflow-hidden bg-secondary">
                         <img
-                          src={it.image}
+                          src={resolveImageUrl(it.image)}
                           alt={it.name}
                           className="h-full w-full object-contain"
                         />

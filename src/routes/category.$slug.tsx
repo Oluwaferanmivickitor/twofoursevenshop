@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { resolveImageUrl } from "@/lib/image-url";
 import { PageLayout } from "@/components/PageLayout";
 import { type Product } from "@/lib/products";
 import { PriceTag, StockNote } from "@/components/PriceTag";
@@ -68,7 +69,7 @@ function Card({ p }: { p: Product }) {
     <>
       <div className="relative aspect-[3/4] overflow-hidden bg-secondary">
         <img
-          src={p.image}
+          src={resolveImageUrl(p.image)}
           alt={p.name}
           loading="lazy"
           className={`h-full w-full max-w-full object-contain transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03] ${

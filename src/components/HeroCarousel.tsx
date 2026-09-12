@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { listHeroSlides } from "@/lib/store.functions";
+import { resolveImageUrl } from "@/lib/image-url";
 import heroAbnormal from "@/assets/abnormal-wd-model.jpg.asset.json";
 import hero1 from "@/assets/hero-money-gang-arch.jpg.asset.json";
 import hero2 from "@/assets/hero-we-different-venue.jpg.asset.json";
@@ -7,11 +8,11 @@ import hero3 from "@/assets/hero-money-gang-doorway.jpg.asset.json";
 import hero4 from "@/assets/hero-247-bed.jpg.asset.json";
 
 const fallbackSlides = [
-  { src: heroAbnormal.url, alt: "TWOFOURSEVEN — Abnormal WE DIFFERENT tee campaign" },
-  { src: hero1.url, alt: "TWOFOURSEVEN — Money Gang editorial portrait" },
-  { src: hero2.url, alt: "TWOFOURSEVEN — WE DIFFERENT venue lookbook" },
-  { src: hero3.url, alt: "TWOFOURSEVEN — Money Gang doorway campaign" },
-  { src: hero4.url, alt: "TWOFOURSEVEN — 247 I'm not weird, we just different tee" },
+  { src: resolveImageUrl(heroAbnormal.url), alt: "TWOFOURSEVEN — Abnormal WE DIFFERENT tee campaign" },
+  { src: resolveImageUrl(hero1.url), alt: "TWOFOURSEVEN — Money Gang editorial portrait" },
+  { src: resolveImageUrl(hero2.url), alt: "TWOFOURSEVEN — WE DIFFERENT venue lookbook" },
+  { src: resolveImageUrl(hero3.url), alt: "TWOFOURSEVEN — Money Gang doorway campaign" },
+  { src: resolveImageUrl(hero4.url), alt: "TWOFOURSEVEN — 247 I'm not weird, we just different tee" },
 ];
 
 export function HeroCarousel() {
@@ -24,7 +25,7 @@ export function HeroCarousel() {
       .then((rows) => {
         const active = rows
           .filter((r) => r.isActive && r.imageUrl)
-          .map((r) => ({ src: r.imageUrl, alt: r.alt || "TWOFOURSEVEN campaign image" }));
+          .map((r) => ({ src: resolveImageUrl(r.imageUrl), alt: r.alt || "TWOFOURSEVEN campaign image" }));
         if (!cancelled && active.length > 0) {
           setSlides(active);
           setIndex(0);

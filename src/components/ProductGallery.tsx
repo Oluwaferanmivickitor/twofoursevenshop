@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { resolveImageUrl } from "@/lib/image-url";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export function ProductGallery({
@@ -44,7 +45,7 @@ export function ProductGallery({
         {images.map((src, i) => (
           <div key={i} className="relative h-full w-full shrink-0 snap-center">
             <img
-              src={src}
+              src={resolveImageUrl(src)}
               alt={`${alt} — view ${i + 1}`}
               loading={i === 0 ? "eager" : "lazy"}
               className="h-full w-full max-w-full object-contain"
