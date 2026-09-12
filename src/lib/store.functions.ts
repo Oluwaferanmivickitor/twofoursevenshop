@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { resolveImageUrl } from "./image-url";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -141,7 +142,7 @@ export const listHeroSlides = createServerFn({ method: "GET" }).handler(
     if (error) throw new Error(error.message);
     return (data ?? []).map((r) => ({
       id: r.id as string,
-      imageUrl: r.image_url as string,
+      imageUrl: resolveImageUrl(r.image_url as string),
       alt: r.alt as string,
       sortOrder: r.sort_order as number,
       isActive: r.is_active as boolean,
