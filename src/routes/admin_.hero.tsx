@@ -10,6 +10,7 @@ import {
   updateHeroSlide,
 } from "@/lib/store.functions";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { resolveImageUrl } from "@/lib/image-url";
 import { ImageUploader } from "@/components/admin/ImageUploader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
