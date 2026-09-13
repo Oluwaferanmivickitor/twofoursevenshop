@@ -3,6 +3,7 @@ import { Loader2, Upload, X as XIcon } from "lucide-react";
 import { toast } from "sonner";
 import { uploadProductImage } from "@/lib/products.functions";
 import { fileToBase64 } from "@/lib/file-to-base64";
+import { resolveImageUrl } from "@/lib/image-url";
 
 export function ImageUploader({
   value,
