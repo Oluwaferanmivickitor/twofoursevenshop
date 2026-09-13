@@ -16,7 +16,11 @@ export function resolveImageUrl(src: string | null | undefined): string {
   if (!src) return "";
   const url = src.trim();
   if (!url) return "";
-  if (url.startsWith("/__l5e/")) return `${ASSET_ORIGIN}${url}`;
+  // Asset-CDN paths may be stored host-relative ("/__l5e/...") or baked into
+  // the database with an absolute origin (e.g. the custom domain). Normalise
+  // both to the stable project origin.
+  const idx = url.indexOf("/__l5e/");
+  if (idx !== -1) return `${ASSET_ORIGIN}${url.slice(idx)}`;
   return url;
 }
 
