@@ -3,6 +3,7 @@ import { Loader2, Upload, X as XIcon } from "lucide-react";
 import { toast } from "sonner";
 import { uploadProductImage } from "@/lib/products.functions";
 import { fileToBase64 } from "@/lib/file-to-base64";
+import { resolveImageUrl } from "@/lib/image-url";
 
 export function ImageUploader({
   value,
@@ -49,7 +50,7 @@ export function ImageUploader({
               key={`${url}-${idx}`}
               className="relative aspect-square overflow-hidden rounded-md border border-border bg-secondary"
             >
-              <img src={url} alt="" className="h-full w-full object-cover" />
+              <img src={resolveImageUrl(url)} alt="" className="h-full w-full object-cover" />
               <button
                 type="button"
                 onClick={() => onChange(value.filter((_, i) => i !== idx))}

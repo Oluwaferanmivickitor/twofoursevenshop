@@ -7,13 +7,20 @@
  * as broken images. Prefixing them with the canonical origin makes them
  * absolute and host-independent.
  */
-const ASSET_ORIGIN = "https://twofourseven.store";
+// Immutable project URL that always serves the published deployment,
+// regardless of domain renames or custom-domain DNS state.
+const ASSET_ORIGIN =
+  "https://project--07b5cb66-7891-4df1-bfe0-6d65612a75d5.lovable.app";
 
 export function resolveImageUrl(src: string | null | undefined): string {
   if (!src) return "";
   const url = src.trim();
   if (!url) return "";
-  if (url.startsWith("/__l5e/")) return `${ASSET_ORIGIN}${url}`;
+  // Asset-CDN paths may be stored host-relative ("/__l5e/...") or baked into
+  // the database with an absolute origin (e.g. the custom domain). Normalise
+  // both to the stable project origin.
+  const idx = url.indexOf("/__l5e/");
+  if (idx !== -1) return `${ASSET_ORIGIN}${url.slice(idx)}`;
   return url;
 }
 

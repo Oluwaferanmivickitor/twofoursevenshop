@@ -10,6 +10,7 @@ import {
   updateHeroSlide,
 } from "@/lib/store.functions";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { resolveImageUrl } from "@/lib/image-url";
 import { ImageUploader } from "@/components/admin/ImageUploader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -105,7 +106,7 @@ function HeroPage() {
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {slides.map((s) => (
           <div key={s.id} className="overflow-hidden rounded-md border border-border bg-card">
-            <img src={s.imageUrl} alt={s.alt} className="aspect-[4/5] w-full object-cover" />
+            <img src={resolveImageUrl(s.imageUrl)} alt={s.alt} className="aspect-[4/5] w-full object-cover" />
             <div className="space-y-3 p-4">
               <Input
                 defaultValue={s.alt}

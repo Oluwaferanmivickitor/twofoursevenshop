@@ -122,7 +122,9 @@ function HorizontalRail({
 export function NewReleases({ products }: { products: Product[] }) {
   const shopTiles = products.filter((p) => !p.isArchived);
   const newReleasesList = products.filter((p) => p.inStock && !p.isArchived);
-  const outOfStockList = products.filter((p) => p.isArchived || !p.inStock);
+  const outOfStockList = products.filter(
+    (p) => (p.isArchived || !p.inStock) && p.image,
+  );
 
   return (
     <>
