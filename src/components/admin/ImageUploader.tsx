@@ -33,10 +33,19 @@ export function ImageUploader({
           continue;
         }
         const payload = await fileToBase64(file);
+        
+        // Safely extract the string whether payload is a string or an object
+        const base64String = 
+          typeof payload === "string" 
+            ? payload 
+            : (payload as any).base64 || (payload as any).data || (payload as any).result || String(payload);
+
         const res = await uploadProductImage({
-          filename: file.name,
-          contentType: file.type || "image/jpeg",
-          dataBase64: payload,
+          data: {
+            filename: file.name,
+            contentType: file.type || "image/jpeg",
+            dataBase64: base64String,
+          },
         });
         uploaded.push(res.url);
       }
