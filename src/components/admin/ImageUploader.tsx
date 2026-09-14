@@ -28,7 +28,13 @@ export function ImageUploader({
           continue;
         }
         const payload = await fileToBase64(file);
-        const res = await uploadProductImage({ data: payload });
+        const res = await uploadProductImage({
+          data: {
+            filename: file.name,
+            contentType: file.type || "image/jpeg",
+            dataBase64: payload,
+          },
+        });
         uploaded.push(res.url);
       }
       if (uploaded.length === 0) return;
