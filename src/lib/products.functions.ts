@@ -244,16 +244,16 @@ const UploadSchema = z.object({
 
 export const uploadProductImage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => UploadSchema.parse(d))
+  .inputValidator((d: unknown) => z.object({ data: UploadSchema }).parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase as never, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const safeName = data.filename.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const safeName = data.data.filename.replace(/[^a-zA-Z0-9._-]/g, "_");
     const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${safeName}`;
-    const bytes = Buffer.from(data.dataBase64, "base64");
+    const bytes = Buffer.from(data.data.dataBase64, "base64");
     const { error: upErr } = await supabaseAdmin.storage
       .from("product-images")
-      .upload(path, bytes, { contentType: data.contentType, upsert: false });
+      .upload(path, bytes, { contentType: data.data.contentType, upsert: false });
     if (upErr) throw new Error(upErr.message);
     const { data: signed, error: signErr } = await supabaseAdmin.storage
       .from("product-images")
@@ -261,3 +261,4 @@ export const uploadProductImage = createServerFn({ method: "POST" })
     if (signErr || !signed) throw new Error(signErr?.message ?? "Failed to sign URL");
     return { url: signed.signedUrl, path };
   });
+  

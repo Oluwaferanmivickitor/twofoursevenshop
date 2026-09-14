@@ -40,10 +40,13 @@ export function ImageUploader({
           reader.onerror = (error) => reject(error);
         });
 
+        // Wrapped in { data: { ... } } to match products.functions.ts
         const res = await uploadProductImage({
-          filename: file.name,
-          contentType: file.type || "image/jpeg",
-          dataBase64: base64String,
+          data: {
+            filename: file.name,
+            contentType: file.type || "image/jpeg",
+            dataBase64: base64String,
+          },
         });
 
         uploaded.push(res.url);
