@@ -27,12 +27,6 @@ export function ImageUploader({
           toast.error(`${file.name} is larger than 10MB`);
           continue;
         }
-        for (const file of Array.from(files)) {
-        if (file.size > 10 * 1024 * 1024) {
-          toast.error(`${file.name} is larger than 10MB`);
-          continue;
-        }
-
         // Read the file directly and extract a clean base64 string
         const base64String = await new Promise<string>((resolve, reject) => {
           const reader = new FileReader();
