@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import { Loader2, Upload, X as XIcon } from "lucide-react";
 import { toast } from "sonner";
 import { uploadProductImage } from "@/lib/products.functions";
-import { fileToBase64 } from "@/lib/file-to-base64";
 import { resolveImageUrl } from "@/lib/image-url";
 
 export function ImageUploader({
@@ -27,6 +26,7 @@ export function ImageUploader({
           toast.error(`${file.name} is larger than 10MB`);
           continue;
         }
+        
         // Read the file directly and extract a clean base64 string
         const base64String = await new Promise<string>((resolve, reject) => {
           const reader = new FileReader();
@@ -48,10 +48,7 @@ export function ImageUploader({
 
         uploaded.push(res.url);
       }
-      }
-        });
-        uploaded.push(res.url);
-      }
+
       if (uploaded.length === 0) return;
       onChange(multiple ? [...value, ...uploaded] : uploaded.slice(-1));
     } catch (e) {
