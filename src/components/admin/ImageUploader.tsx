@@ -31,7 +31,7 @@ export function ImageUploader({
         const payload = await fileToBase64(file);
         const res = await uploadProductImage({
           filename: file.name,
-          contentType: file.type || "image/jpeg",
+          contenType: file.type || "image/jpeg",
           dataBase64: payload,
         });
         uploaded.push(res.url);
