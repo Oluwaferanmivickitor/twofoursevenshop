@@ -32,28 +32,26 @@ export function ImageUploader({
           toast.error(`${file.name} is larger than 10MB`);
           continue;
         }
-       for (const file of Array.from(files)) {
-        if (file.size > 10 * 1024 * 1024) {
-          toast.error(`${file.name} is larger than 10MB`);
-          continue;
-        }
-        
-        // 1. Get the result from fileToBase64
-        const rawPayload = await fileToBase64(file);
-        
-        // 2. Extract the actual string safely whether it's nested or a direct string
-        const base64String = 
-          typeof rawPayload === "string" 
-            ? rawPayload 
-            : (rawPayload as any).base64 || (rawPayload as any).data || (rawPayload as any).result || String(rawPayload);
 
-        // 3. Send it to your clean backend function
+        // Read the file directly and extract a clean base64 string
+        const base64String = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => {
+            const res = reader.result as string;
+            // Strip the "data:image/...;base64," prefix if present
+            const base64 = res.includes(",") ? res.split(",")[1] : res;
+            resolve(base64);
+          };
+          reader.onerror = (error) => reject(error);
+        });
+
         const res = await uploadProductImage({
           filename: file.name,
           contentType: file.type || "image/jpeg",
           dataBase64: base64String,
         });
-        
+
         uploaded.push(res.url);
       }
       }
