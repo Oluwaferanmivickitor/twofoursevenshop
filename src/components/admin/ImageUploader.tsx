@@ -27,13 +27,16 @@ export function ImageUploader({
           toast.error(`${file.name} is larger than 10MB`);
           continue;
         }
+        for (const file of Array.from(files)) {
+        if (file.size > 10 * 1024 * 1024) {
+          toast.error(`${file.name} is larger than 10MB`);
+          continue;
+        }
         const payload = await fileToBase64(file);
         const res = await uploadProductImage({
-          data: {
-            filename: file.name,
-            contentType: file.type || "image/jpeg",
-            dataBase64: payload,
-          },
+          filename: file.name,
+          contentType: file.type || "image/jpeg",
+          dataBase64: payload,
         });
         uploaded.push(res.url);
       }
