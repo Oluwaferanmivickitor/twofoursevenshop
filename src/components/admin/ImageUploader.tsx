@@ -1,7 +1,8 @@
-import { useRef, useState } from "react";
+Import { useRef, useState } from "react";
 import { Loader2, Upload, X as XIcon } from "lucide-react";
 import { toast } from "sonner";
 import { uploadProductImage } from "@/lib/products.functions";
+import { fileToBase64 } from "@/lib/file-to-base64";
 import { resolveImageUrl } from "@/lib/image-url";
 
 export function ImageUploader({
@@ -26,30 +27,10 @@ export function ImageUploader({
           toast.error(`${file.name} is larger than 10MB`);
           continue;
         }
-        
-        const base64String = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(file);
-          reader.onload = () => {
-            const res = reader.result as string;
-            const base64 = res.includes(",") ? res.split(",")[1] : res;
-            resolve(base64);
-          };
-          reader.onerror = (error) => reject(error);
-        });
-
-        // TanStack Start requires wrapping payload in { data: ... }
-        const res = await uploadProductImage({
-          data: {
-            filename: file.name,
-            contentType: file.type || "image/jpeg",
-            dataBase64: base64String,
-          },
-        });
-
+        const payload = await fileToBase64(file);
+        const res = await uploadProductImage({ data: payload });
         uploaded.push(res.url);
       }
-
       if (uploaded.length === 0) return;
       onChange(multiple ? [...value, ...uploaded] : uploaded.slice(-1));
     } catch (e) {
