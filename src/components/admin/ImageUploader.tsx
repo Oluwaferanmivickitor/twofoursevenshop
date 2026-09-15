@@ -38,11 +38,13 @@ export function ImageUploader({
           reader.onerror = (error) => reject(error);
         });
 
-        // Passed directly as a clean flat object—no TanStack wrappers!
+        // TanStack Start requires wrapping payload in { data: ... }
         const res = await uploadProductImage({
-          filename: file.name,
-          contentType: file.type || "image/jpeg",
-          dataBase64: base64String,
+          data: {
+            filename: file.name,
+            contentType: file.type || "image/jpeg",
+            dataBase64: base64String,
+          },
         });
 
         uploaded.push(res.url);
