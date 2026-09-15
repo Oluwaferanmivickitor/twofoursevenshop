@@ -2,17 +2,17 @@ import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { mapProductRow, type Product } from "./products";
 
-// Client for public reads (using Vite env variables)
-function publicClient() {
-  const url = import.meta.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL!;
-  const key = import.meta.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_PUBLISHABLE_KEY!;
+// Client for public reads and uploads
+function getSupabaseClient() {
+  const url = import.meta.env.VITE_SUPABASE_URL || "";
+  const key = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
   return createClient(url, key);
 }
 
 // ---------- Public reads ----------
 
 export async function listProducts(): Promise<Product[]> {
-  const supabase = publicClient();
+  const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("products")
     .select("*")
@@ -23,7 +23,7 @@ export async function listProducts(): Promise<Product[]> {
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  const supabase = publicClient();
+  const supabase = getSupabaseClient();
   const { data: row, error } = await supabase
     .from("products")
     .select("*")
@@ -41,22 +41,22 @@ const UploadSchema = z.object({
   dataBase64: z.string().min(1).max(15_000_000),
 });
 
-// Direct upload function using standard Supabase client storage
+// Direct browser-safe upload using Supabase client storage
 export async function uploadProductImage(input: z.infer<typeof UploadSchema>) {
   const parsed = UploadSchema.parse(input);
-  const supabase = publicClient();
+  const supabase = getSupabaseClient();
   
   const safeName = parsed.filename.replace(/[^a-zA-Z0-9._-]/g, "_");
   const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${safeName}`;
   
-  // Convert base64 to binary buffer/blob for upload
-  const byteCharacters = atob(parsed.dataBase64);
-  const byteNumbers = new Array(byteCharacters.length);
-  for (let i = 0; i < byteCharacters.length; i++) {
-    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  // Convert base64 safely in any browser environment
+  const binaryString = atob(parsed.dataBase64);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
   }
-  const byteArray = new Uint8Array(byteNumbers);
-  const blob = new Blob([byteArray], { type: parsed.contentType });
+  const blob = new Blob([bytes], { type: parsed.contentType });
 
   const { error: upErr } = await supabase.storage
     .from("product-images")
@@ -64,11 +64,11 @@ export async function uploadProductImage(input: z.infer<typeof UploadSchema>) {
     
   if (upErr) throw new Error(upErr.message);
 
-  const { data: signed, error: signErr } = await supabase.storage
+  // Get public URL or signed URL depending on your bucket configuration. 
+  // If your bucket is public, getPublicUrl is much cleaner and doesn't expire:
+  const { data: publicUrlData } = supabase.storage
     .from("product-images")
-    .createSignedUrl(path, 60 * 60 * 24 * 365 * 100);
-    
-  if (signErr || !signed) throw new Error(signErr?.message ?? "Failed to sign URL");
-  
-  return { url: signed.signedUrl, path };
+    .getPublicUrl(path);
+
+  return { url: publicUrlData.publicUrl, path };
 }
