@@ -4,9 +4,10 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { mapProductRow, type Product } from "./products";
 
+// Public client for reads
 function publicClient() {
-  const url = process.env.SUPABASE_URL!;
-  const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
+  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL!;
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_ANON_KEY!;
   return createClient(url, key, {
     auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
     global: {
@@ -19,6 +20,15 @@ function publicClient() {
         return fetch(input, { ...init, headers });
       },
     },
+  });
+}
+
+// Server-side admin client factory (prevents Rolldown static import confusion)
+function adminClient() {
+  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL!;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY!;
+  return createClient(url, serviceKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
   });
 }
 
@@ -77,18 +87,24 @@ export const uploadProductImage = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => UploadSchema.parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase as never, context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    
+    // Create admin client directly here on the server
+    const supabaseAdmin = adminClient();
+    
     const safeName = data.filename.replace(/[^a-zA-Z0-9._-]/g, "_");
     const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${safeName}`;
     const bytes = Buffer.from(data.dataBase64, "base64");
+    
     const { error: upErr } = await supabaseAdmin.storage
       .from("product-images")
       .upload(path, bytes, { contentType: data.contentType, upsert: false });
     if (upErr) throw new Error(upErr.message);
+    
     const { data: signed, error: signErr } = await supabaseAdmin.storage
       .from("product-images")
       .createSignedUrl(path, 60 * 60 * 24 * 365 * 100);
     if (signErr || !signed) throw new Error(signErr?.message ?? "Failed to sign URL");
+    
     return { url: signed.signedUrl, path };
   });
   
