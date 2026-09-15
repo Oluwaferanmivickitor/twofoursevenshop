@@ -259,5 +259,5 @@ export const uploadProductImage = createServerFn({ method: "POST" })
       .from("product-images")
       .createSignedUrl(path, 60 * 60 * 24 * 365 * 100);
     if (signErr || !signed) throw new Error(signErr?.message ?? "Failed to sign URL");
-    return { url: signed.signedUrl, path };
+    return { url: path, path };
   });
