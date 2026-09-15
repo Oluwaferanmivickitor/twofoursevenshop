@@ -96,7 +96,6 @@ export async function assertAdmin(
 export const checkIsAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    // Auto-grant admin to the configured ADMIN_EMAIL on first sign-in.
     const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase();
     const userEmail = (context.claims?.email as string | undefined)?.toLowerCase();
     if (adminEmail && userEmail && adminEmail === userEmail) {
@@ -209,7 +208,6 @@ export const toggleProductStock = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
-// Quick inline edits from the products table (stock count / discount).
 export const setProductStockAndDiscount = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) =>
@@ -244,16 +242,16 @@ const UploadSchema = z.object({
 
 export const uploadProductImage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => z.object({ data: UploadSchema }).parse(d))
+  .inputValidator((d: unknown) => UploadSchema.parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase as never, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const safeName = data.data.filename.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const safeName = data.filename.replace(/[^a-zA-Z0-9._-]/g, "_");
     const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${safeName}`;
-    const bytes = Buffer.from(data.data.dataBase64, "base64");
+    const bytes = Buffer.from(data.dataBase64, "base64");
     const { error: upErr } = await supabaseAdmin.storage
       .from("product-images")
-      .upload(path, bytes, { contentType: data.data.contentType, upsert: false });
+      .upload(path, bytes, { contentType: data.contentType, upsert: false });
     if (upErr) throw new Error(upErr.message);
     const { data: signed, error: signErr } = await supabaseAdmin.storage
       .from("product-images")
