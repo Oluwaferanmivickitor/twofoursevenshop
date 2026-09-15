@@ -27,19 +27,18 @@ export function ImageUploader({
           continue;
         }
         
-        // Read the file directly and extract a clean base64 string
         const base64String = await new Promise<string>((resolve, reject) => {
           const reader = new FileReader();
           reader.readAsDataURL(file);
           reader.onload = () => {
             const res = reader.result as string;
-            // Strip the "data:image/...;base64," prefix if present
             const base64 = res.includes(",") ? res.split(",")[1] : res;
             resolve(base64);
           };
           reader.onerror = (error) => reject(error);
         });
 
+        // Passed directly as a clean flat object—no TanStack wrappers!
         const res = await uploadProductImage({
           filename: file.name,
           contentType: file.type || "image/jpeg",
