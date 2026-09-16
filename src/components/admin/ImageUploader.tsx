@@ -1,4 +1,4 @@
-Import { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Loader2, Upload, X as XIcon } from "lucide-react";
 import { toast } from "sonner";
 import { uploadProductImage } from "@/lib/products.functions";
