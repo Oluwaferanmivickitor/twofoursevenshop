@@ -5,8 +5,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { mapProductRow, type Product } from "./products";
 
 function publicClient() {
-  const url = process.env.SUPABASE_URL!;
-  const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
+  const url = process.env.VITE_SUPABASE_URL!;
+  const key = process.env.VITE_SUPABASE_PUBLISHABLE_KEY!;
   return createClient(url, key, {
     auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
     global: {
