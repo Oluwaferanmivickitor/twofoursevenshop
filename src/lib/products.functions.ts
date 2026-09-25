@@ -5,8 +5,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { mapProductRow, type Product } from "./products";
 
 function publicClient() {
-  const url = process.env.VITE_SUPABASE_URL!;
-  const key = process.env.VITE_SUPABASE_PUBLISHABLE_KEY!;
+  const url = process.env.SUPABASE_URL!;
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
   return createClient(url, key, {
     auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
     global: {
@@ -255,7 +255,9 @@ export const uploadProductImage = createServerFn({ method: "POST" })
       .from("product-images")
       .upload(path, bytes, { contentType: data.contentType, upsert: false });
     if (upErr) throw new Error(upErr.message);
-
-    // Bypass the broken token signing logic entirely:
-    return { url: path, path };
+    const { data: signed, error: signErr } = await supabaseAdmin.storage
+      .from("product-images")
+      .createSignedUrl(path, 60 * 60 * 24 * 365 * 100);
+    if (signErr || !signed) throw new Error(signErr?.message ?? "Failed to sign URL");
+    return { url: signed.signedUrl, path };
   });
