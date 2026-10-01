@@ -61,10 +61,15 @@ function ProductPage() {
   const activeColor = product.colors?.[colorIdx];
   // Combine every variant's imagery into a single swipable stream so customers
   // see every view of every color without toggling.
-  const galleryImages =
-    product.colors && product.colors.length > 0
-      ? product.colors.flatMap((c: ColorVariant) => c.images)
-      : product.gallery ?? [product.image];
+  const galleryImages = Array.from(
+    new Set(
+      [
+        product.image,
+        ...(product.gallery ?? []),
+        ...(product.colors ?? []).flatMap((c: ColorVariant) => c.images),
+      ].filter((s): s is string => !!s && s.length > 0),
+    ),
+  );
 
   return (
     <div className="min-h-screen bg-background">
