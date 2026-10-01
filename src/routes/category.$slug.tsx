@@ -51,7 +51,7 @@ export const Route = createFileRoute("/category/$slug")({
   component: CategoryPage,
   errorComponent: ({ error }) => (
     <PageLayout>
-      <div className="px-5 py-32 text-center text-sm text-muted-foreground sm:px-8">{error.message}</div>
+      <div className="px-5 py-32 text-center text-sm text-muted-foreground sm:px-8">{(error as Error).message}</div>
     </PageLayout>
   ),
   notFoundComponent: () => (

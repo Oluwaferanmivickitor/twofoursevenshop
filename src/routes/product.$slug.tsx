@@ -34,7 +34,7 @@ export const Route = createFileRoute("/product/$slug")({
     };
   },
   errorComponent: ({ error }) => (
-    <div className="p-10 text-center text-sm text-muted-foreground">{error.message}</div>
+    <div className="p-10 text-center text-sm text-muted-foreground">{(error as Error).message}</div>
   ),
   notFoundComponent: () => (
     <div className="p-10 text-center">
