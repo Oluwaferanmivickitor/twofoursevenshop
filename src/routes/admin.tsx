@@ -316,11 +316,22 @@ function toFormState(p: Product | null): FormState {
     image: p?.image ?? "",
     gallery: p?.gallery ?? [],
     sizes: (p?.sizes ?? []).join(", "),
-    colors: JSON.stringify(p?.colors ?? [], null, 2),
+    colors: ((p?.colors ?? []) as ColorVariant[]).map((c) => c.name).join(", "),
     inStock: p?.inStock ?? true,
     isArchived: p?.isArchived ?? false,
     sortOrder: (p?.sortOrder ?? 0).toString(),
   };
+}
+
+const SWATCHES: Record<string, string> = {
+  black: "#111111", white: "#f5f5f5", red: "#c0392b", blue: "#2c5aa0", navy: "#1f2a44",
+  green: "#2e7d32", grey: "#888888", gray: "#888888", brown: "#6d4c41", beige: "#d8c8a8",
+  cream: "#efe6d2", pink: "#e8a0b4", yellow: "#e6c229", orange: "#e67e22", purple: "#6a3d9a",
+  camo: "#5b5b3c", denim: "#3b5b82",
+};
+function guessSwatch(name: string): string {
+  const key = name.toLowerCase().split(/\s+/).find((w) => SWATCHES[w]);
+  return key ? SWATCHES[key] : "#888888";
 }
 
 function ProductForm({
@@ -340,17 +351,20 @@ function ProductForm({
 
   const saveMut = useMutation({
     mutationFn: async () => {
-      let colors: ColorVariant[] = [];
-      const rawColors = form.colors.trim();
-      if (rawColors.length > 0) {
-        try {
-          const parsed = JSON.parse(rawColors);
-          if (!Array.isArray(parsed)) throw new Error("Colors must be a JSON array");
-          colors = parsed as ColorVariant[];
-        } catch (err) {
-          throw new Error(`Invalid colors JSON: ${(err as Error).message}`);
-        }
-      }
+      const existing = (product?.colors ?? []) as ColorVariant[];
+      const colors: ColorVariant[] = Array.from(
+        new Set(
+          form.colors
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
+        ),
+      ).map((name) => {
+        const prev = existing.find((c) => c.name.toLowerCase() === name.toLowerCase());
+        return prev
+          ? { ...prev, name }
+          : { name, swatch: guessSwatch(name), images: [], inStock: form.inStock };
+      });
       const payload = {
         slug: form.slug.trim(),
         name: form.name.trim(),
@@ -511,16 +525,15 @@ function ProductForm({
             />
           </div>
           <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="colors">Colors (JSON)</Label>
-            <Textarea
+            <Label htmlFor="colors">Colors (comma separated)</Label>
+            <Input
               id="colors"
-              rows={5}
               value={form.colors}
+              placeholder="Black, White, Navy"
               onChange={(e) => setForm({ ...form, colors: e.target.value })}
-              className="font-mono text-xs"
             />
             <p className="text-xs text-muted-foreground">
-              Each entry: name, swatch (hex), images (array of URLs), inStock (true/false).
+              e.g. Black, White. Leave empty if the product has a single color.
             </p>
           </div>
           <div className="flex items-center gap-3">
