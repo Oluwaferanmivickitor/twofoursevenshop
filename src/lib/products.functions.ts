@@ -117,8 +117,29 @@ export const checkIsAdmin = createServerFn({ method: "GET" })
       _user_id: context.userId,
       _role: "admin",
     });
-    if (error) return { isAdmin: false };
-    return { isAdmin: data === true };
+    if (!error && data === true) return { isAdmin: true };
+    // Fallback: a profiles table (if present) with role = 'admin' or is_admin = true.
+    try {
+      const { data: prof, error: pErr } = await (context.supabase as never as {
+        from: (t: string) => {
+          select: (c: string) => {
+            eq: (k: string, v: string) => {
+              maybeSingle: () => Promise<{ data: Record<string, unknown> | null; error: unknown }>;
+            };
+          };
+        };
+      })
+        .from("profiles")
+        .select("*")
+        .eq("id", context.userId)
+        .maybeSingle();
+      if (!pErr && prof && (prof.role === "admin" || prof.is_admin === true)) {
+        return { isAdmin: true };
+      }
+    } catch {
+      /* profiles table not present */
+    }
+    return { isAdmin: false };
   });
 
 export const adminListProducts = createServerFn({ method: "GET" })
@@ -255,9 +276,6 @@ export const uploadProductImage = createServerFn({ method: "POST" })
       .from("product-images")
       .upload(path, bytes, { contentType: data.contentType, upsert: false });
     if (upErr) throw new Error(upErr.message);
-    const { data: signed, error: signErr } = await supabaseAdmin.storage
-      .from("product-images")
-      .createSignedUrl(path, 60 * 60 * 24 * 365 * 100);
-    if (signErr || !signed) throw new Error(signErr?.message ?? "Failed to sign URL");
-    return { url: signed.signedUrl, path };
+    // Store a stable, token-free URL served by /api/public/product-image/.
+    return { url: `/api/public/product-image/${encodeURIComponent(path)}`, path };
   });
