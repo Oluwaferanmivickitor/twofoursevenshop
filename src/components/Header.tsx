@@ -5,7 +5,7 @@ import logoAsset from "@/assets/twofourseven-logo.png.asset.json";
 import { resolveImageUrl } from "@/lib/image-url";
 import { useCart } from "@/lib/cart";
 import { ProductCardDetails, ProductImageStatus } from "@/components/PriceTag";
-import { type Product } from "@/lib/products";
+import { formatEur, formatNgn, type Product } from "@/lib/products";
 import { listProducts } from "@/lib/products.functions";
 
 const navLinks: { label: string; to: string }[] = [
