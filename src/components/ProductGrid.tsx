@@ -46,7 +46,7 @@ export function ProductGrid() {
         {products.map((p) => (
           <li key={p.id} className="group">
             <a href="#" className="block">
-              <div className="relative aspect-[3/4] overflow-hidden bg-secondary">
+              <div className="relative aspect-[3/4] overflow-hidden bg-transparent">
                 <img
                   src={p.image}
                   alt={p.name}
