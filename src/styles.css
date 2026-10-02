@@ -39,6 +39,9 @@
   --color-ring-offset-background: var(--background);
   --color-whatsapp: var(--whatsapp);
   --color-whatsapp-foreground: var(--whatsapp-foreground);
+  --color-stock-available: var(--stock-available);
+  --color-stock-unavailable: var(--stock-unavailable);
+  --shadow-status: 0 0 0 4px color-mix(in oklab, var(--background) 75%, transparent), 0 0 14px currentColor;
 }
 
 :root {
@@ -64,6 +67,8 @@
   --ring: oklch(0.12 0 0);
   --whatsapp: #25D366;
   --whatsapp-foreground: #FFFFFF;
+  --stock-available: oklch(0.67 0.18 145);
+  --stock-unavailable: oklch(0.61 0.22 27);
 }
 
 .dark {
@@ -84,6 +89,7 @@
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.98 0 0);
+  color-scheme: dark;
 }
 
 @layer base {

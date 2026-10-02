@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { resolveImageUrl } from "@/lib/image-url";
 import { PageLayout } from "@/components/PageLayout";
 import { type Product } from "@/lib/products";
-import { PriceTag, StockNote } from "@/components/PriceTag";
+import { ProductCardDetails, ProductImageStatus } from "@/components/PriceTag";
 import { listProducts } from "@/lib/products.functions";
 
 export const Route = createFileRoute("/shop")({
@@ -55,19 +55,12 @@ function Card({ p }: { p: Product }) {
             soldOut ? "opacity-70" : ""
           }`}
         />
+        <ProductImageStatus p={p} />
         {soldOut && (
-          <span className="eyebrow absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border border-foreground bg-background/90 px-4 py-2 text-[0.65rem] tracking-[0.25em]">
-            Sold Out
-          </span>
+          <div className="absolute inset-0 bg-background/10" />
         )}
       </div>
-      <div className="mt-4 text-center">
-        <h3 className="text-sm font-normal tracking-wide text-foreground">{p.name}</h3>
-        <div className="mt-1 flex justify-center">
-          <PriceTag p={p} soldOut={soldOut} />
-        </div>
-        <StockNote p={p} />
-      </div>
+      <ProductCardDetails p={p} />
     </>
   );
   if (soldOut) return <div className="group cursor-not-allowed">{inner}</div>;
