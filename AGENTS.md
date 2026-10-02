@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Storefront theming is class-based on the document element, defaults to dark, and persists the visitor's explicit choice; this prevents theme flashes while preserving semantic tokens.

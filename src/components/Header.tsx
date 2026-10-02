@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { ChevronDown, Menu, Minus, Plus, Search, ShoppingBag, X } from "lucide-react";
+import { ChevronDown, Menu, Minus, Moon, Plus, Search, ShoppingBag, Sun, X } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import logoAsset from "@/assets/twofourseven-logo.png.asset.json";
 import { resolveImageUrl } from "@/lib/image-url";
 import { useCart } from "@/lib/cart";
-import { formatEur, formatNgn, type Product } from "@/lib/products";
+import { ProductCardDetails, ProductImageStatus } from "@/components/PriceTag";
+import { type Product } from "@/lib/products";
 import { listProducts } from "@/lib/products.functions";
 
 const navLinks: { label: string; to: string }[] = [
@@ -34,8 +35,21 @@ export function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchProducts, setSearchProducts] = useState<Product[] | null>(null);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [isDark, setIsDark] = useState(true);
   const { items, count, subtotalNgn, updateQty, removeItem } = useCart();
   const close = () => setPanel(null);
+
+  useEffect(() => {
+    setIsDark(document.documentElement.classList.contains("dark"));
+  }, []);
+
+  const toggleTheme = () => {
+    const nextDark = !isDark;
+    document.documentElement.classList.toggle("dark", nextDark);
+    document.documentElement.style.colorScheme = nextDark ? "dark" : "light";
+    localStorage.setItem("twofourseven-theme", nextDark ? "dark" : "light");
+    setIsDark(nextDark);
+  };
 
   useEffect(() => {
     if (panel !== "search" || searchProducts !== null) return;
@@ -110,7 +124,20 @@ export function Header() {
             />
           </Link>
 
-          <div className="justify-self-end">
+          <div className="flex items-center gap-1 justify-self-end">
+            <button
+              type="button"
+              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+              title={isDark ? "Light mode" : "Dark mode"}
+              onClick={toggleTheme}
+              className="p-2 text-foreground transition-opacity hover:opacity-60"
+            >
+              {isDark ? (
+                <Sun strokeWidth={1.25} className="h-5 w-5" />
+              ) : (
+                <Moon strokeWidth={1.25} className="h-5 w-5" />
+              )}
+            </button>
             <button
               aria-label={`Open cart (${count})`}
               onClick={() => setPanel("cart")}
@@ -244,14 +271,9 @@ export function Header() {
                             loading="lazy"
                             className="h-full w-full object-contain transition-transform duration-[800ms] ease-out group-hover:scale-[1.03]"
                           />
+                          <ProductImageStatus p={p} />
                         </div>
-                        <div className="mt-3 text-center">
-                          <p className="text-sm text-foreground">{p.name}</p>
-                          <p className="mt-1 text-xs text-muted-foreground">
-                            {formatNgn(p.priceNgn)}{" "}
-                            <span className="opacity-70">/ {formatEur(p.priceNgn)}</span>
-                          </p>
-                        </div>
+                        <ProductCardDetails p={p} />
                       </Link>
                     </li>
                   ))}

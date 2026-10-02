@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { type Product } from "@/lib/products";
-import { PriceTag, StockNote } from "@/components/PriceTag";
+import { ProductCardDetails, ProductImageStatus } from "@/components/PriceTag";
 import { resolveImageUrl } from "@/lib/image-url";
 import featuredGreenTee from "@/assets/featured-we-different-green.jpg.asset.json";
 import featuredBandana from "@/assets/featured-247-bandana.jpg.asset.json";
@@ -13,18 +13,6 @@ const featuredCollection = [
   { src: resolveImageUrl(featuredBandana.url), title: "Midnight Safari Scarf", caption: "Preview" },
   { src: resolveImageUrl(featuredCamoBeanie.url), title: "247 Beanie — Camo", caption: "Preview" },
 ];
-
-function PriceLine({ p, soldOut }: { p: Product; soldOut: boolean }) {
-  return (
-    <div className="mt-4 space-y-1.5">
-      <h3 className="text-[0.8rem] font-normal tracking-wide text-foreground sm:text-sm">
-        {p.name}
-      </h3>
-      <PriceTag p={p} soldOut={soldOut} />
-      <StockNote p={p} />
-    </div>
-  );
-}
 
 function ProductCard({ p, soldOut = false }: { p: Product; soldOut?: boolean }) {
   const inner = (
@@ -38,16 +26,12 @@ function ProductCard({ p, soldOut = false }: { p: Product; soldOut?: boolean }) 
             soldOut ? "opacity-70" : ""
           }`}
         />
+        <ProductImageStatus p={p} />
         {soldOut && (
-          <>
-            <div className="absolute inset-0 bg-background/10" />
-            <span className="eyebrow absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border border-foreground bg-background/90 px-4 py-2 text-[0.65rem] tracking-[0.25em] text-foreground">
-              Sold Out
-            </span>
-          </>
+          <div className="absolute inset-0 bg-background/10" />
         )}
       </div>
-      <PriceLine p={p} soldOut={soldOut} />
+      <ProductCardDetails p={p} />
     </>
   );
 
@@ -129,7 +113,7 @@ export function NewReleases({ products }: { products: Product[] }) {
   return (
     <>
       {/* Shop — grid */}
-      <section id="shop" aria-labelledby="shop-heading" className="border-t border-border">
+      <section id="shop" aria-labelledby="shop-heading">
         <div className="px-5 pt-16 sm:px-8 sm:pt-24">
           <p className="eyebrow text-muted-foreground">Shop</p>
           <h2
@@ -158,16 +142,12 @@ export function NewReleases({ products }: { products: Product[] }) {
                         soldOut ? "opacity-70" : ""
                       }`}
                     />
+                    <ProductImageStatus p={p} />
                     {soldOut && (
-                      <>
-                        <div className="absolute inset-0 bg-background/10" />
-                        <span className="eyebrow absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border border-foreground bg-background/90 px-4 py-2 text-[0.65rem] tracking-[0.25em] text-foreground">
-                          Sold Out
-                        </span>
-                      </>
+                      <div className="absolute inset-0 bg-background/10" />
                     )}
                   </div>
-                  <PriceLine p={p} soldOut={soldOut} />
+                  <ProductCardDetails p={p} />
                 </div>
               );
 
@@ -198,7 +178,7 @@ export function NewReleases({ products }: { products: Product[] }) {
       {newReleasesList.length > 0 && (
         <section
           aria-labelledby="new-releases-heading"
-          className="border-t border-border px-5 py-16 sm:px-8 sm:py-24"
+          className="px-5 py-16 sm:px-8 sm:py-24"
         >
           <div className="mb-10 sm:mb-14">
             <p className="eyebrow text-muted-foreground">Drop 01 — Available Now</p>
@@ -217,7 +197,7 @@ export function NewReleases({ products }: { products: Product[] }) {
       {outOfStockList.length > 0 && (
         <section
           aria-labelledby="oos-heading"
-          className="border-t border-border bg-secondary/40 px-5 py-16 sm:px-8 sm:py-24"
+          className="bg-secondary/40 px-5 py-16 sm:px-8 sm:py-24"
         >
           <div className="mb-10 sm:mb-14">
             <p className="eyebrow text-muted-foreground">Archive</p>
@@ -238,7 +218,7 @@ export function NewReleases({ products }: { products: Product[] }) {
       {/* Featured Collection */}
       <section
         aria-labelledby="featured-heading"
-        className="border-t border-border px-5 py-16 sm:px-8 sm:py-24"
+        className="px-5 py-16 sm:px-8 sm:py-24"
       >
         <div className="mb-10 sm:mb-14">
           <p className="eyebrow text-muted-foreground">Editorial</p>
