@@ -46,7 +46,7 @@ function Card({ p }: { p: Product }) {
   const soldOut = !p.inStock;
   const inner = (
     <>
-      <div className="relative aspect-[3/4] overflow-hidden bg-secondary">
+      <div className="relative aspect-[3/4] overflow-hidden bg-transparent">
         <img
           src={resolveImageUrl(p.image)}
           alt={p.name}

@@ -17,7 +17,7 @@ const featuredCollection = [
 function ProductCard({ p, soldOut = false }: { p: Product; soldOut?: boolean }) {
   const inner = (
     <>
-      <div className="relative aspect-[3/4] overflow-hidden bg-secondary">
+      <div className="relative aspect-[3/4] overflow-hidden bg-transparent">
         <img
           src={resolveImageUrl(p.image)}
           alt={p.name}
@@ -133,7 +133,7 @@ export function NewReleases({ products }: { products: Product[] }) {
               const soldOut = !p.inStock;
               const inner = (
                 <div className="flex h-full flex-col">
-                  <div className="relative aspect-[3/4] overflow-hidden bg-secondary">
+                  <div className="relative aspect-[3/4] overflow-hidden bg-transparent">
                     <img
                       src={resolveImageUrl(p.image)}
                       alt={p.name}

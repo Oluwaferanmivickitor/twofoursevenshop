@@ -264,7 +264,7 @@ export function Header() {
                         onClick={close}
                         className="group block"
                       >
-                        <div className="relative aspect-[3/4] overflow-hidden bg-secondary">
+                        <div className="relative aspect-[3/4] overflow-hidden bg-transparent">
                           <img
                             src={resolveImageUrl(p.image)}
                             alt={p.name}
