@@ -290,3 +290,7 @@ header img {
 }
 @media(prefers-reduced-motion:reduce){.admin-theme *{animation:none!important;transition:none!important;}}
 @media print {body:has(.admin-print-receipt) * {visibility:hidden;} .admin-print-receipt,.admin-print-receipt * {visibility:visible!important;} .admin-print-receipt {position:fixed;inset:0;background:var(--foreground);color:var(--background);padding:30px;} .admin-print-receipt button{display:none;}}
+.admin-panel {left:auto!important;right:0!important;top:0!important;bottom:0!important;translate:none!important;}
+.admin-theme button[role="switch"] {min-height:24px;height:24px;width:42px;flex-shrink:0;border-radius:20px;}
+.admin-theme button[role="switch"] span {border-radius:50%;}
+@media(max-width:767px){.admin-panel{top:5dvh!important;}.admin-filter-row{gap:4px;margin-bottom:18px;}.admin-filter-row button{min-height:36px;font-size:12px;padding:0 9px;}}
