@@ -1,136 +1,67 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { ExternalLink } from "lucide-react";
-import { adminGetReceiptUrl, adminListOrders } from "@/lib/orders.functions";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { formatDistanceToNow } from "date-fns";
+import { toast } from "sonner";
+import { ArrowRight, Check, MapPin, MoreHorizontal, Phone, MessageCircle, Printer, Search, Upload, FileText, Truck, ShoppingBag } from "lucide-react";
+import { adminGetReceiptUrl, adminListOrders, adminSetOrderStatus, adminSaveOrderNote, adminOrderActivity, adminUploadOrderProof } from "@/lib/orders.functions";
+import { adminListProducts } from "@/lib/products.functions";
 import { formatNgn } from "@/lib/products";
+import { resolveImageUrl } from "@/lib/image-url";
+import { PAYMENT_LABELS, STAGE_LABELS, nextOrderStage, type Order, type OrderStage, type PaymentStatus } from "@/lib/order-lifecycle";
+import { supabase } from "@/integrations/supabase/client";
+import { adminHead } from "@/lib/admin-meta";
+import { fileToBase64 } from "@/lib/file-to-base64";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { AdminEmpty, AdminLoading, AdminPanel, ConfirmAction } from "@/components/admin/AdminUI";
+import { OrderTimeline } from "@/components/admin/OrderTimeline";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-
-export const Route = createFileRoute("/admin_/orders")({
-  ssr: false,
-  head: () => ({
-    meta: [
-      { title: "Orders — Admin" },
-      { name: "robots", content: "noindex,nofollow" },
-    ],
-  }),
-  component: OrdersPage,
-});
-
-type OrderItem = { name: string; color?: string; size?: string; quantity: number };
-
-function OrdersPage() {
-  const query = useQuery({ queryKey: ["admin", "orders"], queryFn: () => adminListOrders() });
-  const [busy, setBusy] = useState<string | null>(null);
-
-  async function openReceipt(path: string) {
-    setBusy(path);
-    try {
-      const { url } = await adminGetReceiptUrl({ data: { path } });
-      window.open(url, "_blank", "noopener");
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  const orders = (query.data ?? []) as Array<Record<string, unknown>>;
-
-  return (
-    <AdminShell title="Orders" description="Every order placed on the store, newest first.">
-      <div className="overflow-x-auto rounded-md border border-border bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Reference</TableHead>
-              <TableHead>Customer</TableHead>
-              <TableHead>Items</TableHead>
-              <TableHead>Delivery</TableHead>
-              <TableHead>Total</TableHead>
-              <TableHead>Receipt</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {query.isLoading && (
-              <TableRow>
-                <TableCell colSpan={6} className="py-10 text-center text-sm text-muted-foreground">
-                  Loading…
-                </TableCell>
-              </TableRow>
-            )}
-            {!query.isLoading && orders.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={6} className="py-10 text-center text-sm text-muted-foreground">
-                  No orders yet.
-                </TableCell>
-              </TableRow>
-            )}
-            {orders.map((o) => {
-              const items = (Array.isArray(o.items) ? o.items : []) as OrderItem[];
-              const path = (o.receipt_path as string | null) ?? null;
-              return (
-                <TableRow key={String(o.id)}>
-                  <TableCell className="font-mono text-xs">
-                    {String(o.reference)}
-                    <div className="mt-1 text-[0.65rem] text-muted-foreground">
-                      {new Date(String(o.created_at)).toLocaleString()}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-sm">
-                    <div className="font-medium text-foreground">{String(o.full_name)}</div>
-                    <div className="text-xs text-muted-foreground">{String(o.email)}</div>
-                    <div className="text-xs text-muted-foreground">{String(o.phone)}</div>
-                    <div className="mt-1 max-w-xs text-xs text-muted-foreground">
-                      {String(o.address)}, {String(o.city)}, {String(o.country)}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-xs">
-                    {items.map((i, idx) => (
-                      <div key={idx}>
-                        {i.name}
-                        {i.color ? ` / ${i.color}` : ""}
-                        {i.size ? ` / ${i.size}` : ""} × {i.quantity}
-                      </div>
-                    ))}
-                  </TableCell>
-                  <TableCell className="text-xs">
-                    <div>{String(o.delivery_location ?? "") || "—"}</div>
-                    <div className="text-muted-foreground">
-                      {formatNgn(Number(o.shipping_ngn) || 0)}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-sm font-medium">
-                    {formatNgn(Number(o.total_ngn) || 0)}
-                  </TableCell>
-                  <TableCell>
-                    {path ? (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        disabled={busy === path}
-                        onClick={() => openReceipt(path)}
-                      >
-                        <ExternalLink className="mr-1 h-3.5 w-3.5" />
-                        {busy === path ? "Opening…" : "View"}
-                      </Button>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">—</span>
-                    )}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </div>
-    </AdminShell>
-  );
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+export const Route = createFileRoute("/admin_/orders")({ ssr:false, head:()=>adminHead("Orders"), component:OrdersPage });
+const tone = (s:string) => s==="shipped"?"text-status-shipped":s==="delivered"||s==="paid"?"text-status-delivered":s==="cancelled"||s==="failed"||s==="payment_failed"?"text-status-cancelled":s==="refunded"?"text-muted-foreground":s==="order_placed"?"text-status-new":"text-status-confirmed";
+function Badge({status,payment=false}:{status:OrderStage|PaymentStatus;payment?:boolean}){return <span className={`admin-badge ${tone(status)}`}>{payment ? PAYMENT_LABELS[status as PaymentStatus] : STAGE_LABELS[status as OrderStage]}</span>;}
+const ACTION:Record<string,string> = {payment_confirmed:"Mark payment as received",processing:"Start processing",packed:"Mark packed",shipped:"Mark shipped",delivered:"Mark delivered"};
+export function OrdersPage(){
+ const qc=useQueryClient(); const query=useQuery({queryKey:["admin","orders"],queryFn:()=>adminListOrders()});
+ const products=useQuery({queryKey:["admin","products"],queryFn:()=>adminListProducts()});
+ const [filter,setFilter]=useState("all"),[search,setSearch]=useState(""),[selected,setSelected]=useState<string|null>(null);
+ useEffect(()=>{const channel=supabase.channel("admin-orders-live").on("postgres_changes",{event:"*",schema:"public",table:"orders"},payload=>{qc.invalidateQueries({queryKey:["admin","orders"]});qc.invalidateQueries({queryKey:["admin","order-activity"]});if(payload.eventType==="INSERT")toast("New order received",{description:"Your orders list has been updated."});}).subscribe();return()=>{supabase.removeChannel(channel);};},[qc]);
+ const orders=(query.data??[]) as unknown as Order[];
+ const matches=(o:Order,f:string)=>f==="all"||f==="new"&&["order_placed","awaiting_payment","payment_failed"].includes(o.lifecycle_status)||f==="to_pack"&&["payment_confirmed","processing","packed"].includes(o.lifecycle_status)||o.lifecycle_status===f;
+ const count=(f:string)=>orders.filter(o=>matches(o,f)).length;
+ const filtered=orders.filter(o=>matches(o,filter)&&`${o.reference} ${o.full_name} ${o.email}`.toLowerCase().includes(search.toLowerCase())).sort((a,b)=>Number(b.payment_status==="awaiting_payment")-Number(a.payment_status==="awaiting_payment")||new Date(b.created_at).getTime()-new Date(a.created_at).getTime());
+ const selectedOrder=orders.find(o=>o.id===selected);
+ const photo=(slug:string,image?:string)=>resolveImageUrl(image||products.data?.find(p=>p.slug===slug)?.image||"");
+ return <AdminShell title="Orders" description="Every order. Every detail. All in one place." actions={<span className="admin-badge text-status-delivered"><span className="h-1.5 w-1.5 rounded-full bg-status-delivered"/>Live</span>}>
+  <div className="admin-summary">{[{id:"new",label:"New",icon:ShoppingBag},{id:"to_pack",label:"To pack",icon:Check},{id:"shipped",label:"Shipped",icon:Truck},{id:"delivered",label:"Delivered",icon:Check}].map(c=><Button variant="ghost" key={c.id} className={`admin-summary-chip ${filter===c.id?"active":""}`} onClick={()=>setFilter(filter===c.id?"all":c.id)}><span>{c.id==="new"&&count("new")>0?<span className="h-1.5 w-1.5 rounded-full bg-status-cancelled"/>:<c.icon size={13}/>} {c.label}</span><strong>{count(c.id)}</strong></Button>)}</div>
+  <div className="relative"><Search className="absolute left-4 top-4 text-muted-foreground" size={18}/><Input aria-label="Search orders" placeholder="Search orders or customers" className="pl-11" value={search} onChange={e=>setSearch(e.target.value)}/></div>
+  <div className="admin-filter-row">{["all",...Object.keys(STAGE_LABELS)].map(s=><Button variant="ghost" key={s} className={filter===s?"active":""} onClick={()=>setFilter(s)}>{s==="all"?"All orders":STAGE_LABELS[s as OrderStage]} <span className="opacity-60">{count(s)}</span></Button>)}</div>
+  {query.isLoading?<AdminLoading/>:query.error?<AdminEmpty title="Orders could not load" detail={(query.error as Error).message} action={<Button onClick={()=>query.refetch()}>Try again</Button>}/>:filtered.length===0?<AdminEmpty title={orders.length?"No matching orders":"Ready for your first order"} detail={orders.length?"Try another status or customer name.":"Orders will appear here as soon as a customer checks out."}/>:<div className="admin-order-list">{filtered.map(o=><Button key={o.id} variant="ghost" className={`admin-order-card ${o.payment_status==="awaiting_payment"?"new":""}`} onClick={()=>setSelected(o.id)}><div className="admin-order-top"><div><strong className="font-mono text-sm">#{o.reference}</strong><p className="admin-order-time">{formatDistanceToNow(new Date(o.created_at),{addSuffix:true})}</p></div><ArrowRight size={18} className="text-muted-foreground"/></div><p className="admin-order-customer">{o.full_name}</p><div className="admin-badge-row mb-4"><Badge status={o.lifecycle_status}/><Badge status={o.payment_status} payment/></div><div className="admin-order-thumbs">{o.items.slice(0,4).map((i,n)=>photo(i.slug,i.image)?<img key={n} src={photo(i.slug,i.image)} alt={i.name}/>:<ShoppingBag key={n} size={32} className="text-muted-foreground"/>)}<span className="text-xs text-muted-foreground ml-2">{o.items.reduce((s,i)=>s+i.quantity,0)} items</span></div><div className="admin-order-bottom"><span><MapPin size={14}/>{o.delivery_location||o.city}</span><strong>{formatNgn(o.total_ngn)}</strong></div></Button>)}</div>}
+  {selectedOrder&&<OrderDetails key={selectedOrder.id} order={selectedOrder} photo={photo} onClose={()=>setSelected(null)} onSaved={()=>qc.invalidateQueries({queryKey:["admin","orders"]})}/>}
+ </AdminShell>;
+}
+function OrderDetails({order:o,photo,onClose,onSaved}:{order:Order;photo:(slug:string,image?:string)=>string;onClose:()=>void;onSaved:()=>void}){
+ const qc=useQueryClient();const [notes,setNotes]=useState(o.internal_notes),[busy,setBusy]=useState(false),[confirm,setConfirm]=useState<OrderStage|null>(null),[shipping,setShipping]=useState(false),[courier,setCourier]=useState(o.courier_name),[tracking,setTracking]=useState(o.tracking_number),[printing,setPrinting]=useState(false); const proof=useRef<HTMLInputElement>(null);
+ const activity=useQuery({queryKey:["admin","order-activity",o.id],queryFn:()=>adminOrderActivity({data:{id:o.id}})});
+ const next=nextOrderStage(o.lifecycle_status);
+ async function advance(status:OrderStage){setBusy(true);try{await adminSetOrderStatus({data:{id:o.id,status:status as "payment_confirmed",courierName:courier,trackingNumber:tracking}});toast.success(status==="payment_confirmed"?"Payment marked as received":`Order ${STAGE_LABELS[status].toLowerCase()}`);setConfirm(null);setShipping(false);onSaved();qc.invalidateQueries({queryKey:["admin","order-activity",o.id]});}catch(e){toast.error((e as Error).message);}finally{setBusy(false);}}
+ async function viewProof(){try{const {url}=await adminGetReceiptUrl({data:{path:o.receipt_path??""}});window.open(url,"_blank","noopener");}catch(e){toast.error((e as Error).message);}}
+ async function upload(file:File|undefined){if(!file)return;if(file.size>8*1024*1024){toast.error("Proof must be under 8MB");return;}setBusy(true);try{await adminUploadOrderProof({data:{id:o.id,receipt:await fileToBase64(file)}});toast.success("Payment proof saved");onSaved();}catch(e){toast.error((e as Error).message);}finally{setBusy(false);}}
+ const phone=o.phone.replace(/\D/g,"");const whatsapp=phone.startsWith("0")?`234${phone.slice(1)}`:phone;
+ return <AdminPanel title={`#${o.reference}`} description={`${o.full_name} · ${new Date(o.created_at).toLocaleDateString()}`} onClose={onClose}><div className="admin-panel-body"><div className="flex justify-between items-center mb-6"><div className="admin-badge-row"><Badge status={o.lifecycle_status}/><Badge status={o.payment_status} payment/></div><DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon" aria-label="Order actions"><MoreHorizontal/></Button></DropdownMenuTrigger><DropdownMenuContent className="admin-theme" align="end"><DropdownMenuItem disabled={["cancelled","refunded"].includes(o.lifecycle_status)} onSelect={()=>setConfirm("cancelled")}>Cancel order</DropdownMenuItem><DropdownMenuItem disabled={o.payment_status!=="paid"||o.lifecycle_status==="refunded"} onSelect={()=>setConfirm("refunded")}>Record refund</DropdownMenuItem><DropdownMenuItem disabled={o.payment_status==="paid"} onSelect={()=>setConfirm("payment_failed")}>Mark payment failed</DropdownMenuItem></DropdownMenuContent></DropdownMenu></div>
+ <section className="admin-section"><h3>Order items</h3>{o.items.map((i,n)=><div key={n} className="admin-order-item">{photo(i.slug,i.image)?<img src={photo(i.slug,i.image)} alt={i.name}/>:<ShoppingBag/>}<div><p className="text-sm font-medium">{i.name}</p><small>{[i.size,i.color].filter(Boolean).join(" / ")} · Qty {i.quantity}</small></div><span className="text-xs">{formatNgn(i.priceNgn*i.quantity)}</span></div>)}<div className="grid gap-3 mt-5 text-sm"><div className="flex justify-between text-muted-foreground"><span>Subtotal</span><span>{formatNgn(o.subtotal_ngn)}</span></div><div className="flex justify-between text-muted-foreground"><span>Delivery fee</span><span>{formatNgn(o.shipping_ngn)}</span></div><div className="flex justify-between font-semibold"><span>Total</span><span>{formatNgn(o.total_ngn)}</span></div></div></section>
+ <section className="admin-section"><h3>Customer & delivery</h3><p className="font-medium">{o.full_name}</p><p className="text-muted-foreground text-sm mt-2 break-all">{o.email}</p><p className="text-sm mt-4">{o.phone}</p><div className="grid grid-cols-2 gap-3 my-4"><Button asChild variant="outline"><a href={`tel:${o.phone}`}><Phone size={16}/> Call</a></Button><Button asChild variant="outline"><a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer"><MessageCircle size={16}/> WhatsApp</a></Button></div><p className="text-sm leading-relaxed text-muted-foreground">{[o.address,o.city,o.state,o.postal,o.country].filter(Boolean).join(", ")}</p><p className="text-sm mt-2">{o.delivery_location}</p></section>
+ <section className="admin-section"><h3>Payment · {o.payment_method==="bank"?"Bank transfer":"Card"}</h3><Badge status={o.payment_status} payment/><div className="flex gap-3 mt-4 flex-wrap">{o.receipt_path&&<Button variant="outline" onClick={viewProof}><FileText size={16}/>View proof</Button>}<Button variant="outline" onClick={()=>proof.current?.click()} disabled={busy}><Upload size={16}/>Upload proof</Button><input ref={proof} className="admin-proof-input" type="file" accept="image/jpeg,image/png,application/pdf" onChange={e=>upload(e.target.files?.[0])}/></div></section>
+ <section className="admin-section"><h3>Order journey</h3><OrderTimeline timestamps={o.stage_timestamps} stage={o.lifecycle_status} horizontal/>{o.courier_name&&<div className="mt-4 text-sm"><p>{o.courier_name}</p><p className="text-muted-foreground mt-2 break-all">Tracking: {o.tracking_number}</p></div>}</section>
+ <section className="admin-section"><h3>Internal notes</h3><Textarea aria-label="Internal notes" value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Add a note for your team…" rows={3}/><Button className="mt-3" variant="outline" disabled={busy||notes===o.internal_notes} onClick={async()=>{setBusy(true);try{await adminSaveOrderNote({data:{id:o.id,notes}});toast.success("Note saved");onSaved();activity.refetch();}catch(e){toast.error((e as Error).message);}finally{setBusy(false);}}}>Save note</Button></section>
+ <section className="admin-section"><h3>Activity</h3>{activity.isLoading?<p>Loading activity…</p>:activity.data?.length?activity.data.map(a=><div key={a.id} className="mb-4"><p className="text-sm">{a.action}{a.to_status?` → ${STAGE_LABELS[a.to_status as OrderStage]??PAYMENT_LABELS[a.to_status as PaymentStatus]??a.to_status}`:""}</p><p className="text-xs text-muted-foreground mt-1 break-all">{a.actor_label} · {new Date(a.created_at).toLocaleString()}</p></div>):<p className="text-muted-foreground">No changes recorded yet.</p>}</section>
+ <Button variant="outline" onClick={()=>setPrinting(true)}><Printer size={16}/>Printable receipt</Button>
+ </div><div className="admin-panel-footer">{next?<Button className="w-full h-12" disabled={busy||next!=="payment_confirmed"&&o.payment_status!=="paid"} onClick={()=>next==="shipped"?setShipping(true):next==="payment_confirmed"?setConfirm(next):advance(next)}>{busy?"Updating…":ACTION[next]}<ArrowRight size={18}/></Button>:<p className="text-muted-foreground text-sm py-2">{STAGE_LABELS[o.lifecycle_status]} · No further steps</p>}</div>
+ {confirm&&<ConfirmAction title={confirm==="payment_confirmed"?"Confirm payment received?":confirm==="refunded"?"Record a completed refund?":`${STAGE_LABELS[confirm]}?`} description={confirm==="refunded"?"Return the funds through your bank or payment provider first. This records the refund only; it does not transfer money.":confirm==="payment_confirmed"?"Only confirm after you have verified the funds arrived in your account.":"This change will be recorded in the order activity."} onClose={()=>setConfirm(null)} onConfirm={()=>advance(confirm)} busy={busy}/>}
+ {shipping&&<AdminPanel title="Dispatch order" description="Add the courier and tracking details." onClose={()=>setShipping(false)}><form onSubmit={e=>{e.preventDefault();advance("shipped");}} className="admin-panel-body"><div className="admin-field"><Label htmlFor="courier">Courier name</Label><Input id="courier" required value={courier} onChange={e=>setCourier(e.target.value)}/></div><div className="admin-field"><Label htmlFor="tracking">Tracking number</Label><Input id="tracking" required value={tracking} onChange={e=>setTracking(e.target.value)}/></div><Button disabled={busy} type="submit" className="w-full">Mark shipped</Button></form></AdminPanel>}
+ {printing&&<AdminPanel title="Receipt" onClose={()=>setPrinting(false)}><div className="admin-panel-body"><div className="admin-print-receipt"><h2>TwoFourSeven</h2><p className="mt-4">Order #{o.reference}</p><p>{o.full_name}</p><p>{new Date(o.created_at).toLocaleDateString()}</p><div className="my-8">{o.items.map((i,n)=><p key={n} className="flex justify-between my-3"><span>{i.name} · {i.size} · {i.color} × {i.quantity}</span><span>{formatNgn(i.priceNgn*i.quantity)}</span></p>)}</div><p>Delivery: {formatNgn(o.shipping_ngn)}</p><p className="font-semibold mt-4">Total: {formatNgn(o.total_ngn)}</p><p className="mt-3">Payment: {PAYMENT_LABELS[o.payment_status]}</p></div><Button className="mt-8" onClick={()=>window.print()}><Printer size={16}/>Print receipt</Button></div></AdminPanel>}
+ </AdminPanel>;
 }

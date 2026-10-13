@@ -41,6 +41,10 @@ export const Route = createFileRoute("/category/$slug")({
   },
   head: ({ loaderData }) => ({
     meta: [
+      { property: "og:title", content: `${loaderData?.cat.name ?? "Category"} — TWOFOURSEVEN` },
+      { property: "og:description", content: loaderData?.cat.blurb ?? "TWOFOURSEVEN ready-to-wear category." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: `${loaderData?.cat.name ?? "Category"} — TWOFOURSEVEN` },
       {
         name: "description",

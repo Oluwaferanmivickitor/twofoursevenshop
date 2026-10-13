@@ -9,6 +9,10 @@ export const Route = createFileRoute("/admin_/login")({
   ssr: false,
   head: () => ({
     meta: [
+      { property: "og:title", content: "Admin Login — TWOFOURSEVEN" },
+      { property: "og:description", content: "TwoFourSeven store." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Admin Login — TWOFOURSEVEN" },
       { name: "robots", content: "noindex,nofollow" },
     ],
@@ -38,7 +42,7 @@ function AdminLoginPage() {
         setError(error.message);
         return;
       }
-      await router.navigate({ to: "/admin" });
+      await router.navigate({ to: "/admin/orders" });
     } else {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -51,7 +55,7 @@ function AdminLoginPage() {
         return;
       }
       if (data.session) {
-        await router.navigate({ to: "/admin" });
+        await router.navigate({ to: "/admin/orders" });
       } else {
         setInfo("Account created. Check your email to confirm, then sign in.");
         setMode("signin");
@@ -60,18 +64,18 @@ function AdminLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="admin-theme flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <Link to="/" className="eyebrow text-muted-foreground hover:text-foreground">
             TWOFOURSEVEN
           </Link>
           <h1 className="mt-4 font-serif text-3xl font-light tracking-tight text-foreground">
-            Admin
+            Store studio
           </h1>
           <p className="mt-2 text-xs text-muted-foreground">
             {mode === "signin"
-              ? "Sign in to manage the catalog."
+              ? "Your store, at your fingertips."
               : "Create your administrator account."}
           </p>
         </div>

@@ -44,6 +44,7 @@ export type Database = {
       delivery_locations: {
         Row: {
           created_at: string
+          estimated_days: string
           fee_ngn: number
           id: string
           is_active: boolean
@@ -53,6 +54,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          estimated_days?: string
           fee_ngn?: number
           id?: string
           is_active?: boolean
@@ -62,6 +64,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          estimated_days?: string
           fee_ngn?: number
           id?: string
           is_active?: boolean
@@ -74,101 +77,166 @@ export type Database = {
       hero_slides: {
         Row: {
           alt: string
+          caption: string
           created_at: string
           id: string
           image_url: string
           is_active: boolean
+          link_url: string
           sort_order: number
           updated_at: string
         }
         Insert: {
           alt?: string
+          caption?: string
           created_at?: string
           id?: string
           image_url: string
           is_active?: boolean
+          link_url?: string
           sort_order?: number
           updated_at?: string
         }
         Update: {
           alt?: string
+          caption?: string
           created_at?: string
           id?: string
           image_url?: string
           is_active?: boolean
+          link_url?: string
           sort_order?: number
           updated_at?: string
         }
         Relationships: []
+      }
+      order_activity: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_label: string
+          created_at: string
+          from_status: string | null
+          id: string
+          order_id: string
+          to_status: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_label?: string
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          order_id: string
+          to_status?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_label?: string
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          order_id?: string
+          to_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_activity_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       orders: {
         Row: {
           address: string
           city: string
           country: string
+          courier_name: string
           created_at: string
           delivery_location: string
           email: string
           full_name: string
           id: string
+          internal_notes: string
           items: Json
+          lifecycle_status: string
           notified: boolean
           payment_method: string
+          payment_status: string
           phone: string
           postal: string
           receipt_path: string | null
           reference: string
           shipping_ngn: number
+          stage_timestamps: Json
           state: string
           status: string
           subtotal_ngn: number
           total_ngn: number
+          tracking_number: string
           updated_at: string
         }
         Insert: {
           address: string
           city: string
           country: string
+          courier_name?: string
           created_at?: string
           delivery_location?: string
           email: string
           full_name: string
           id?: string
+          internal_notes?: string
           items?: Json
+          lifecycle_status?: string
           notified?: boolean
           payment_method?: string
+          payment_status?: string
           phone: string
           postal?: string
           receipt_path?: string | null
           reference: string
           shipping_ngn?: number
+          stage_timestamps?: Json
           state?: string
           status?: string
           subtotal_ngn?: number
           total_ngn?: number
+          tracking_number?: string
           updated_at?: string
         }
         Update: {
           address?: string
           city?: string
           country?: string
+          courier_name?: string
           created_at?: string
           delivery_location?: string
           email?: string
           full_name?: string
           id?: string
+          internal_notes?: string
           items?: Json
+          lifecycle_status?: string
           notified?: boolean
           payment_method?: string
+          payment_status?: string
           phone?: string
           postal?: string
           receipt_path?: string | null
           reference?: string
           shipping_ngn?: number
+          stage_timestamps?: Json
           state?: string
           status?: string
           subtotal_ngn?: number
           total_ngn?: number
+          tracking_number?: string
           updated_at?: string
         }
         Relationships: []
@@ -187,6 +255,7 @@ export type Database = {
           is_archived: boolean
           name: string
           price_ngn: number
+          size_stock: Json
           sizes: Json
           slug: string
           sort_order: number
@@ -206,6 +275,7 @@ export type Database = {
           is_archived?: boolean
           name: string
           price_ngn: number
+          size_stock?: Json
           sizes?: Json
           slug: string
           sort_order?: number
@@ -225,11 +295,27 @@ export type Database = {
           is_archived?: boolean
           name?: string
           price_ngn?: number
+          size_stock?: Json
           sizes?: Json
           slug?: string
           sort_order?: number
           stock_quantity?: number
           updated_at?: string
+        }
+        Relationships: []
+      }
+      store_settings: {
+        Row: {
+          free_delivery_threshold_ngn: number
+          id: string
+        }
+        Insert: {
+          free_delivery_threshold_ngn?: number
+          id?: string
+        }
+        Update: {
+          free_delivery_threshold_ngn?: number
+          id?: string
         }
         Relationships: []
       }

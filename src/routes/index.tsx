@@ -11,6 +11,9 @@ export const Route = createFileRoute("/")({
   loader: () => listProducts(),
   head: () => ({
     meta: [
+      { property: "og:description", content: "TWOFOURSEVEN" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "TWOFOURSEVEN" },
       { name: "description", content: "TWOFOURSEVEN" },
       { property: "og:title", content: "TWOFOURSEVEN" },

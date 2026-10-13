@@ -22,6 +22,7 @@ export type Product = {
   inStock: boolean;
   discountPercent?: number;
   stockQuantity?: number;
+  sizeStock?: Record<string, number>;
   isArchived?: boolean;
   sortOrder?: number;
   description: string;
@@ -55,6 +56,7 @@ type ProductRow = {
   in_stock: boolean;
   discount_percent: number;
   stock_quantity: number;
+  size_stock?: unknown;
   is_archived: boolean;
   sort_order: number;
 };
@@ -94,6 +96,7 @@ export function mapProductRow(row: ProductRow): Product {
     inStock: row.in_stock,
     discountPercent: row.discount_percent ?? 0,
     stockQuantity: row.stock_quantity ?? 0,
+    sizeStock: row.size_stock && typeof row.size_stock === "object" && !Array.isArray(row.size_stock) ? row.size_stock as Record<string, number> : {},
     isArchived: row.is_archived,
     sortOrder: row.sort_order,
   };

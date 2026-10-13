@@ -5,6 +5,10 @@ import { PolicyPage } from "@/components/PolicyPage";
 export const Route = createFileRoute("/shipping")({
   head: () => ({
     meta: [
+      { property: "og:title", content: "Shipping Policy — TWOFOURSEVEN" },
+      { property: "og:description", content: "Delivery within 24–72 hours within Nigeria. International orders: 7–14 business days." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Shipping Policy — TWOFOURSEVEN" },
       {
         name: "description",

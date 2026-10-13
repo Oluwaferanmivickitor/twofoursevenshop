@@ -1,154 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
-import {
-  createHeroSlide,
-  deleteHeroSlide,
-  listHeroSlides,
-  updateHeroSlide,
-} from "@/lib/store.functions";
-import { AdminShell } from "@/components/admin/AdminShell";
+import { Images, Eye, Trash2, Plus } from "lucide-react";
+import { listHeroSlides, createHeroSlide, updateHeroSlide, deleteHeroSlide, type HeroSlide } from "@/lib/store.functions";
+import { adminHead } from "@/lib/admin-meta";
 import { resolveImageUrl } from "@/lib/image-url";
+import fallback from "@/assets/abnormal-wd-model.jpg.asset.json";
+import { AdminShell } from "@/components/admin/AdminShell";
+import { SortableList } from "@/components/admin/SortableList";
+import { AdminLoading, AdminPanel, ConfirmAction } from "@/components/admin/AdminUI";
 import { ImageUploader } from "@/components/admin/ImageUploader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-
-export const Route = createFileRoute("/admin_/hero")({
-  ssr: false,
-  head: () => ({
-    meta: [
-      { title: "Header images — Admin" },
-      { name: "robots", content: "noindex,nofollow" },
-    ],
-  }),
-  component: HeroPage,
-});
-
-function HeroPage() {
-  const qc = useQueryClient();
-  const query = useQuery({ queryKey: ["hero-slides"], queryFn: () => listHeroSlides() });
-  const [pending, setPending] = useState<string[]>([]);
-  const [alt, setAlt] = useState("");
-
-  const invalidate = () => qc.invalidateQueries({ queryKey: ["hero-slides"] });
-
-  const addMut = useMutation({
-    mutationFn: async (urls: string[]) => {
-      let order = (query.data ?? []).length;
-      for (const url of urls) {
-        await createHeroSlide({ data: { imageUrl: url, alt, sortOrder: order } });
-        order += 1;
-      }
-    },
-    onSuccess: () => {
-      toast.success("Header images added");
-      setPending([]);
-      setAlt("");
-      invalidate();
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-
-  const updateMut = useMutation({
-    mutationFn: (v: { id: string; alt?: string; sortOrder?: number; isActive?: boolean }) =>
-      updateHeroSlide({ data: v }),
-    onSuccess: () => {
-      toast.success("Saved");
-      invalidate();
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-
-  const deleteMut = useMutation({
-    mutationFn: (id: string) => deleteHeroSlide({ data: { id } }),
-    onSuccess: () => {
-      toast.success("Image removed");
-      invalidate();
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-
-  const slides = query.data ?? [];
-
-  return (
-    <AdminShell
-      title="Header images"
-      description="These are the big images in the slideshow at the top of the homepage."
-    >
-      <div className="mb-10 max-w-xl space-y-4 rounded-md border border-border bg-card p-5">
-        <div className="space-y-2">
-          <Label>Upload new header images</Label>
-          <ImageUploader value={pending} multiple onChange={setPending} />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="alt">Short image description (optional)</Label>
-          <Input id="alt" value={alt} onChange={(e) => setAlt(e.target.value)} />
-        </div>
-        <Button
-          disabled={pending.length === 0 || addMut.isPending}
-          onClick={() => addMut.mutate(pending)}
-        >
-          {addMut.isPending ? "Adding…" : "Add to slideshow"}
-        </Button>
-      </div>
-
-      {query.isLoading && <p className="text-sm text-muted-foreground">Loading…</p>}
-      {!query.isLoading && slides.length === 0 && (
-        <p className="text-sm text-muted-foreground">
-          No custom header images yet — the homepage is showing the built-in ones.
-        </p>
-      )}
-
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {slides.map((s) => (
-          <div key={s.id} className="overflow-hidden rounded-md border border-border bg-card">
-            <img src={resolveImageUrl(s.imageUrl)} alt={s.alt} className="aspect-[4/5] w-full object-cover" />
-            <div className="space-y-3 p-4">
-              <Input
-                defaultValue={s.alt}
-                placeholder="Description"
-                onBlur={(e) =>
-                  e.target.value !== s.alt && updateMut.mutate({ id: s.id, alt: e.target.value })
-                }
-              />
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <Label className="text-xs">Order</Label>
-                  <Input
-                    type="number"
-                    min={0}
-                    className="h-9 w-20"
-                    defaultValue={s.sortOrder}
-                    onBlur={(e) => {
-                      const n = Number(e.target.value) || 0;
-                      if (n !== s.sortOrder) updateMut.mutate({ id: s.id, sortOrder: n });
-                    }}
-                  />
-                </div>
-                <div className="flex items-center gap-2">
-                  <Label className="text-xs">Visible</Label>
-                  <Switch
-                    checked={s.isActive}
-                    onCheckedChange={(v) => updateMut.mutate({ id: s.id, isActive: v })}
-                  />
-                </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-destructive"
-                onClick={() => deleteMut.mutate(s.id)}
-              >
-                <Trash2 className="mr-1 h-4 w-4" /> Remove
-              </Button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </AdminShell>
-  );
+export const Route=createFileRoute("/admin_/hero")({ssr:false,head:()=>adminHead("Content"),component:ContentPage});
+function ContentPage(){const qc=useQueryClient();const q=useQuery({queryKey:["hero-slides"],queryFn:()=>listHeroSlides()});const [adding,setAdding]=useState(false),[photos,setPhotos]=useState<string[]>([]),[busy,setBusy]=useState(false),[deleting,setDeleting]=useState<HeroSlide|null>(null),[index,setIndex]=useState(0);const active=q.data?.filter(s=>s.isActive)??[];useEffect(()=>{const id=setInterval(()=>setIndex(i=>(i+1)%Math.max(1,active.length)),5000);return()=>clearInterval(id);},[active.length]);const invalidate=()=>qc.invalidateQueries({queryKey:["hero-slides"]});async function update(data:{ id: string; alt?: string; sortOrder?: number; isActive?: boolean; caption?: string; linkUrl?: string }){try{await updateHeroSlide({data});toast.success("Content saved");invalidate();}catch(e){toast.error((e as Error).message);}}
+ return <AdminShell title="Content" description="Set the scene for your collection." actions={<Button onClick={()=>setAdding(true)}><Plus size={17}/>Upload</Button>}><div className="max-w-3xl"><div className="flex justify-between items-center mb-4"><h2>Homepage preview</h2><span className="admin-badge text-primary"><Eye size={13}/>Live preview</span></div><div className="admin-hero-preview"><img src={resolveImageUrl(active[index%Math.max(active.length,1)]?.imageUrl??fallback.url)} alt="Current homepage hero"/><span>{active[index%Math.max(active.length,1)]?.caption||"TwoFourSeven"}</span></div><h2 className="mb-5">Header images <span className="text-muted-foreground text-sm">{q.data?.length??0}</span></h2>{q.isLoading?<AdminLoading/>:q.error?<p className="text-destructive">{(q.error as Error).message}</p>:q.data?.length?<SortableList items={q.data} onReorder={async items=>{qc.setQueryData(["hero-slides"],items);try{await Promise.all(items.map((s,n)=>updateHeroSlide({data:{id:s.id,sortOrder:n}})));toast.success("Image order saved");invalidate();}catch(e){toast.error((e as Error).message);invalidate();}}} render={s=><><div><img src={s.imageUrl} alt={s.alt} className="w-full aspect-[16/9] object-cover rounded-lg mb-4"/><div className="admin-field"><Label htmlFor={`caption-${s.id}`}>Caption</Label><Input id={`caption-${s.id}`} defaultValue={s.caption} placeholder="Optional caption" onBlur={e=>e.target.value!==s.caption&&update({id:s.id,caption:e.target.value})}/></div><div className="admin-field"><Label htmlFor={`link-${s.id}`}>Link</Label><Input id={`link-${s.id}`} defaultValue={s.linkUrl} placeholder="/shop" onBlur={e=>e.target.value!==s.linkUrl&&update({id:s.id,linkUrl:e.target.value})}/></div><div className="admin-field"><Label htmlFor={`alt-${s.id}`}>Image description</Label><Input id={`alt-${s.id}`} defaultValue={s.alt} onBlur={e=>e.target.value!==s.alt&&update({id:s.id,alt:e.target.value})}/></div><div className="flex justify-between items-center"><div className="flex items-center gap-3"><Switch id={`visible-${s.id}`} checked={s.isActive} onCheckedChange={v=>update({id:s.id,isActive:v})}/><Label htmlFor={`visible-${s.id}`}>Visible</Label></div><Button variant="ghost" className="text-destructive" aria-label="Remove header image" onClick={()=>setDeleting(s)}><Trash2 size={17}/></Button></div></div><span/></>}/>:<div className="admin-card p-6"><Images className="text-primary mb-4"/><h2>Your campaign, your canvas</h2><p className="text-muted-foreground text-sm mt-3">The homepage currently uses the original campaign photos.</p><Button className="mt-6" onClick={()=>setAdding(true)}>Upload header images</Button></div>}</div>{adding&&<AdminPanel title="Add header images" onClose={()=>setAdding(false)}><div className="admin-panel-body"><ImageUploader value={photos} multiple onChange={setPhotos}/></div><div className="admin-panel-footer"><Button className="w-full" disabled={busy||!photos.length} onClick={async()=>{setBusy(true);try{for(const [n,url]of photos.entries())await createHeroSlide({data:{imageUrl:url,alt:"",sortOrder:(q.data?.length??0)+n}});toast.success("Header images added");setPhotos([]);setAdding(false);invalidate();}catch(e){toast.error((e as Error).message);}finally{setBusy(false);}}}>{busy?"Saving…":"Add to homepage"}</Button></div></AdminPanel>}{deleting&&<ConfirmAction title="Remove header image?" description="This image will no longer appear on your homepage." onClose={()=>setDeleting(null)} onConfirm={async()=>{setBusy(true);try{await deleteHeroSlide({data:{id:deleting.id}});setDeleting(null);toast.success("Image removed");invalidate();}catch(e){toast.error((e as Error).message);}finally{setBusy(false);}}} busy={busy}/>}</AdminShell>;
 }

@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { CustomerTracker } from "./track";
 import { PageLayout } from "@/components/PageLayout";
 
 export const Route = createFileRoute("/thank-you")({
@@ -7,6 +8,10 @@ export const Route = createFileRoute("/thank-you")({
   }),
   head: () => ({
     meta: [
+      { property: "og:title", content: "Thank You — TWOFOURSEVEN" },
+      { property: "og:description", content: "Your order has been received and is under review." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Thank You — TWOFOURSEVEN" },
       { name: "description", content: "Your order has been received and is under review." },
     ],
@@ -35,6 +40,7 @@ function ThankYouPage() {
             </a>
             .
           </p>
+          <div className="mt-10"><CustomerTracker reference={ref} useSavedEmail /></div>
           <div className="mt-12 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link
               to="/shop"

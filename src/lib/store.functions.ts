@@ -11,11 +11,14 @@ export type HeroSlide = {
   alt: string;
   sortOrder: number;
   isActive: boolean;
+  caption: string;
+  linkUrl: string;
 };
 export type DeliveryLocation = {
   id: string;
   name: string;
   feeNgn: number;
+  estimatedDays: string;
   sortOrder: number;
   isActive: boolean;
 };
@@ -146,6 +149,8 @@ export const listHeroSlides = createServerFn({ method: "GET" }).handler(
       alt: r.alt as string,
       sortOrder: r.sort_order as number,
       isActive: r.is_active as boolean,
+      caption: (r.caption as string) || "",
+      linkUrl: (r.link_url as string) || "",
     }));
   },
 );
@@ -179,12 +184,16 @@ export const updateHeroSlide = createServerFn({ method: "POST" })
         alt: z.string().trim().max(200).optional(),
         sortOrder: z.number().int().min(0).max(10000).optional(),
         isActive: z.boolean().optional(),
+        caption: z.string().trim().max(300).optional(),
+        linkUrl: z.string().trim().max(2000).refine(v => !v || /^\/(?!\/)/.test(v) || /^https:\/\//.test(v), "Use a store path or HTTPS link").optional(),
       })
       .parse(d),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase as never, context.userId);
-    const patch: { alt?: string; sort_order?: number; is_active?: boolean } = {};
+    const patch: { alt?: string; sort_order?: number; is_active?: boolean; caption?: string; link_url?: string } = {};
+    if (data.caption !== undefined) patch.caption = data.caption;
+    if (data.linkUrl !== undefined) patch.link_url = data.linkUrl;
     if (data.alt !== undefined) patch.alt = data.alt;
     if (data.sortOrder !== undefined) patch.sort_order = data.sortOrder;
     if (data.isActive !== undefined) patch.is_active = data.isActive;
@@ -218,6 +227,7 @@ export const listDeliveryLocations = createServerFn({ method: "GET" }).handler(
       id: r.id as string,
       name: r.name as string,
       feeNgn: r.fee_ngn as number,
+      estimatedDays: (r.estimated_days as string) || "",
       sortOrder: r.sort_order as number,
       isActive: r.is_active as boolean,
     }));
@@ -227,6 +237,7 @@ export const listDeliveryLocations = createServerFn({ method: "GET" }).handler(
 const LocationInput = z.object({
   name: z.string().trim().min(1).max(120),
   feeNgn: z.number().int().min(0).max(10_000_000),
+  estimatedDays: z.string().trim().max(80).default(""),
   sortOrder: z.number().int().min(0).max(10000).default(0),
   isActive: z.boolean().default(true),
 });
@@ -239,6 +250,7 @@ export const createDeliveryLocation = createServerFn({ method: "POST" })
     const { error } = await context.supabase.from("delivery_locations").insert({
       name: data.name,
       fee_ngn: data.feeNgn,
+      estimated_days: data.estimatedDays,
       sort_order: data.sortOrder,
       is_active: data.isActive,
     });
@@ -258,6 +270,7 @@ export const updateDeliveryLocation = createServerFn({ method: "POST" })
       .update({
         name: data.name,
         fee_ngn: data.feeNgn,
+      estimated_days: data.estimatedDays,
         sort_order: data.sortOrder,
         is_active: data.isActive,
       })
@@ -278,3 +291,17 @@ export const deleteDeliveryLocation = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });
+
+export const getStoreSettings = createServerFn({ method: "GET" }).handler(async () => {
+  const result = await publicClient().from("store_settings").select("free_delivery_threshold_ngn").eq("id", "store").maybeSingle();
+  if (result.error) throw new Error(result.error.message);
+  return { freeDeliveryThresholdNgn: result.data?.free_delivery_threshold_ngn ?? 0 };
+});
+export const saveStoreSettings = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
+.inputValidator((d: unknown) => z.object({ freeDeliveryThresholdNgn: z.number().int().min(0).max(1000000000) }).parse(d))
+.handler(async ({ data, context }) => {
+  await assertAdmin(context.supabase as never, context.userId);
+  const result = await context.supabase.from("store_settings").upsert({ id: "store", free_delivery_threshold_ngn: data.freeDeliveryThresholdNgn });
+  if (result.error) throw new Error(result.error.message);
+  return { ok: true };
+});

@@ -10,3 +10,8 @@
 <!-- LOVABLE:END -->
 
 - Storefront theming is class-based on the document element, defaults to dark, and persists the visitor's explicit choice; this prevents theme flashes while preserving semantic tokens.
+
+- Admin pages use a scoped admin theme and shared shell, preserving the independent storefront theme.
+- Order lifecycle rules and audit records are enforced by database triggers; UI transitions use the shared lifecycle module so payment gating cannot be bypassed.
+- Public order tracking verifies reference plus checkout email and returns a narrow projection without contact details, proof URLs, or internal notes.
+- Sortable admin lists use touch and keyboard-enabled drag handles; editor changes are persisted only through authenticated owner functions.

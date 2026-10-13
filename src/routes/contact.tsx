@@ -4,6 +4,10 @@ import { PageLayout } from "@/components/PageLayout";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
+      { property: "og:title", content: "Contact — TWOFOURSEVEN" },
+      { property: "og:description", content: "Contact TWOFOURSEVEN. Based in Lagos, Nigeria. Email 247.freeworld@gmail.com." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Contact — TWOFOURSEVEN" },
       {
         name: "description",

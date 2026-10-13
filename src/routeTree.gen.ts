@@ -20,11 +20,14 @@ import { Route as ShippingRouteImport } from './routes/shipping'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as SizeGuideRouteImport } from './routes/size-guide'
 import { Route as ThankYouRouteImport } from './routes/thank-you'
+import { Route as TrackRouteImport } from './routes/track'
 import { Route as AdminCategoriesRouteImport } from './routes/admin_.categories'
 import { Route as AdminDeliveryRouteImport } from './routes/admin_.delivery'
 import { Route as AdminHeroRouteImport } from './routes/admin_.hero'
 import { Route as AdminLoginRouteImport } from './routes/admin_.login'
 import { Route as AdminOrdersRouteImport } from './routes/admin_.orders'
+import { Route as AdminProductsRouteImport } from './routes/admin_.products'
+import { Route as AdminSettingsRouteImport } from './routes/admin_.settings'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as ApiPublicProductImageSplatRouteImport } from './routes/api/public/product-image.$'
@@ -84,6 +87,11 @@ const ThankYouRoute = ThankYouRouteImport.update({
   path: '/thank-you',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TrackRoute = TrackRouteImport.update({
+  id: '/track',
+  path: '/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   id: '/admin_/categories',
   path: '/admin/categories',
@@ -107,6 +115,16 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
 const AdminOrdersRoute = AdminOrdersRouteImport.update({
   id: '/admin_/orders',
   path: '/admin/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminProductsRoute = AdminProductsRouteImport.update({
+  id: '/admin_/products',
+  path: '/admin/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/admin_/settings',
+  path: '/admin/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CategorySlugRoute = CategorySlugRouteImport.update({
@@ -138,11 +156,14 @@ export interface FileRoutesByFullPath {
   '/shop': typeof ShopRoute
   '/size-guide': typeof SizeGuideRoute
   '/thank-you': typeof ThankYouRoute
+  '/track': typeof TrackRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/delivery': typeof AdminDeliveryRoute
   '/admin/hero': typeof AdminHeroRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orders': typeof AdminOrdersRoute
+  '/admin/products': typeof AdminProductsRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/api/public/product-image/$': typeof ApiPublicProductImageSplatRoute
@@ -159,11 +180,14 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopRoute
   '/size-guide': typeof SizeGuideRoute
   '/thank-you': typeof ThankYouRoute
+  '/track': typeof TrackRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/delivery': typeof AdminDeliveryRoute
   '/admin/hero': typeof AdminHeroRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orders': typeof AdminOrdersRoute
+  '/admin/products': typeof AdminProductsRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/api/public/product-image/$': typeof ApiPublicProductImageSplatRoute
@@ -181,11 +205,14 @@ export interface FileRoutesById {
   '/shop': typeof ShopRoute
   '/size-guide': typeof SizeGuideRoute
   '/thank-you': typeof ThankYouRoute
+  '/track': typeof TrackRoute
   '/admin_/categories': typeof AdminCategoriesRoute
   '/admin_/delivery': typeof AdminDeliveryRoute
   '/admin_/hero': typeof AdminHeroRoute
   '/admin_/login': typeof AdminLoginRoute
   '/admin_/orders': typeof AdminOrdersRoute
+  '/admin_/products': typeof AdminProductsRoute
+  '/admin_/settings': typeof AdminSettingsRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/api/public/product-image/$': typeof ApiPublicProductImageSplatRoute
@@ -204,11 +231,14 @@ export interface FileRouteTypes {
     | '/shop'
     | '/size-guide'
     | '/thank-you'
+    | '/track'
     | '/admin/categories'
     | '/admin/delivery'
     | '/admin/hero'
     | '/admin/login'
     | '/admin/orders'
+    | '/admin/products'
+    | '/admin/settings'
     | '/category/$slug'
     | '/product/$slug'
     | '/api/public/product-image/$'
@@ -225,11 +255,14 @@ export interface FileRouteTypes {
     | '/shop'
     | '/size-guide'
     | '/thank-you'
+    | '/track'
     | '/admin/categories'
     | '/admin/delivery'
     | '/admin/hero'
     | '/admin/login'
     | '/admin/orders'
+    | '/admin/products'
+    | '/admin/settings'
     | '/category/$slug'
     | '/product/$slug'
     | '/api/public/product-image/$'
@@ -246,11 +279,14 @@ export interface FileRouteTypes {
     | '/shop'
     | '/size-guide'
     | '/thank-you'
+    | '/track'
     | '/admin_/categories'
     | '/admin_/delivery'
     | '/admin_/hero'
     | '/admin_/login'
     | '/admin_/orders'
+    | '/admin_/products'
+    | '/admin_/settings'
     | '/category/$slug'
     | '/product/$slug'
     | '/api/public/product-image/$'
@@ -268,11 +304,14 @@ export interface RootRouteChildren {
   ShopRoute: typeof ShopRoute
   SizeGuideRoute: typeof SizeGuideRoute
   ThankYouRoute: typeof ThankYouRoute
+  TrackRoute: typeof TrackRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminDeliveryRoute: typeof AdminDeliveryRoute
   AdminHeroRoute: typeof AdminHeroRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
+  AdminProductsRoute: typeof AdminProductsRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
   CategorySlugRoute: typeof CategorySlugRoute
   ProductSlugRoute: typeof ProductSlugRoute
   ApiPublicProductImageSplatRoute: typeof ApiPublicProductImageSplatRoute
@@ -357,6 +396,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ThankYouRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/track': {
+      id: '/track'
+      path: '/track'
+      fullPath: '/track'
+      preLoaderRoute: typeof TrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/categories': {
       id: '/admin_/categories'
       path: '/admin/categories'
@@ -390,6 +436,20 @@ declare module '@tanstack/react-router' {
       path: '/admin/orders'
       fullPath: '/admin/orders'
       preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/products': {
+      id: '/admin_/products'
+      path: '/admin/products'
+      fullPath: '/admin/products'
+      preLoaderRoute: typeof AdminProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/settings': {
+      id: '/admin_/settings'
+      path: '/admin/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/category/$slug': {
@@ -428,11 +488,14 @@ const rootRouteChildren: RootRouteChildren = {
   ShopRoute: ShopRoute,
   SizeGuideRoute: SizeGuideRoute,
   ThankYouRoute: ThankYouRoute,
+  TrackRoute: TrackRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminDeliveryRoute: AdminDeliveryRoute,
   AdminHeroRoute: AdminHeroRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminOrdersRoute: AdminOrdersRoute,
+  AdminProductsRoute: AdminProductsRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
   CategorySlugRoute: CategorySlugRoute,
   ProductSlugRoute: ProductSlugRoute,
   ApiPublicProductImageSplatRoute: ApiPublicProductImageSplatRoute,

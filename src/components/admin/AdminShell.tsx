@@ -1,138 +1,23 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Link, useRouter } from "@tanstack/react-router";
-import { ExternalLink, LogOut } from "lucide-react";
+import { Link, useRouter, useRouterState } from "@tanstack/react-router";
+import { ShoppingBag, Package, Shapes, Images, MoreHorizontal, ArrowUpRight, LogOut, Truck, Settings, ChevronDown, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { checkIsAdmin } from "@/lib/products.functions";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
-
-type AuthState =
-  | { status: "checking" }
-  | { status: "signed_out" }
-  | { status: "not_admin"; email: string | null }
-  | { status: "admin"; email: string | null };
-
-const NAV = [
-  { to: "/admin", label: "Products" },
-  { to: "/admin/categories", label: "Categories" },
-  { to: "/admin/hero", label: "Header images" },
-  { to: "/admin/delivery", label: "Delivery" },
-  { to: "/admin/orders", label: "Orders" },
-] as const;
-
-export function AdminShell({
-  title,
-  description,
-  actions,
-  children,
-}: {
-  title: string;
-  description?: string;
-  actions?: ReactNode;
-  children: ReactNode;
-}) {
-  const router = useRouter();
-  const [auth, setAuth] = useState<AuthState>({ status: "checking" });
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const { data: userData } = await supabase.auth.getUser();
-      if (cancelled) return;
-      if (!userData.user) {
-        router.navigate({ to: "/admin/login" });
-        return;
-      }
-      try {
-        const res = await checkIsAdmin();
-        if (cancelled) return;
-        setAuth({
-          status: res.isAdmin ? "admin" : "not_admin",
-          email: userData.user.email ?? null,
-        });
-      } catch {
-        if (!cancelled) setAuth({ status: "signed_out" });
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [router]);
-
-  async function signOut() {
-    await supabase.auth.signOut();
-    router.navigate({ to: "/admin/login" });
-  }
-
-  if (auth.status === "checking") {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">
-        Loading admin…
-      </div>
-    );
-  }
-  if (auth.status === "signed_out") return null;
-  if (auth.status === "not_admin") {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-4 text-center">
-        <h1 className="font-serif text-2xl font-light">Not authorised</h1>
-        <p className="max-w-md text-sm text-muted-foreground">
-          {auth.email ?? "This account"} is signed in but is not an administrator.
-        </p>
-        <Button variant="outline" onClick={signOut}>
-          Sign out
-        </Button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-background">
-      <Toaster richColors position="top-right" />
-      <header className="border-b border-border px-5 py-4 sm:px-8">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-4">
-            <Link to="/" className="eyebrow text-muted-foreground hover:text-foreground">
-              TWOFOURSEVEN
-            </Link>
-            <span className="text-sm font-medium text-foreground">Admin</span>
-          </div>
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="hidden sm:inline">{auth.email}</span>
-            <Link to="/" className="inline-flex items-center gap-1 hover:text-foreground">
-              <ExternalLink className="h-3.5 w-3.5" /> View site
-            </Link>
-            <Button size="sm" variant="outline" onClick={signOut}>
-              <LogOut className="mr-1 h-3.5 w-3.5" /> Sign out
-            </Button>
-          </div>
-        </div>
-        <nav className="mt-4 flex flex-wrap gap-1">
-          {NAV.map((n) => (
-            <Link
-              key={n.to}
-              to={n.to}
-              activeOptions={{ exact: true }}
-              className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground [&.active]:bg-foreground [&.active]:text-background"
-            >
-              {n.label}
-            </Link>
-          ))}
-        </nav>
-      </header>
-
-      <main className="mx-auto max-w-7xl px-5 py-10 sm:px-8">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="font-serif text-3xl font-light tracking-tight text-foreground">
-              {title}
-            </h1>
-            {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
-          </div>
-          {actions}
-        </div>
-        {children}
-      </main>
-    </div>
-  );
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { AdminLoading } from "./AdminUI";
+const NAV = [{ to: "/admin/orders", label: "Orders", icon: ShoppingBag }, { to: "/admin/products", label: "Products", icon: Package }, { to: "/admin/categories", label: "Categories", icon: Shapes }, { to: "/admin/hero", label: "Content", icon: Images }] as const;
+export function AdminShell({ title, description, actions, children }: { title: string; description?: string; actions?: ReactNode; children: ReactNode }) {
+ const router = useRouter(); const pathname = useRouterState({select:s=>s.location.pathname});
+ const [auth,setAuth] = useState<"checking"|"admin"|"denied">("checking"); const [email,setEmail]=useState(""); const [more,setMore]=useState(false);
+ useEffect(()=>{ let cancelled=false; (async()=>{ const {data}=await supabase.auth.getUser(); if(!data.user){await router.navigate({to:"/admin/login"});return;} try {const result=await checkIsAdmin(); if(!cancelled){setAuth(result.isAdmin?"admin":"denied");setEmail(data.user.email??"");}}catch{if(!cancelled)setAuth("denied");} })(); return ()=>{cancelled=true};},[router]);
+ async function signOut(){await supabase.auth.signOut();await router.navigate({to:"/admin/login"});}
+ if(auth!=="admin") return <div className="admin-theme min-h-screen p-5">{auth==="checking"?<div className="mx-auto max-w-lg pt-20"><AdminLoading/></div>:<div className="admin-empty"><h1>Access restricted</h1><p>This account does not have store-owner access.</p><Button onClick={signOut}>Sign out</Button></div>}</div>;
+ return <div className="admin-theme admin-app"><Toaster theme="dark" richColors position="top-center"/>
+  <aside className="admin-sidebar"><Link to="/admin/orders" className="admin-brand"><span className="admin-brand-symbol">TF</span><span>TwoFourSeven<small>STORE STUDIO</small></span></Link><div className="admin-sidebar-label">WORKSPACE</div><nav>{NAV.map(n=><Link key={n.to} to={n.to} activeOptions={{exact:true}} className="admin-nav-link"><n.icon size={20}/>{n.label}</Link>)}<Link to="/admin/delivery" className="admin-nav-link"><Truck size={20}/>Delivery</Link><Link to="/admin/settings" className="admin-nav-link"><Settings size={20}/>Store settings</Link></nav><div className="admin-sidebar-bottom"><Link to="/" className="admin-nav-link"><ArrowUpRight size={20}/>View store</Link><Button variant="ghost" className="admin-profile" onClick={()=>setMore(true)}><span className="admin-avatar">{email.slice(0,1).toUpperCase()}</span><span>Store owner<small>Manage account</small></span><ChevronDown size={16}/></Button></div></aside>
+  <div className="admin-workspace"><div className="admin-topbar"><Link to="/admin/orders" className="admin-mobile-brand"><span className="admin-brand-symbol">TF</span>TwoFourSeven</Link><div className="admin-studio-label"><Sparkles size={16}/> Store studio</div><Button variant="ghost" aria-label="Open profile menu" onClick={()=>setMore(true)}><span className="admin-avatar">{email.slice(0,1).toUpperCase()}</span></Button></div><main className="admin-main"><div className="admin-page-heading"><div><p className="admin-eyebrow">YOUR STORE, IN FOCUS</p><h1>{title}</h1>{description&&<p className="admin-description">{description}</p>}</div>{actions}</div>{children}</main></div>
+  <nav className="admin-bottom-nav">{NAV.map(n=><Link key={n.to} to={n.to} activeOptions={{exact:true}} className="admin-bottom-link"><n.icon size={22}/><span>{n.label}</span></Link>)}<Button variant="ghost" className={`admin-bottom-link ${pathname.includes("delivery")||pathname.includes("settings")?"active":""}`} onClick={()=>setMore(true)}><MoreHorizontal size={22}/><span>More</span></Button></nav>
+  <Dialog open={more} onOpenChange={setMore}><DialogContent className="admin-theme admin-more"><DialogTitle>Your workspace</DialogTitle><DialogDescription className="break-all">{email}</DialogDescription><Link to="/admin/delivery" className="admin-menu-link" onClick={()=>setMore(false)}><Truck/>Delivery<ArrowUpRight size={18}/></Link><Link to="/admin/settings" className="admin-menu-link" onClick={()=>setMore(false)}><Settings/>Store settings<ArrowUpRight size={18}/></Link><Link to="/" className="admin-menu-link"><ArrowUpRight/>View store</Link><Button variant="ghost" className="admin-menu-link text-destructive" onClick={signOut}><LogOut/>Sign out</Button></DialogContent></Dialog>
+ </div>;
 }

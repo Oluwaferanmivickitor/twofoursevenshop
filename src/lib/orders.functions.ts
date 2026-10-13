@@ -2,10 +2,12 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { assertAdmin } from "./products.functions";
+import { validateOrderTransition, type Order, type OrderStage } from "./order-lifecycle";
 
 const ItemSchema = z.object({
   slug: z.string().min(1).max(200),
   name: z.string().min(1).max(300),
+  image: z.string().max(2000).optional(),
   color: z.string().max(80).optional(),
   size: z.string().max(20).optional(),
   priceNgn: z.number().int().min(0).max(1_000_000_000),
@@ -190,14 +192,57 @@ export const adminGetReceiptUrl = createServerFn({ method: "POST" })
 export const adminSetOrderStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) =>
-    z.object({ id: z.string().uuid(), status: z.string().trim().min(1).max(40) }).parse(d),
+    z.object({ id: z.string().uuid(), status: z.enum(["payment_confirmed", "processing", "packed", "shipped", "delivered", "cancelled", "refunded", "payment_failed", "awaiting_payment"]), courierName: z.string().trim().max(160).default(""), trackingNumber: z.string().trim().max(160).default("") }).parse(d),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase as never, context.userId);
+    const { data: row, error: readError } = await context.supabase.from("orders").select("*").eq("id", data.id).single();
+    if (readError || !row) throw new Error("Order not found");
+    validateOrderTransition(row.lifecycle_status as OrderStage, data.status, row.payment_status as Order["payment_status"], data.courierName || row.courier_name, data.trackingNumber || row.tracking_number);
     const { error } = await context.supabase
       .from("orders")
-      .update({ status: data.status })
-      .eq("id", data.id);
+      .update({ lifecycle_status: data.status, payment_status: data.status === "payment_confirmed" ? "paid" : data.status === "refunded" ? "refunded" : data.status === "payment_failed" ? "failed" : row.payment_status, courier_name: data.courierName || row.courier_name, tracking_number: data.trackingNumber || row.tracking_number })
+      .eq("id", data.id).eq("lifecycle_status", row.lifecycle_status).select("id").single();
     if (error) throw new Error(error.message);
     return { ok: true as const };
+  });
+
+export const adminOrderActivity = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase as never, context.userId);
+    const result = await context.supabase.from("order_activity").select("*").eq("order_id", data.id).order("created_at", { ascending: false });
+    if (result.error) throw new Error(result.error.message);
+    return result.data;
+  });
+
+export const adminSaveOrderNote = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid(), notes: z.string().max(5000) }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase as never, context.userId);
+    const { error } = await context.supabase.from("orders").update({ internal_notes: data.notes }).eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminUploadOrderProof = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid(), receipt: z.object({ filename: z.string().max(200), contentType: z.enum(["image/jpeg", "image/png", "application/pdf"]), dataBase64: z.string().max(12_000_000) }) }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase as never, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const path = `${data.id}/${crypto.randomUUID()}-${data.receipt.filename.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+    const upload = await supabaseAdmin.storage.from("order-receipts").upload(path, Buffer.from(data.receipt.dataBase64, "base64"), { contentType: data.receipt.contentType });
+    if (upload.error) throw new Error(upload.error.message);
+    const { error } = await context.supabase.from("orders").update({ receipt_path: path }).eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const trackOrder = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ reference: z.string().trim().min(4).max(60), email: z.string().trim().email().max(200) }).parse(d))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const result = await supabaseAdmin.from("orders").select("reference,full_name,items,subtotal_ngn,shipping_ngn,total_ngn,delivery_location,lifecycle_status,payment_status,courier_name,tracking_number,stage_timestamps,created_at").eq("reference", data.reference).ilike("email", data.email.replace(/[%_\\]/g, "\\$&")).maybeSingle();
+    if (result.error) throw new Error("Unable to check this order right now");
+    return result.data;
   });
