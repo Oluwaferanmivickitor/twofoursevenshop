@@ -20,6 +20,7 @@ import { Route as ShippingRouteImport } from './routes/shipping'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as SizeGuideRouteImport } from './routes/size-guide'
 import { Route as ThankYouRouteImport } from './routes/thank-you'
+import { Route as TrackRouteImport } from './routes/track'
 import { Route as AdminCategoriesRouteImport } from './routes/admin_.categories'
 import { Route as AdminDeliveryRouteImport } from './routes/admin_.delivery'
 import { Route as AdminHeroRouteImport } from './routes/admin_.hero'
@@ -86,6 +87,11 @@ const ThankYouRoute = ThankYouRouteImport.update({
   path: '/thank-you',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TrackRoute = TrackRouteImport.update({
+  id: '/track',
+  path: '/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   id: '/admin_/categories',
   path: '/admin/categories',
@@ -150,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/shop': typeof ShopRoute
   '/size-guide': typeof SizeGuideRoute
   '/thank-you': typeof ThankYouRoute
+  '/track': typeof TrackRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/delivery': typeof AdminDeliveryRoute
   '/admin/hero': typeof AdminHeroRoute
@@ -173,6 +180,7 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopRoute
   '/size-guide': typeof SizeGuideRoute
   '/thank-you': typeof ThankYouRoute
+  '/track': typeof TrackRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/delivery': typeof AdminDeliveryRoute
   '/admin/hero': typeof AdminHeroRoute
@@ -197,6 +205,7 @@ export interface FileRoutesById {
   '/shop': typeof ShopRoute
   '/size-guide': typeof SizeGuideRoute
   '/thank-you': typeof ThankYouRoute
+  '/track': typeof TrackRoute
   '/admin_/categories': typeof AdminCategoriesRoute
   '/admin_/delivery': typeof AdminDeliveryRoute
   '/admin_/hero': typeof AdminHeroRoute
@@ -222,6 +231,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/size-guide'
     | '/thank-you'
+    | '/track'
     | '/admin/categories'
     | '/admin/delivery'
     | '/admin/hero'
@@ -245,6 +255,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/size-guide'
     | '/thank-you'
+    | '/track'
     | '/admin/categories'
     | '/admin/delivery'
     | '/admin/hero'
@@ -268,6 +279,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/size-guide'
     | '/thank-you'
+    | '/track'
     | '/admin_/categories'
     | '/admin_/delivery'
     | '/admin_/hero'
@@ -292,6 +304,7 @@ export interface RootRouteChildren {
   ShopRoute: typeof ShopRoute
   SizeGuideRoute: typeof SizeGuideRoute
   ThankYouRoute: typeof ThankYouRoute
+  TrackRoute: typeof TrackRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminDeliveryRoute: typeof AdminDeliveryRoute
   AdminHeroRoute: typeof AdminHeroRoute
@@ -383,6 +396,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ThankYouRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/track': {
+      id: '/track'
+      path: '/track'
+      fullPath: '/track'
+      preLoaderRoute: typeof TrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/categories': {
       id: '/admin_/categories'
       path: '/admin/categories'
@@ -468,6 +488,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShopRoute: ShopRoute,
   SizeGuideRoute: SizeGuideRoute,
   ThankYouRoute: ThankYouRoute,
+  TrackRoute: TrackRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminDeliveryRoute: AdminDeliveryRoute,
   AdminHeroRoute: AdminHeroRoute,
