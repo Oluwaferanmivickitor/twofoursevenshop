@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { CustomerTracker } from "./track";
 import { PageLayout } from "@/components/PageLayout";
 
 export const Route = createFileRoute("/thank-you")({
@@ -35,6 +36,7 @@ function ThankYouPage() {
             </a>
             .
           </p>
+          <div className="mt-10"><CustomerTracker reference={ref} useSavedEmail /></div>
           <div className="mt-12 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link
               to="/shop"

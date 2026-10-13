@@ -1,0 +1,21 @@
+import { useEffect, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { Search, Truck } from "lucide-react";
+import { trackOrder } from "@/lib/orders.functions";
+import { STAGE_LABELS, PAYMENT_LABELS, type OrderStage, type PaymentStatus } from "@/lib/order-lifecycle";
+import { formatNgn } from "@/lib/products";
+import { resolveImageUrl } from "@/lib/image-url";
+import { OrderTimeline } from "@/components/admin/OrderTimeline";
+import { PageLayout } from "@/components/PageLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+export const Route=createFileRoute("/track")({head:()=>({meta:[{title:"Track your order — TwoFourSeven"},{name:"description",content:"Follow your TwoFourSeven order from payment to delivery."},{property:"og:title",content:"Track your order — TwoFourSeven"},{property:"og:description",content:"Follow your TwoFourSeven order from payment to delivery."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary"}]}),component:TrackPage});
+export function CustomerTracker({reference="",useSavedEmail=false}:{reference?:string;useSavedEmail?:boolean}){
+ const [ref,setRef]=useState(reference),[email,setEmail]=useState(""),[lookup,setLookup]=useState<{reference:string;email:string}|null>(null);
+ useEffect(()=>{if(useSavedEmail){const saved=sessionStorage.getItem("twofourseven-order-email");if(saved&&reference){setEmail(saved);setLookup({reference,email:saved});}}},[useSavedEmail,reference]);
+ const q=useQuery({queryKey:["track",lookup],queryFn:()=>lookup?trackOrder({data:lookup}):null,enabled:!!lookup,refetchInterval:15000}); const order=q.data;
+ return <div className="max-w-2xl mx-auto text-left"><form className="grid gap-4" onSubmit={e=>{e.preventDefault();setLookup({reference:ref.trim(),email:email.trim()});}}><div><Label htmlFor="track-ref">Order reference</Label><Input id="track-ref" className="mt-2" required value={ref} onChange={e=>setRef(e.target.value)} placeholder="247-…"/></div><div><Label htmlFor="track-email">Email address</Label><Input id="track-email" className="mt-2" type="email" required value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email used at checkout"/></div><Button disabled={q.isFetching} type="submit" className="h-12"><Search size={17}/>{q.isFetching?"Checking…":"Track my order"}</Button></form>{q.error&&<p role="alert" className="mt-5 text-destructive">Unable to check this order. Please try again.</p>}{lookup&&!q.isFetching&&!order&&!q.error&&<p role="status" className="mt-5 text-muted-foreground">No matching order. Check your reference and checkout email.</p>}{order&&<div className="mt-10"><div className="flex flex-wrap justify-between items-center gap-3 mb-8"><h2 className="font-serif text-2xl">{STAGE_LABELS[order.lifecycle_status as OrderStage]}</h2><span className="text-sm">Payment · {PAYMENT_LABELS[order.payment_status as PaymentStatus]}</span></div><OrderTimeline stage={order.lifecycle_status as OrderStage} timestamps={order.stage_timestamps as Record<string,string>}/>{order.courier_name&&<div className="mt-4 mb-8 flex gap-3"><Truck/><div><p>{order.courier_name}</p><p className="text-muted-foreground break-all">Tracking: {order.tracking_number}</p></div></div>}<h3 className="font-medium mb-4">Order details</h3>{(order.items as unknown as {name:string;image?:string;size?:string;color?:string;quantity:number}[]).map((i,n)=><div className="flex gap-3 items-center mb-4" key={n}>{i.image&&<img src={resolveImageUrl(i.image)} alt={i.name} className="h-16 w-14 object-cover"/>}<div><p>{i.name}</p><p className="text-sm text-muted-foreground">{[i.size,i.color].filter(Boolean).join(" / ")} · {i.quantity}</p></div></div>)}<p className="text-sm text-muted-foreground mt-6">Delivery · {order.delivery_location||"As arranged"}</p><p className="text-sm text-muted-foreground mt-2">Delivery fee · {formatNgn(order.shipping_ngn)}</p><p className="font-medium mt-4">Total · {formatNgn(order.total_ngn)}</p></div>}</div>;
+}
+function TrackPage(){return <PageLayout><section className="px-5 py-28"><div className="max-w-2xl mx-auto"><h1 className="font-serif text-4xl mb-10">Track my order</h1><CustomerTracker/></div></section></PageLayout>;}
