@@ -140,6 +140,7 @@ function CheckoutPage() {
           items: items.map((i) => ({
             slug: i.slug,
             name: i.name,
+            image: i.image,
             color: i.color,
             size: i.size,
             priceNgn: i.priceNgn,
@@ -152,6 +153,7 @@ function CheckoutPage() {
           receipt: receiptPayload,
         },
       });
+      sessionStorage.setItem("twofourseven-order-email", details.email);
       clear();
       navigate({ to: "/thank-you", search: { ref: orderRef } });
     } catch (e) {
