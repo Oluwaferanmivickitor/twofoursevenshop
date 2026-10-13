@@ -14,6 +14,10 @@ const WHATSAPP_NUMBER = "2348060063068";
 export const Route = createFileRoute("/checkout")({
   head: () => ({
     meta: [
+      { property: "og:title", content: "Checkout — TWOFOURSEVEN" },
+      { property: "og:description", content: "Secure on-site checkout with bank transfer and receipt upload." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Checkout — TWOFOURSEVEN" },
       { name: "description", content: "Secure on-site checkout with bank transfer and receipt upload." },
     ],

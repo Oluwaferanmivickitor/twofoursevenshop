@@ -5,6 +5,10 @@ import { PolicyPage } from "@/components/PolicyPage";
 export const Route = createFileRoute("/returns")({
   head: () => ({
     meta: [
+      { property: "og:title", content: "Returns & Refunds — TWOFOURSEVEN" },
+      { property: "og:description", content: "Exchanges accepted for sizing discrepancies. Refunds processed within four working days." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Returns & Refunds — TWOFOURSEVEN" },
       {
         name: "description",

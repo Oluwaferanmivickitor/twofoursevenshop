@@ -9,6 +9,8 @@ export const Route = createFileRoute("/shop")({
   loader: () => listProducts(),
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Shop — TWOFOURSEVEN" },
       {
         name: "description",

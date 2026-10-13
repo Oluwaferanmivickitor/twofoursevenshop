@@ -8,6 +8,10 @@ export const Route = createFileRoute("/thank-you")({
   }),
   head: () => ({
     meta: [
+      { property: "og:title", content: "Thank You — TWOFOURSEVEN" },
+      { property: "og:description", content: "Your order has been received and is under review." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Thank You — TWOFOURSEVEN" },
       { name: "description", content: "Your order has been received and is under review." },
     ],

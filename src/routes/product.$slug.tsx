@@ -23,12 +23,13 @@ export const Route = createFileRoute("/product/$slug")({
     return {
       meta: p
         ? [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
             { title: `${p.name} — TWOFOURSEVEN` },
             { name: "description", content: p.description },
             { property: "og:title", content: `${p.name} — TWOFOURSEVEN` },
             { property: "og:description", content: p.description },
-            { property: "og:image", content: p.image },
-            { name: "twitter:image", content: p.image },
+            ...(p.image.startsWith("https://") ? [{ property: "og:image", content: p.image }, { name: "twitter:image", content: p.image }] : []),
           ]
         : [],
     };

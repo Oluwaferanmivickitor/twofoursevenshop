@@ -4,6 +4,10 @@ import { PageLayout } from "@/components/PageLayout";
 export const Route = createFileRoute("/size-guide")({
   head: () => ({
     meta: [
+      { property: "og:title", content: "Size Guide — TWOFOURSEVEN" },
+      { property: "og:description", content: "Sizing measurements for TWOFOURSEVEN ready-to-wear." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Size Guide — TWOFOURSEVEN" },
       { name: "description", content: "Sizing measurements for TWOFOURSEVEN ready-to-wear." },
     ],

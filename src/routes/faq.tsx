@@ -10,6 +10,10 @@ import {
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
+      { property: "og:title", content: "FAQ — TWOFOURSEVEN" },
+      { property: "og:description", content: "Shipping, returns, payment and contact information for TWOFOURSEVEN." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "FAQ — TWOFOURSEVEN" },
       {
         name: "description",

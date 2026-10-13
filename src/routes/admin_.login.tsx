@@ -9,6 +9,10 @@ export const Route = createFileRoute("/admin_/login")({
   ssr: false,
   head: () => ({
     meta: [
+      { property: "og:title", content: "Admin Login — TWOFOURSEVEN" },
+      { property: "og:description", content: "TwoFourSeven store." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Admin Login — TWOFOURSEVEN" },
       { name: "robots", content: "noindex,nofollow" },
     ],
