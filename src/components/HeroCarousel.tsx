@@ -25,7 +25,7 @@ export function HeroCarousel() {
       .then((rows) => {
         const active = rows
           .filter((r) => r.isActive && r.imageUrl)
-          .map((r) => ({ src: resolveImageUrl(r.imageUrl), alt: r.alt || "TWOFOURSEVEN campaign image" }));
+          .map((r) => ({ src: resolveImageUrl(r.imageUrl), alt: r.alt || "TWOFOURSEVEN campaign image", caption: r.caption, linkUrl: r.linkUrl }));
         if (!cancelled && active.length > 0) {
           setSlides(active);
           setIndex(0);
@@ -63,6 +63,8 @@ export function HeroCarousel() {
                 fetchPriority={i === 0 ? "high" : "auto"}
                 className="h-full w-full object-cover object-center"
               />
+              {"caption" in s && typeof s.caption === "string" && s.caption && <p className="absolute bottom-20 left-5 font-serif text-3xl bg-background/80 px-4 py-2">{s.caption}</p>}
+              {"linkUrl" in s && typeof s.linkUrl === "string" && s.linkUrl && <a href={s.linkUrl} aria-label={s.alt} className="absolute inset-0" />}
             </div>
           ))}
         </div>

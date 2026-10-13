@@ -5,8 +5,9 @@ import { PageLayout } from "@/components/PageLayout";
 import { useCart } from "@/lib/cart";
 import { formatNgn, formatEur } from "@/lib/products";
 import { submitOrder } from "@/lib/orders.functions";
+import { deliveryFee } from "@/lib/order-lifecycle";
 import { fileToBase64 } from "@/lib/file-to-base64";
-import { listDeliveryLocations, type DeliveryLocation } from "@/lib/store.functions";
+import { getStoreSettings, listDeliveryLocations, type DeliveryLocation } from "@/lib/store.functions";
 
 const WHATSAPP_NUMBER = "2348060063068";
 
@@ -60,11 +61,13 @@ function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<"bank" | "card">("bank");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [threshold, setThreshold] = useState(0);
   const [locations, setLocations] = useState<DeliveryLocation[]>([]);
   const [locationId, setLocationId] = useState<string>("");
 
   useEffect(() => {
     let cancelled = false;
+    getStoreSettings().then(s => { if (!cancelled) setThreshold(s.freeDeliveryThresholdNgn); }).catch(() => {});
     listDeliveryLocations()
       .then((rows) => {
         if (cancelled) return;
@@ -79,14 +82,14 @@ function CheckoutPage() {
   const selectedLocation = locations.find((l) => l.id === locationId) ?? null;
   const isOther = locationId === OTHER;
 
-  const shippingNgn =
+  const shippingNgn = deliveryFee(subtotalNgn,
     items.length === 0 || isOther
       ? 0
       : selectedLocation
         ? selectedLocation.feeNgn
         : locations.length > 0
           ? 0
-          : SHIPPING_NGN;
+          : SHIPPING_NGN, threshold);
   const totalNgn = subtotalNgn + shippingNgn;
 
   const canContinueStep1 = useMemo(
